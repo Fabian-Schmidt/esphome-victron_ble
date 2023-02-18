@@ -104,7 +104,7 @@ class VictronBle : public PollingComponent, public ble_client::BLEClientNode {
 #undef BLE_DATA_STORAGE
 
   uint8_t read_request_started_ = 0;
-  uint16_t find_handle_and_read_(const esp32_ble_tracker::ESPBTUUID *characteristic);
+  uint16_t find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic, bool read_value =  true);
   void read_value_(const uint16_t handle, const uint8_t *value, const uint16_t value_len,
                    const bool register_for_notify = false);
   void send_keep_alive_();

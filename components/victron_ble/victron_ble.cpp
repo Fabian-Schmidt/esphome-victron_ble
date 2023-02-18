@@ -84,37 +84,38 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
       break;
 
     case ESP_GATTC_SEARCH_CMPL_EVT:
-      this->handle_keep_alive_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_KEEP_ALIVE);
+      this->handle_keep_alive_ = this->find_handle_(&CHARACTERISTIC_UUID_KEEP_ALIVE, /*read_value*/ false);
       if (this->state_of_charge_ != nullptr) {
-        this->handle_state_of_charge_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_SOC);
+        this->handle_state_of_charge_ = this->find_handle_(&CHARACTERISTIC_UUID_SOC);
       }
       if (this->voltage_ != nullptr) {
-        this->handle_voltage_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_VOLTAGE);
+        this->handle_voltage_ = this->find_handle_(&CHARACTERISTIC_UUID_VOLTAGE);
       }
       if (this->power_ != nullptr) {
-        this->handle_power_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_POWER);
+        this->handle_power_ = this->find_handle_(&CHARACTERISTIC_UUID_POWER);
       }
       if (this->current_ != nullptr) {
-        this->handle_current_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_CURRENT);
+        this->handle_current_ = this->find_handle_(&CHARACTERISTIC_UUID_CURRENT);
       }
       if (this->ah_ != nullptr) {
-        this->handle_ah_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_AH);
+        this->handle_ah_ = this->find_handle_(&CHARACTERISTIC_UUID_AH);
       }
       if (this->starter_battery_voltage_ != nullptr) {
-        this->handle_starter_battery_voltage_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_VOLTAGE2);
+        this->handle_starter_battery_voltage_ = this->find_handle_(&CHARACTERISTIC_UUID_VOLTAGE2);
       }
       if (this->val2_ != nullptr) {
-        this->handle_val2_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_VAL2);
+        this->handle_val2_ = this->find_handle_(&CHARACTERISTIC_UUID_VAL2);
       }
       if (this->val3_ != nullptr) {
-        this->handle_val3_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_VAL3);
+        this->handle_val3_ = this->find_handle_(&CHARACTERISTIC_UUID_VAL3);
       }
       if (this->val4_ != nullptr) {
-        this->handle_val4_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_VAL4);
+        this->handle_val4_ = this->find_handle_(&CHARACTERISTIC_UUID_VAL4);
       }
       if (this->remaining_time_ != nullptr) {
-        this->handle_remaining_time_ = this->find_handle_and_read_(&CHARACTERISTIC_UUID_REMAINING_TIME);
+        this->handle_remaining_time_ = this->find_handle_(&CHARACTERISTIC_UUID_REMAINING_TIME);
       }
+
       if (this->notify_ && this->read_request_started_ > 0) {
         // Register keep alive interval.
         this->set_interval(KEEP_ALIVE_INTERVAL, 20000 /* 20 seconds */, [this]() { this->send_keep_alive_(); });
@@ -188,7 +189,7 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
   }
 }
 
-uint16_t VictronBle::find_handle_and_read_(const esp32_ble_tracker::ESPBTUUID *characteristic) {
+uint16_t VictronBle::find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic, bool read_value) {
   auto *chr = this->parent_->get_characteristic(SERVICE_UUID, *characteristic);
   if (chr == nullptr) {
     ESP_LOGW(TAG, "[%s] No characteristic found at service %s char %s", this->get_name().c_str(),
@@ -196,15 +197,17 @@ uint16_t VictronBle::find_handle_and_read_(const esp32_ble_tracker::ESPBTUUID *c
     return 0;
   }
 
-  // Auth options: ESP_GATT_AUTH_REQ_NONE, ESP_GATT_AUTH_REQ_MITM, ESP_GATT_AUTH_REQ_SIGNED_MITM
-  auto status = esp_ble_gattc_read_char(this->parent_->get_gattc_if(), this->parent_->get_conn_id(), chr->handle,
-                                        ESP_GATT_AUTH_REQ_SIGNED_MITM);
+  if (read_value) {
+    // Auth options: ESP_GATT_AUTH_REQ_NONE, ESP_GATT_AUTH_REQ_MITM, ESP_GATT_AUTH_REQ_SIGNED_MITM
+    auto status = esp_ble_gattc_read_char(this->parent_->get_gattc_if(), this->parent_->get_conn_id(), chr->handle,
+                                          ESP_GATT_AUTH_REQ_SIGNED_MITM);
 
-  if (status) {
-    ESP_LOGW(TAG, "[%s] Error sending read request for service %s char %s, status=%d", this->get_name().c_str(),
-             SERVICE_UUID.to_string().c_str(), (*characteristic).to_string().c_str(), status);
-  } else {
-    this->read_request_started_++;
+    if (status) {
+      ESP_LOGW(TAG, "[%s] Error sending read request for service %s char %s, status=%d", this->get_name().c_str(),
+               SERVICE_UUID.to_string().c_str(), (*characteristic).to_string().c_str(), status);
+    } else {
+      this->read_request_started_++;
+    }
   }
 
   return chr->handle;
@@ -217,73 +220,69 @@ void VictronBle::read_value_(const uint16_t handle, const uint8_t *value, const 
   if (handle == this->handle_state_of_charge_ && value_len == sizeof(u_int16_t)) {
     // handle_state_of_charge_
     handle_found = true;
-    this->read_request_started_--;
     this->value_state_of_charge_ = *reinterpret_cast<const u_int16_t *>(value);
     ESP_LOGD(TAG, "[%s] State of Charge: %u", this->get_name().c_str(), this->value_state_of_charge_);
   } else if (handle == this->handle_voltage_ && value_len == sizeof(int16_t)) {
     // handle_voltage_
     handle_found = true;
-    this->read_request_started_--;
     this->value_voltage_ = *reinterpret_cast<const int16_t *>(value);
     ESP_LOGD(TAG, "[%s] Voltage: %i", this->get_name().c_str(), this->value_voltage_);
   } else if (handle == this->handle_power_ && value_len == sizeof(int16_t)) {
     // handle_power_
     handle_found = true;
-    this->read_request_started_--;
     this->value_power_ = *reinterpret_cast<const int16_t *>(value);
     ESP_LOGD(TAG, "[%s] Power: %i", this->get_name().c_str(), this->value_power_);
   } else if (handle == this->handle_current_ && value_len == sizeof(int32_t)) {
     // handle_current_
     handle_found = true;
-    this->read_request_started_--;
     this->value_current_ = *reinterpret_cast<const int32_t *>(value);
     ESP_LOGD(TAG, "[%s] Current: %i", this->get_name().c_str(), this->value_current_);
   } else if (handle == this->handle_ah_ && value_len == sizeof(int32_t)) {
     // handle_ah_
     handle_found = true;
-    this->read_request_started_--;
     this->value_ah_ = *reinterpret_cast<const int32_t *>(value);
     ESP_LOGD(TAG, "[%s] Ah: %i", this->get_name().c_str(), this->value_ah_);
   } else if (handle == this->handle_starter_battery_voltage_ && value_len == sizeof(int16_t)) {
     // handle_starter_battery_voltage_
     handle_found = true;
-    this->read_request_started_--;
     this->value_starter_battery_voltage_ = *reinterpret_cast<const int16_t *>(value);
     ESP_LOGD(TAG, "[%s] Starter Battery Voltage: %i", this->get_name().c_str(), this->value_starter_battery_voltage_);
   } else if (handle == this->handle_val2_ && value_len == sizeof(u_int16_t)) {
     // handle_val2_
     handle_found = true;
-    this->read_request_started_--;
     this->value_val2_ = *reinterpret_cast<const u_int16_t *>(value);
     ESP_LOGD(TAG, "[%s] Value 2: %u", this->get_name().c_str(), this->value_val2_);
   } else if (handle == this->handle_val3_ && value_len == sizeof(u_int16_t)) {
     // handle_val3_
     handle_found = true;
-    this->read_request_started_--;
     this->value_val3_ = *reinterpret_cast<const u_int16_t *>(value);
     ESP_LOGD(TAG, "[%s] Value 3: %u", this->get_name().c_str(), this->value_val3_);
   } else if (handle == this->handle_val4_ && value_len == sizeof(int16_t)) {
     // handle_val4_
     handle_found = true;
-    this->read_request_started_--;
     this->value_val4_ = *reinterpret_cast<const int16_t *>(value);
     ESP_LOGD(TAG, "[%s] Value 4: %i", this->get_name().c_str(), this->value_val4_);
   } else if (handle == this->handle_remaining_time_ && value_len == sizeof(u_int16_t)) {
     // handle_remaining_time_
     handle_found = true;
-    this->read_request_started_--;
     this->value_remaining_time_ = *reinterpret_cast<const u_int16_t *>(value);
     ESP_LOGD(TAG, "[%s] Remaining Time: %u", this->get_name().c_str(), this->value_remaining_time_);
   }
 
-  if (register_for_notify && handle_found) {
-    auto status =
-        esp_ble_gattc_register_for_notify(this->parent_->get_gattc_if(), this->parent_->get_remote_bda(), handle);
+  if (handle_found) {
+    this->read_request_started_--;
+    if (register_for_notify) {
+      auto status =
+          esp_ble_gattc_register_for_notify(this->parent_->get_gattc_if(), this->parent_->get_remote_bda(), handle);
 
-    if (status) {
-      ESP_LOGW(TAG, "[%s] Error sending notify request for service %s handle 0x%04x, status=%d",
-               this->get_name().c_str(), SERVICE_UUID.to_string().c_str(), handle, status);
+      if (status) {
+        ESP_LOGW(TAG, "[%s] Error sending notify request for service %s handle 0x%04x, status=%d",
+                 this->get_name().c_str(), SERVICE_UUID.to_string().c_str(), handle, status);
+      }
     }
+  } else {
+    ESP_LOGW(TAG, "[%s] Error recieved data with unkown handle for service %s handle 0x%04x", this->get_name().c_str(),
+             SERVICE_UUID.to_string().c_str(), handle);
   }
 }
 

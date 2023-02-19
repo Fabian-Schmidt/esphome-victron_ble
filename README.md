@@ -1,8 +1,8 @@
 # ESPHome victron_ble component
 
-Using the [official Victron Bluetooth BLE Protocol](https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html) for fetching data from Victorn SmartShunt via Bluetooth LE via ESPHome.
+Using the [official Victron Bluetooth BLE Protocol](https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html) for fetching data from Victron SmartShunt via Bluetooth LE via ESPHome.
 
-This solution is using the [PR#4258 of ESPHome](https://github.com/esphome/esphome/pull/4258) for connecting to Victorn Smart Shunt.
+This solution is using the [PR#4258 of ESPHome](https://github.com/esphome/esphome/pull/4258) for connecting to Victron Smart Shunt.
 
 ## Steps
 
@@ -94,3 +94,7 @@ sensor:
 
 See [victron_ble_all.yaml](/victron_ble_all.yaml) for a full example.
 Assumption is you are having a `secret.yaml` in the same folder.
+
+## TODO
+
+- In `notify` mode Victron SmartShunt submits on change max every second one value. It send to the sensor api with `update_interval` (default 2min). Currently the last value is submitted. Implement an average function between sensor submits.  

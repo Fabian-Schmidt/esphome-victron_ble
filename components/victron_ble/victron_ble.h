@@ -87,9 +87,10 @@ class VictronBle : public PollingComponent, public ble_client::BLEClientNode {
   uint16_t handle_keep_alive_;
 
 #define BLE_DATA_STORAGE(name, type) \
-  sensor::Sensor * name {nullptr};\
-  uint16_t handle_##name = 0;\
-  type value_##name = std::numeric_limits<type>::max();
+  sensor::Sensor * name {nullptr}; \
+  uint16_t handle_##name = 0; \
+  type value_##name = std::numeric_limits<type>::max(); \
+  bool value_is_set_##name = false;
   
   BLE_DATA_STORAGE(state_of_charge_, u_int16_t)
   BLE_DATA_STORAGE(voltage_, int16_t)

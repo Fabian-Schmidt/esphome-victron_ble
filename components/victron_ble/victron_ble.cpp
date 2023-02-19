@@ -152,8 +152,8 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
       break;
 
     case ESP_GATTC_REG_FOR_NOTIFY_EVT:
-      this->node_state = esp32_ble_tracker::ClientState::ESTABLISHED;
       if (param->reg_for_notify.status == ESP_GATT_OK) {
+        this->node_state = esp32_ble_tracker::ClientState::ESTABLISHED;
         ESP_LOGV(TAG, "[%s] Register notify 0x%04x status=%d", this->get_name().c_str(), param->reg_for_notify.handle,
                  param->reg_for_notify.status);
       } else {
@@ -221,51 +221,61 @@ void VictronBle::read_value_(const uint16_t handle, const uint8_t *value, const 
     // handle_state_of_charge_
     handle_found = true;
     this->value_state_of_charge_ = *reinterpret_cast<const u_int16_t *>(value);
+    this->value_is_set_state_of_charge_ = true;
     ESP_LOGD(TAG, "[%s] State of Charge: %u", this->get_name().c_str(), this->value_state_of_charge_);
   } else if (handle == this->handle_voltage_ && value_len == sizeof(int16_t)) {
     // handle_voltage_
     handle_found = true;
     this->value_voltage_ = *reinterpret_cast<const int16_t *>(value);
+    this->value_is_set_voltage_ = true;
     ESP_LOGD(TAG, "[%s] Voltage: %i", this->get_name().c_str(), this->value_voltage_);
   } else if (handle == this->handle_power_ && value_len == sizeof(int16_t)) {
     // handle_power_
     handle_found = true;
     this->value_power_ = *reinterpret_cast<const int16_t *>(value);
+    this->value_is_set_power_ = true;
     ESP_LOGD(TAG, "[%s] Power: %i", this->get_name().c_str(), this->value_power_);
   } else if (handle == this->handle_current_ && value_len == sizeof(int32_t)) {
     // handle_current_
     handle_found = true;
     this->value_current_ = *reinterpret_cast<const int32_t *>(value);
+    this->value_is_set_current_ = true;
     ESP_LOGD(TAG, "[%s] Current: %i", this->get_name().c_str(), this->value_current_);
   } else if (handle == this->handle_ah_ && value_len == sizeof(int32_t)) {
     // handle_ah_
     handle_found = true;
     this->value_ah_ = *reinterpret_cast<const int32_t *>(value);
+    this->value_is_set_ah_ = true;
     ESP_LOGD(TAG, "[%s] Ah: %i", this->get_name().c_str(), this->value_ah_);
   } else if (handle == this->handle_starter_battery_voltage_ && value_len == sizeof(int16_t)) {
     // handle_starter_battery_voltage_
     handle_found = true;
     this->value_starter_battery_voltage_ = *reinterpret_cast<const int16_t *>(value);
+    this->value_is_set_starter_battery_voltage_ = true;
     ESP_LOGD(TAG, "[%s] Starter Battery Voltage: %i", this->get_name().c_str(), this->value_starter_battery_voltage_);
   } else if (handle == this->handle_val2_ && value_len == sizeof(u_int16_t)) {
     // handle_val2_
     handle_found = true;
     this->value_val2_ = *reinterpret_cast<const u_int16_t *>(value);
+    this->value_is_set_val2_ = true;
     ESP_LOGD(TAG, "[%s] Value 2: %u", this->get_name().c_str(), this->value_val2_);
   } else if (handle == this->handle_val3_ && value_len == sizeof(u_int16_t)) {
     // handle_val3_
     handle_found = true;
     this->value_val3_ = *reinterpret_cast<const u_int16_t *>(value);
+    this->value_is_set_val3_ = true;
     ESP_LOGD(TAG, "[%s] Value 3: %u", this->get_name().c_str(), this->value_val3_);
   } else if (handle == this->handle_val4_ && value_len == sizeof(int16_t)) {
     // handle_val4_
     handle_found = true;
     this->value_val4_ = *reinterpret_cast<const int16_t *>(value);
+    this->value_is_set_val4_ = true;
     ESP_LOGD(TAG, "[%s] Value 4: %i", this->get_name().c_str(), this->value_val4_);
   } else if (handle == this->handle_remaining_time_ && value_len == sizeof(u_int16_t)) {
     // handle_remaining_time_
     handle_found = true;
     this->value_remaining_time_ = *reinterpret_cast<const u_int16_t *>(value);
+    this->value_is_set_remaining_time_ = true;
     ESP_LOGD(TAG, "[%s] Remaining Time: %u", this->get_name().c_str(), this->value_remaining_time_);
   }
 
@@ -303,125 +313,95 @@ void VictronBle::send_keep_alive_() {
 
 void VictronBle::update_sensors_() {
   if (this->state_of_charge_ != nullptr) {
-    if (this->value_state_of_charge_ != std::numeric_limits<u_int16_t>::max()) {
+    if (this->value_is_set_state_of_charge_) {
       this->state_of_charge_->publish_state(static_cast<float>(this->value_state_of_charge_) / 100.0f);
     } else {
       this->state_of_charge_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for State of Charge.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for State of Charge.", this->get_name().c_str());
     }
   }
 
   if (this->voltage_ != nullptr) {
-    if (this->value_voltage_ != std::numeric_limits<int16_t>::max()) {
+    if (this->value_is_set_voltage_) {
       this->voltage_->publish_state(static_cast<float>(this->value_voltage_) / 100.0f);
     } else {
       this->voltage_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Voltage.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Voltage.", this->get_name().c_str());
     }
   }
 
   if (this->power_ != nullptr) {
-    if (this->value_power_ != std::numeric_limits<int16_t>::max()) {
+    if (this->value_is_set_power_) {
       this->power_->publish_state(static_cast<float>(this->value_power_));
     } else {
       this->power_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Power consumption.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Power consumption.", this->get_name().c_str());
     }
   }
 
   if (this->current_ != nullptr) {
-    if (this->value_current_ != std::numeric_limits<int32_t>::max()) {
+    if (this->value_is_set_current_) {
       this->current_->publish_state(static_cast<float>(this->value_current_) / 1000.0f);
     } else {
       this->current_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Current.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Current.", this->get_name().c_str());
     }
   }
 
   if (this->ah_ != nullptr) {
-    if (this->value_ah_ != std::numeric_limits<int32_t>::max()) {
+    if (this->value_is_set_ah_) {
       this->ah_->publish_state(static_cast<float>(this->value_ah_) / 10.0f);
     } else {
       this->ah_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Consumed Ah.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Consumed Ah.", this->get_name().c_str());
     }
   }
 
   if (this->starter_battery_voltage_ != nullptr) {
-    if (this->value_starter_battery_voltage_ != std::numeric_limits<int16_t>::max()) {
+    if (this->value_is_set_starter_battery_voltage_) {
       this->starter_battery_voltage_->publish_state(static_cast<float>(this->value_starter_battery_voltage_) / 100.0f);
     } else {
       this->starter_battery_voltage_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Starter Battery Voltage.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Starter Battery Voltage.", this->get_name().c_str());
     }
   }
 
   if (this->val2_ != nullptr) {
-    if (this->value_val2_ != std::numeric_limits<u_int16_t>::max()) {
+    if (this->value_is_set_val2_) {
       this->val2_->publish_state(static_cast<float>(this->value_val2_));
     } else {
       this->val2_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Val2.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Val2.", this->get_name().c_str());
     }
   }
 
   if (this->val3_ != nullptr) {
-    if (this->value_val3_ != std::numeric_limits<u_int16_t>::max()) {
+    if (this->value_is_set_val3_) {
       this->val3_->publish_state(static_cast<float>(this->value_val3_));
     } else {
       this->val3_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Val3.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Val3.", this->get_name().c_str());
     }
   }
 
   if (this->val4_ != nullptr) {
-    if (this->value_val4_ != std::numeric_limits<int16_t>::max()) {
+    if (this->value_is_set_val4_) {
       this->val4_->publish_state(static_cast<float>(this->value_val4_));
     } else {
       this->val4_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Val4.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Val4.", this->get_name().c_str());
     }
   }
 
   if (this->remaining_time_ != nullptr) {
-    if (this->value_remaining_time_ != std::numeric_limits<u_int16_t>::max()) {
+    if (this->value_is_set_remaining_time_) {
       this->remaining_time_->publish_state(static_cast<float>(this->value_remaining_time_));
     } else {
       this->remaining_time_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Remaining Time.");
+      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Remaining Time.", this->get_name().c_str());
     }
   }
 }
-
-// bool VictronBle::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
-//   const auto &manu_datas = device.get_manufacturer_datas();
-//   if (manu_datas.size() != 1) {
-//     return false;
-//   }
-//   const auto &manu_data = manu_datas[0];
-
-//   if (manu_data.uuid != esp32_ble_tracker::ESPBTUUID::from_uint16(MANUFACTURER_ID)) {
-//     return true;
-//   }
-
-//   //   if (manu_data.data.size() < MANUFACTURER_DATA_MIN_LENGTH) {
-//   //     return false;
-//   //   }
-
-// //   const auto ad_flag = device.ad_flag_.has_value();
-//   const auto name = device.get_name();
-
-//   //   if (!device.get_name().empty()) {
-//   //     ESP_LOGD(TAG, "  Name: '%s'", device.get_name().c_str());
-//   //   }
-
-//   ESP_LOGI(TAG, "Victron Device found: %s (%s) %d", device.address_str().c_str(), name.c_str(),
-//            manu_data.data.size());
-
-//   return false;
-// }
-
-// bool VictronBle::parse_sync_button_(const std::vector<uint8_t> &message) { return (message[2] & 0x80) != 0; }
 
 }  // namespace victron_ble
 }  // namespace esphome

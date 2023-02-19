@@ -55,12 +55,6 @@ class VictronBle : public PollingComponent, public ble_client::BLEClientNode {
 
   void gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if,
                            esp_ble_gattc_cb_param_t *param) override;
-  //   void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param) override;
-  //   void connect() override;
-
-  //   // ESPBTDeviceListener
-  //   void on_scan_end() override;
-  //   bool parse_device(const esp32_ble_tracker::ESPBTDevice &device) override;
   std::string get_name() {
     if (this->name_.empty()) {
       return this->parent_->address_str();
@@ -87,11 +81,12 @@ class VictronBle : public PollingComponent, public ble_client::BLEClientNode {
   uint16_t handle_keep_alive_;
 
 #define BLE_DATA_STORAGE(name, type) \
-  sensor::Sensor * name {nullptr}; \
+  sensor::Sensor *name{nullptr}; \
   uint16_t handle_##name = 0; \
   type value_##name = std::numeric_limits<type>::max(); \
-  bool value_is_set_##name = false;
-  
+  bool value_is_set_##name = false; \
+  bool request_read_##name = false;
+
   BLE_DATA_STORAGE(state_of_charge_, u_int16_t)
   BLE_DATA_STORAGE(voltage_, int16_t)
   BLE_DATA_STORAGE(power_, int16_t)
@@ -105,11 +100,35 @@ class VictronBle : public PollingComponent, public ble_client::BLEClientNode {
 #undef BLE_DATA_STORAGE
 
   uint8_t read_request_started_ = 0;
-  uint16_t find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic, bool read_value =  true);
+  uint16_t find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic);
+  void request_read_next_value_();
+  bool request_read_(const uint16_t handle);
   void read_value_(const uint16_t handle, const uint8_t *value, const uint16_t value_len,
                    const bool register_for_notify = false);
   void send_keep_alive_();
   void update_sensors_();
+
+#define BLE_DATA_RESET(name, type) \
+  this->handle_##name = 0; \
+  this->value_##name = std::numeric_limits<type>::max(); \
+  this->value_is_set_##name = false; \
+  this->request_read_##name = false;
+
+  void reset_state() {
+    this->read_request_started_ = 0;
+
+    BLE_DATA_RESET(state_of_charge_, u_int16_t)
+    BLE_DATA_RESET(voltage_, int16_t)
+    BLE_DATA_RESET(power_, int16_t)
+    BLE_DATA_RESET(current_, int32_t)
+    BLE_DATA_RESET(ah_, int32_t)
+    BLE_DATA_RESET(starter_battery_voltage_, int16_t)
+    BLE_DATA_RESET(val2_, u_int16_t)
+    BLE_DATA_RESET(val3_, u_int16_t)
+    BLE_DATA_RESET(val4_, int16_t)
+    BLE_DATA_RESET(remaining_time_, u_int16_t)
+  };
+#undef BLE_DATA_RESET
 };
 
 }  // namespace victron_ble

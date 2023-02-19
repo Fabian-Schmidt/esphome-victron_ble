@@ -61,7 +61,7 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
     case ESP_GATTC_OPEN_EVT:
       if (param->open.status == ESP_GATT_OK) {
         ESP_LOGI(TAG, "[%s] Connected successfully", this->get_name().c_str());
-        this->read_request_started_ = 0;
+        this->reset_state();
       }
       break;
 
@@ -71,7 +71,6 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
       } else {
         ESP_LOGI(TAG, "[%s] Disconnected", this->get_name().c_str());
       }
-      this->read_request_started_ = 0;
       if (this->notify_) {
         cancel_interval(KEEP_ALIVE_INTERVAL);
       }
@@ -84,7 +83,8 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
       break;
 
     case ESP_GATTC_SEARCH_CMPL_EVT:
-      this->handle_keep_alive_ = this->find_handle_(&CHARACTERISTIC_UUID_KEEP_ALIVE, /*read_value*/ false);
+      this->node_state = esp32_ble_tracker::ClientState::ESTABLISHED;
+      this->handle_keep_alive_ = this->find_handle_(&CHARACTERISTIC_UUID_KEEP_ALIVE);
       if (this->state_of_charge_ != nullptr) {
         this->handle_state_of_charge_ = this->find_handle_(&CHARACTERISTIC_UUID_SOC);
       }
@@ -116,19 +116,15 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
         this->handle_remaining_time_ = this->find_handle_(&CHARACTERISTIC_UUID_REMAINING_TIME);
       }
 
-      if (this->notify_ && this->read_request_started_ > 0) {
-        // Register keep alive interval.
-        this->set_interval(KEEP_ALIVE_INTERVAL, 20000 /* 20 seconds */, [this]() { this->send_keep_alive_(); });
-        this->node_state = esp32_ble_tracker::ClientState::ESTABLISHED;
-      }
+      this->request_read_next_value_();
       break;
 
     case ESP_GATTC_READ_CHAR_EVT:
       if (param->read.conn_id != this->parent_->get_conn_id()) {
         break;
       }
-      this->node_state = esp32_ble_tracker::ClientState::ESTABLISHED;
       if (param->read.status == ESP_GATT_OK) {
+        this->node_state = esp32_ble_tracker::ClientState::ESTABLISHED;
         ESP_LOGV(TAG, "[%s] Reading char at handle %d, status=%d", this->get_name().c_str(), param->read.handle,
                  param->read.status);
       } else {
@@ -140,10 +136,15 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
       this->read_value_(param->read.handle, param->read.value, param->read.value_len,
                         /*register_for_notify*/ this->notify_);
 
+      this->request_read_next_value_();
+
       if (this->read_request_started_ == 0) {
         // I got all requested values. Submit initial sensors.
         this->set_timeout(UPDATE_SENSOR_TIMEOUT, 100 /*msec */, [this]() { this->update_sensors_(); });
-        if (!this->notify_) {
+        if (this->notify_) {
+          // Register keep alive interval.
+          this->set_interval(KEEP_ALIVE_INTERVAL, 20000 /* 20 seconds */, [this]() { this->send_keep_alive_(); });
+        } else {
           // Not using notification so I can disconnect.
           this->parent_->set_enabled(false);
         }
@@ -189,28 +190,52 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
   }
 }
 
-uint16_t VictronBle::find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic, bool read_value) {
+uint16_t VictronBle::find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic) {
   auto *chr = this->parent_->get_characteristic(SERVICE_UUID, *characteristic);
   if (chr == nullptr) {
     ESP_LOGW(TAG, "[%s] No characteristic found at service %s char %s", this->get_name().c_str(),
              SERVICE_UUID.to_string().c_str(), (*characteristic).to_string().c_str());
     return 0;
   }
+  return chr->handle;
+}
 
-  if (read_value) {
-    // Auth options: ESP_GATT_AUTH_REQ_NONE, ESP_GATT_AUTH_REQ_MITM, ESP_GATT_AUTH_REQ_SIGNED_MITM
-    auto status = esp_ble_gattc_read_char(this->parent_->get_gattc_if(), this->parent_->get_conn_id(), chr->handle,
-                                          ESP_GATT_AUTH_REQ_SIGNED_MITM);
-
-    if (status) {
-      ESP_LOGW(TAG, "[%s] Error sending read request for service %s char %s, status=%d", this->get_name().c_str(),
-               SERVICE_UUID.to_string().c_str(), (*characteristic).to_string().c_str(), status);
-    } else {
-      this->read_request_started_++;
-    }
+#define REQUEST_READ_NEXT_VALUE(name) \
+  if (this->handle_##name != 0 && !this->request_read_##name) { \
+    this->request_read_##name = true; \
+    if (this->request_read_(this->handle_##name)) { \
+      /* Request was okay. Wait for response. */ \
+      return; \
+    } \
   }
 
-  return chr->handle;
+void VictronBle::request_read_next_value_() {
+  REQUEST_READ_NEXT_VALUE(state_of_charge_)
+  REQUEST_READ_NEXT_VALUE(voltage_)
+  REQUEST_READ_NEXT_VALUE(power_)
+  REQUEST_READ_NEXT_VALUE(current_)
+  REQUEST_READ_NEXT_VALUE(ah_)
+  REQUEST_READ_NEXT_VALUE(starter_battery_voltage_)
+  REQUEST_READ_NEXT_VALUE(val2_)
+  REQUEST_READ_NEXT_VALUE(val3_)
+  REQUEST_READ_NEXT_VALUE(val4_)
+  REQUEST_READ_NEXT_VALUE(remaining_time_)
+}
+#undef REQUEST_READ_NEXT_VALUE
+
+bool VictronBle::request_read_(const uint16_t handle) {
+  // Auth options: ESP_GATT_AUTH_REQ_NONE, ESP_GATT_AUTH_REQ_MITM, ESP_GATT_AUTH_REQ_SIGNED_MITM
+  auto status = esp_ble_gattc_read_char(this->parent_->get_gattc_if(), this->parent_->get_conn_id(), handle,
+                                        ESP_GATT_AUTH_REQ_SIGNED_MITM);
+
+  if (status) {
+    ESP_LOGW(TAG, "[%s] Error sending read request for service %s handle 0x%04x, status=%d", this->get_name().c_str(),
+             SERVICE_UUID.to_string().c_str(), handle, status);
+    return false;
+  } else {
+    this->read_request_started_++;
+    return true;
+  }
 }
 
 void VictronBle::read_value_(const uint16_t handle, const uint8_t *value, const uint16_t value_len,

@@ -33,8 +33,8 @@ CONF_VAL4 = "val4"
 CONF_REMAINING_TIME = "remaining_time"
 UNIT_AMPERE_HOURS = "Ah"
 
-victron_ble_ns = cg.esphome_ns.namespace("victron_ble_connect")
-VictronBleConnect = victron_ble_ns.class_(
+victron_ble_connect_ns = cg.esphome_ns.namespace("victron_ble_connect")
+VictronBleConnect = victron_ble_connect_ns.class_(
     "VictronBleConnect",  cg.PollingComponent, ble_client.BLEClientNode
 )
 

@@ -1,0 +1,84 @@
+esphome:
+  name: "victron-ble"
+
+external_components:
+  - source: github://Fabian-Schmidt/esphome-victron_ble
+
+esp32:
+  board: mhetesp32devkit
+
+logger:
+  level: DEBUG
+
+esp32_ble_tracker:
+
+victron_ble:
+  - id: MySmartShunt
+    mac_address: "MY SMART SHUNT MAC"    
+    bindkey: "MY AES ENCRYPTION KEY"
+  - id: MySmartSolar
+    mac_address: "MY SMART SOLAR MAC"
+    bindkey: "MY AES ENCRYPTION KEY"
+
+sensor:
+  # MySmartShunt
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Time remaining"
+    type: BATTERY_MONITOR_TIME_TO_GO
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Battery voltage"
+    type: BATTERY_MONITOR_BATTERY_VOLTAGE
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Alarm"
+    type: BATTERY_MONITOR_ALARM_REASON
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Starter Battery"
+    # BATTERY_MONITOR_AUX_VOLTAGE or BATTERY_MONITOR_MID_VOLTAGE or BATTERY_MONITOR_TEMPERATURE.
+    # Depending on configuration of SmartShunt
+    type: BATTERY_MONITOR_AUX_VOLTAGE
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Current"
+    type: BATTERY_MONITOR_BATTERY_CURRENT
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Consumed Ah"
+    type: BATTERY_MONITOR_CONSUMED_AH
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "State of charge"
+    type: BATTERY_MONITOR_STATE_OF_CHARGE
+
+  # MySmartSolar
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Device state"
+    type: SOLAR_CHARGER_DEVICE_STATE
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Charger error"
+    type: SOLAR_CHARGER_CHARGER_ERROR
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Battery Voltage"
+    type: SOLAR_CHARGER_BATTERY_VOLTAGE
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Battery Current"
+    type: SOLAR_CHARGER_BATTERY_CURRENT
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Yield Today"
+    type: SOLAR_CHARGER_YIELD_TODAY
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "PV Power"
+    type: SOLAR_CHARGER_PV_POWER
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Load Current"
+    type: SOLAR_CHARGER_LOAD_CURRENT

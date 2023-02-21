@@ -17,6 +17,7 @@ victron_ble_ns = cg.esphome_ns.namespace("victron_ble")
 VictronBle = victron_ble_ns.class_(
     "VictronBle", esp32_ble_tracker.ESPBTDeviceListener, cg.PollingComponent
 )
+MULTI_CONF = True
 
 class Array:
     def __init__(self, *parts):

@@ -26,7 +26,7 @@ void VictronSensor::setup() {
           [this](const VICTRON_BLE_RECORD_BATTERY_MONITOR *battery_monitor) {
             switch (this->type_) {
               case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_TIME_TO_GO:
-                this->publish_state(0.1f * battery_monitor->time_to_go);
+                this->publish_state(battery_monitor->time_to_go);
                 break;
               case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_BATTERY_VOLTAGE:
                 this->publish_state(0.01f * battery_monitor->battery_voltage);

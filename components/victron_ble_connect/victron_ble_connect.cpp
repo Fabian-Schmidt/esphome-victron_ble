@@ -1,10 +1,10 @@
-#include "victron_ble.h"
+#include "victron_ble_connect.h"
 #include "esphome/core/log.h"
 
 #ifdef USE_ESP32
 
 namespace esphome {
-namespace victron_ble {
+namespace victron_ble_connect {
 
 static const char *const TAG = "victron_ble";
 static const std::string KEEP_ALIVE_INTERVAL = "victron_ble_keep_alive";
@@ -20,9 +20,9 @@ static const std::string UPDATE_SENSOR_TIMEOUT = "victron_ble_update_sensors";
  * if notify: every 20 seconds (polling frequency) a 60 second keep alive is send.
  */
 
-VictronBle::VictronBle() : PollingComponent(60000 /* 60 seconds */) {}
+VictronBleConnect::VictronBleConnect() : PollingComponent(60000 /* 60 seconds */) {}
 
-void VictronBle::dump_config() {
+void VictronBleConnect::dump_config() {
   ESP_LOGCONFIG(TAG, "Mopeka Pro Check");
   LOG_SENSOR("  ", "State of Charge", this->state_of_charge_);
   LOG_SENSOR("  ", "Voltage", this->voltage_);
@@ -36,7 +36,7 @@ void VictronBle::dump_config() {
   ESP_LOGCONFIG(TAG, "  Notify: %s", YESNO(this->notify_));
 }
 
-void VictronBle::update() {
+void VictronBleConnect::update() {
   if (this->notify_) {
     if (this->parent_->enabled && this->node_state == esp32_ble_tracker::ClientState::ESTABLISHED) {
       this->update_sensors_();
@@ -55,7 +55,7 @@ void VictronBle::update() {
   }
 }
 
-void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if,
+void VictronBleConnect::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if,
                                      esp_ble_gattc_cb_param_t *param) {
   switch (event) {
     case ESP_GATTC_OPEN_EVT:
@@ -190,7 +190,7 @@ void VictronBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t g
   }
 }
 
-uint16_t VictronBle::find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic) {
+uint16_t VictronBleConnect::find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic) {
   auto *chr = this->parent_->get_characteristic(SERVICE_UUID, *characteristic);
   if (chr == nullptr) {
     ESP_LOGW(TAG, "[%s] No characteristic found at service %s char %s", this->get_name().c_str(),
@@ -209,7 +209,7 @@ uint16_t VictronBle::find_handle_(const esp32_ble_tracker::ESPBTUUID *characteri
     } \
   }
 
-void VictronBle::request_read_next_value_() {
+void VictronBleConnect::request_read_next_value_() {
   REQUEST_READ_NEXT_VALUE(state_of_charge_)
   REQUEST_READ_NEXT_VALUE(voltage_)
   REQUEST_READ_NEXT_VALUE(power_)
@@ -223,7 +223,7 @@ void VictronBle::request_read_next_value_() {
 }
 #undef REQUEST_READ_NEXT_VALUE
 
-bool VictronBle::request_read_(const uint16_t handle) {
+bool VictronBleConnect::request_read_(const uint16_t handle) {
   // Auth options: ESP_GATT_AUTH_REQ_NONE, ESP_GATT_AUTH_REQ_MITM, ESP_GATT_AUTH_REQ_SIGNED_MITM
   auto status = esp_ble_gattc_read_char(this->parent_->get_gattc_if(), this->parent_->get_conn_id(), handle,
                                         ESP_GATT_AUTH_REQ_SIGNED_MITM);
@@ -238,7 +238,7 @@ bool VictronBle::request_read_(const uint16_t handle) {
   }
 }
 
-void VictronBle::read_value_(const uint16_t handle, const uint8_t *value, const uint16_t value_len,
+void VictronBleConnect::read_value_(const uint16_t handle, const uint8_t *value, const uint16_t value_len,
                              const bool register_for_notify) {
   bool handle_found = false;
 
@@ -321,7 +321,7 @@ void VictronBle::read_value_(const uint16_t handle, const uint8_t *value, const 
   }
 }
 
-void VictronBle::send_keep_alive_() {
+void VictronBleConnect::send_keep_alive_() {
   if (this->node_state == esp32_ble_tracker::ClientState::ESTABLISHED && this->handle_keep_alive_ != 0) {
     // A keep alive is required. Without that, the device will automatically disconnect after one minute.
     u_int16_t keep_alive = 30000 /* 30 seconds */;
@@ -336,7 +336,7 @@ void VictronBle::send_keep_alive_() {
   }
 }
 
-void VictronBle::update_sensors_() {
+void VictronBleConnect::update_sensors_() {
   if (this->state_of_charge_ != nullptr) {
     if (this->value_is_set_state_of_charge_) {
       this->state_of_charge_->publish_state(static_cast<float>(this->value_state_of_charge_) / 100.0f);
@@ -428,7 +428,7 @@ void VictronBle::update_sensors_() {
   }
 }
 
-}  // namespace victron_ble
+}  // namespace victron_ble_connect
 }  // namespace esphome
 
 #endif

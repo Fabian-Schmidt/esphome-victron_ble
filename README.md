@@ -74,7 +74,7 @@ ble_client:
           passkey: !secret ble_passkey
 
 sensor:
-  - platform: victron_ble
+  - platform: victron_ble_connect
     ble_client_id: victron_smart_shunt_ble_client_id
     state_of_charge: 
       name: "State of Charge"

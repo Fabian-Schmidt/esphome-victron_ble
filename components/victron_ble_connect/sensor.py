@@ -33,9 +33,9 @@ CONF_VAL4 = "val4"
 CONF_REMAINING_TIME = "remaining_time"
 UNIT_AMPERE_HOURS = "Ah"
 
-victron_ble_ns = cg.esphome_ns.namespace("victron_ble")
-VictronBle = victron_ble_ns.class_(
-    "VictronBle",  cg.PollingComponent, ble_client.BLEClientNode
+victron_ble_ns = cg.esphome_ns.namespace("victron_ble_connect")
+VictronBleConnect = victron_ble_ns.class_(
+    "VictronBleConnect",  cg.PollingComponent, ble_client.BLEClientNode
 )
 
 
@@ -67,7 +67,7 @@ def final_validate_maximum_number_of_sensors_if_notify(
 CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
-            cv.GenerateID(): cv.declare_id(VictronBle),
+            cv.GenerateID(): cv.declare_id(VictronBleConnect),
             cv.Optional(CONF_NOTIFY, default=True): cv.boolean,
             cv.Optional(CONF_STATE_OF_CHARGE): sensor.sensor_schema(
                 unit_of_measurement=UNIT_PERCENT,

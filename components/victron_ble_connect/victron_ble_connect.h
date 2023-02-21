@@ -8,7 +8,7 @@
 #ifdef USE_ESP32
 
 namespace esphome {
-namespace victron_ble {
+namespace victron_ble_connect {
 
 static const esp32_ble_tracker::ESPBTUUID SERVICE_UUID =
     esp32_ble_tracker::ESPBTUUID::from_raw("65970000-4bda-4c1e-af4b-551c4cf74769");
@@ -47,9 +47,9 @@ static const esp32_ble_tracker::ESPBTUUID CHARACTERISTIC_UUID_VAL4 =
 static const esp32_ble_tracker::ESPBTUUID CHARACTERISTIC_UUID_REMAINING_TIME =
     esp32_ble_tracker::ESPBTUUID::from_raw("65970FFE-4BDA-4C1E-AF4B-551C4CF74769");
 
-class VictronBle : public PollingComponent, public ble_client::BLEClientNode {
+class VictronBleConnect : public PollingComponent, public ble_client::BLEClientNode {
  public:
-  VictronBle();
+  VictronBleConnect();
   void dump_config() override;
   void update() override;
 
@@ -74,12 +74,6 @@ class VictronBle : public PollingComponent, public ble_client::BLEClientNode {
   void set_val4(sensor::Sensor *val) { this->val4_ = val; }
   void set_remaining_time(sensor::Sensor *val) { this->remaining_time_ = val; }
 
- protected:
-  bool notify_ = true;
-
-  std::string name_;
-  uint16_t handle_keep_alive_;
-
 #define BLE_DATA_STORAGE(name, type) \
   sensor::Sensor *name{nullptr}; \
   uint16_t handle_##name = 0; \
@@ -98,6 +92,12 @@ class VictronBle : public PollingComponent, public ble_client::BLEClientNode {
   BLE_DATA_STORAGE(val4_, int16_t)
   BLE_DATA_STORAGE(remaining_time_, u_int16_t)
 #undef BLE_DATA_STORAGE
+
+ protected:
+  bool notify_ = true;
+
+  std::string name_;
+  uint16_t handle_keep_alive_;
 
   uint8_t read_request_started_ = 0;
   uint16_t find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic);
@@ -131,7 +131,7 @@ class VictronBle : public PollingComponent, public ble_client::BLEClientNode {
 #undef BLE_DATA_RESET
 };
 
-}  // namespace victron_ble
+}  // namespace victron_ble_connect
 }  // namespace esphome
 
 #endif

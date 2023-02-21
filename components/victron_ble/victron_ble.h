@@ -253,8 +253,23 @@ struct VICTRON_BLE_MANUFACTURER_DATA {  // NOLINT(readability-identifier-naming,
 } __attribute__((packed));
 
 enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
+  // VICTRON_BLE_RECORD_TEST
+  TEST_RECORD = 0x00,
+  // VICTRON_BLE_SOLAR_CHARGER
+  SOLAR_CHARGER = 0x01,
   // VICTRON_BLE_RECORD_BATTERY_MONITOR
   BATTERY_MONITOR = 0x02,
+  INVERTER = 0x03,
+  DCDC_CONVERTER = 0x04,
+  SMART_LITHIUM = 0x05,
+  INVERTER_RS = 0x06,
+  GX_DEVICE = 0x07,
+  AC_CHARGER = 0x08,
+  SMART_BATTERY_PROTECT = 0x09,
+  LYNX_SMART_BMS = 0x0A,
+  MULTI_RS = 0x0B,
+  VE_BUS = 0x0C,
+  DC_ENERGY_METER = 0x0D,
 };
 
 struct VICTRON_BLE_RECORD_BASE {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
@@ -264,6 +279,30 @@ struct VICTRON_BLE_RECORD_BASE {  // NOLINT(readability-identifier-naming,altera
   u_int8_t data_counter_msb;
   // Byte 0 of the encryption key (bindkey)
   u_int8_t encryption_key_0;
+} __attribute__((packed));
+
+struct VICTRON_BLE_RECORD_TEST {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  // 1 s, 0 .. 34 year
+  u_int32_t uptime : 30;
+  // 1 °C, -40 .. 86 °C
+  u_int16_t temperature : 7;
+} __attribute__((packed));
+
+struct VICTRON_BLE_SOLAR_CHARGER {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  // TODO
+  u_int8_t device_state;
+  // TODO
+  u_int8_t charger_error;
+  // 0.01 V, -327.68 .. 327.66 V
+  int16_t battery_voltage;
+  // 0.1 A, -3276.8 .. 3276.6 A
+  int16_t battery_current;
+  // 0.01 kWh, 0 .. 655.34 kWh
+  u_int16_t yield_today;
+  // 1 W, 0 .. 65534 W
+  u_int16_t pv_power;
+  // 0.1 A, 0 .. 51.0 A
+  u_int16_t load_current : 9;
 } __attribute__((packed));
 
 enum class VICTRON_AUX_INPUT_TYPE : u_int8_t {
@@ -278,7 +317,7 @@ struct VICTRON_BLE_RECORD_BATTERY_MONITOR {  // NOLINT(readability-identifier-na
   u_int16_t time_to_go;
   // 0.01 V, -327.68 .. 327.66 V
   int16_t battery_voltage;
-  // 0 .. 0xFFFF
+  // TODO
   u_int16_t alarm_reason;
   union {
     // Aux voltage 327.68 .. 327.64 V
@@ -323,16 +362,25 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
       std::function<void(const VICTRON_BLE_RECORD_BATTERY_MONITOR *)> callback) {
     this->on_battery_monitor_message_callback_.add(std::move(callback));
   }
+  void add_on_solar_charger_message_callback(
+      std::function<void(const VICTRON_BLE_SOLAR_CHARGER *)> callback) {
+    this->on_solar_charger_message_callback_.add(std::move(callback));
+  }
 
  protected:
   uint64_t address_;
   std::string address_str_{};
   std::array<uint8_t, 16> bindkey_;
 
-  bool battery_monitor_updated_ = false;
-  VICTRON_BLE_RECORD_BATTERY_MONITOR battery_monitor_message_{};
+#define VICTRON_MESSAGE_STORAGE(name, type) \
+  bool name ## _updated_ = false; \
+  type name ## _message_{}; \
+  CallbackManager<void(const type *)> on_ ## name ## _message_callback_{};
 
-  CallbackManager<void(const VICTRON_BLE_RECORD_BATTERY_MONITOR *)> on_battery_monitor_message_callback_{};
+  VICTRON_MESSAGE_STORAGE(battery_monitor, VICTRON_BLE_RECORD_BATTERY_MONITOR)
+  VICTRON_MESSAGE_STORAGE(solar_charger, VICTRON_BLE_SOLAR_CHARGER)
+
+#undef VICTRON_MESSAGE_STORAGE
 
   bool encrypt_message_(const u_int8_t *crypted_data, const u_int8_t crypted_len, u_int8_t encrypted_data[32],
                         const u_int8_t data_counter_lsb, const u_int8_t data_counter_msb);

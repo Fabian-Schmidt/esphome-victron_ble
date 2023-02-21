@@ -75,7 +75,40 @@ void VictronSensor::setup() {
             }
           });
       break;
-
+    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE:
+    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
+    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_BATTERY_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_BATTERY_CURRENT:
+    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_YIELD_TODAY:
+    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_PV_POWER:
+    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_LOAD_CURRENT:
+      this->parent_->add_on_solar_charger_message_callback([this](const VICTRON_BLE_SOLAR_CHARGER *solar) {
+        switch (this->type_) {
+          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE:
+            this->publish_state(solar->device_state);
+            break;
+          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
+            this->publish_state(solar->charger_error);
+            break;
+          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_BATTERY_VOLTAGE:
+            this->publish_state(0.01f * solar->battery_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_BATTERY_CURRENT:
+            this->publish_state(0.1f * solar->battery_current);
+            break;
+          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_YIELD_TODAY:
+            this->publish_state(0.01f * solar->yield_today);
+            break;
+          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_PV_POWER:
+            this->publish_state(solar->pv_power);
+            break;
+          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_LOAD_CURRENT:
+            this->publish_state(-0.1f * solar->load_current);
+            break;
+          default:
+            break;
+        }
+      });
     default:
       break;
   }

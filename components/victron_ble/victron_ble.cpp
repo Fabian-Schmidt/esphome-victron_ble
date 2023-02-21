@@ -20,6 +20,10 @@ void VictronBle::update() {
     this->on_battery_monitor_message_callback_.call(&this->battery_monitor_message_);
     this->battery_monitor_updated_ = false;
   }
+  if (this->solar_charger_updated_) {
+    this->on_solar_charger_message_callback_.call(&this->solar_charger_message_);
+    this->solar_charger_updated_ = false;
+  }
 }
 
 /**
@@ -123,6 +127,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
         return true;
       }
       break;
+    case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+      if (crypted_len >= sizeof(VICTRON_BLE_SOLAR_CHARGER)) {
+        return true;
+      }
+      break;
     default:
       ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), record_type);
       return false;
@@ -139,6 +148,11 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const
       this->battery_monitor_message_ = *(const VICTRON_BLE_RECORD_BATTERY_MONITOR *) encrypted_data;
       this->battery_monitor_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved BATTERY_MONITOR message.", this->address_str().c_str());
+      break;
+    case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+      this->solar_charger_message_ = *(const VICTRON_BLE_SOLAR_CHARGER *) encrypted_data;
+      this->solar_charger_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved SOLAR_CHARGER message.", this->address_str().c_str());
       break;
     default:
       break;

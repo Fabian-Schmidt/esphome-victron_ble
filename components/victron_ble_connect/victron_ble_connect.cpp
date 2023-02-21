@@ -6,7 +6,7 @@
 namespace esphome {
 namespace victron_ble_connect {
 
-static const char *const TAG = "victron_ble";
+static const char *const TAG = "victron_ble_connect";
 static const std::string KEEP_ALIVE_INTERVAL = "victron_ble_keep_alive";
 static const std::string UPDATE_SENSOR_TIMEOUT = "victron_ble_update_sensors";
 /**
@@ -23,7 +23,7 @@ static const std::string UPDATE_SENSOR_TIMEOUT = "victron_ble_update_sensors";
 VictronBleConnect::VictronBleConnect() : PollingComponent(60000 /* 60 seconds */) {}
 
 void VictronBleConnect::dump_config() {
-  ESP_LOGCONFIG(TAG, "Mopeka Pro Check");
+  ESP_LOGCONFIG(TAG, "Victron ble connect");
   LOG_SENSOR("  ", "State of Charge", this->state_of_charge_);
   LOG_SENSOR("  ", "Voltage", this->voltage_);
   LOG_SENSOR("  ", "Current", this->current_);

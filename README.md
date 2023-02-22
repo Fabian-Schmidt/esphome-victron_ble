@@ -8,16 +8,17 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
 
 - (Recommended) [Bluetooth accouncement protocol](https://community.victronenergy.com/questions/187303/victron-bluetooth-advertising-protocol.html) - Component `victron_ble`.
   - Supported Devices:
-    - Smart Shunt (full)
-    - Smart Solar (full)
-    - Inverter (basic)
-    - DC/DC convert (basic)
-    - SmartLithium (basic)
-    - Smart Batery Protect
-    - (Lynx Smart) BMS
-    - Multi RS
-    - VE.Bus
-    - DC Energy Meter
+    - Smart Shunt
+    - Smart Solar
+    - Inverter
+    - DC/DC convert
+    - SmartLithium
+      - Missing definition for `bms_flags`, `error` and `balancer_status`
+    - Smart Batery Protect (basic)
+    - (Lynx Smart) BMS (basic)
+    - Multi RS (basic)
+    - VE.Bus (basic)
+    - DC Energy Meter (basic)
 
 - [Bluetooth connection protocol](https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html) - Component `victron_ble_connect`.
   - This solution is using the [PR#4258 of ESPHome](https://github.com/esphome/esphome/pull/4258).
@@ -176,6 +177,19 @@ The following `type` are supported by the `sensor` component:
 - `DCDC_CONVERTER_INPUT_VOLTAGE`
 - `DCDC_CONVERTER_OUTPUT_VOLTAGE`
 - `DCDC_CONVERTER_OFF_REASON`
+- `SMART_LITHIUM_BMS_FLAGS`
+- `SMART_LITHIUM_ERROR`,`
+- `SMART_LITHIUM_CELL1`,`
+- `SMART_LITHIUM_CELL2`,`
+- `SMART_LITHIUM_CELL3`,`
+- `SMART_LITHIUM_CELL4`,`
+- `SMART_LITHIUM_CELL5`,`
+- `SMART_LITHIUM_CELL6`,`
+- `SMART_LITHIUM_CELL7`,`
+- `SMART_LITHIUM_CELL8`,`
+- `SMART_LITHIUM_BATTERY_VOLTAGE`
+- `SMART_LITHIUM_BALANCER_STATUS`
+- `SMART_LITHIUM_BATTERY_TEMPERATURE`
 
 ### Binary Sensor
 

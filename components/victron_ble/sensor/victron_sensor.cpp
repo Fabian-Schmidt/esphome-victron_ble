@@ -168,6 +168,97 @@ void VictronSensor::setup() {
         }
       });
       break;
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BMS_FLAGS:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_ERROR:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL1:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL2:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL3:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL4:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL5:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL6:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL7:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL8:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BATTERY_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BALANCER_STATUS:
+    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BATTERY_TEMPERATURE:
+      this->parent_->add_on_smart_lithium_message_callback([this](const VICTRON_BLE_RECORD_SMART_LITHIUM *val) {
+        switch (this->type_) {
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BMS_FLAGS:
+            this->publish_state((u_int32_t) val->bms_flags);
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_ERROR:
+            this->publish_state((u_int16_t) val->SmartLithium_error);
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL1:
+            if (val->cell1 == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * val->cell1 + 2.60f);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL2:
+            if (val->cell2 == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * val->cell2 + 2.60f);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL3:
+            if (val->cell3 == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * val->cell3 + 2.60f);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL4:
+            if (val->cell4 == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * val->cell4 + 2.60f);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL5:
+            if (val->cell5 == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * val->cell5 + 2.60f);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL6:
+            if (val->cell6 == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * val->cell6 + 2.60f);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL7:
+            if (val->cell7 == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * val->cell7 + 2.60f);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL8:
+            if (val->cell8 == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * val->cell8 + 2.60f);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BATTERY_VOLTAGE:
+            this->publish_state(0.01f * val->battery_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BALANCER_STATUS:
+            this->publish_state((u_int8_t) val->balancer_status);
+            break;
+          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BATTERY_TEMPERATURE:
+            this->publish_state(val->battery_temperature - 40);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }

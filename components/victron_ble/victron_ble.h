@@ -798,6 +798,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   uint64_t address_;
   std::string address_str_{};
   std::array<uint8_t, 16> bindkey_;
+  u_int16_t last_package_data_counter_ = 0;
 
 #define VICTRON_MESSAGE_STORAGE(name, type) \
   bool name##_updated_ = false; \

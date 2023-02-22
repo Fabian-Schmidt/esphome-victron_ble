@@ -100,6 +100,11 @@ bool VictronBle::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     return false;
   }
 
+  // Filter out duplicate messages
+  if ((victron_data->data_counter_lsb | (victron_data->data_counter_msb << 8)) == this->last_package_data_counter_) {
+    return false;
+  }
+
   const u_int8_t *crypted_data = manu_data.data.data() + sizeof(VICTRON_BLE_RECORD_BASE);
   const u_int8_t crypted_len = manu_data.data.size() - sizeof(VICTRON_BLE_RECORD_BASE);
   ESP_LOGVV(TAG, "[%s] Cryted message: %s", this->address_str().c_str(),
@@ -125,6 +130,9 @@ bool VictronBle::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   }
 
   this->handle_record_(victron_data->record_type, encrypted_data);
+
+  // Save the last recieved data counter
+  this->last_package_data_counter_ = victron_data->data_counter_lsb | (victron_data->data_counter_msb << 8);
   return false;
 }
 

@@ -264,7 +264,7 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   INVERTER = 0x03,
   // VICTRON_BLE_RECORD_DCDC_CONVERTER
   DCDC_CONVERTER = 0x04,
-  // TODO
+  // VICTRON_BLE_RECORD_SMART_LITHIUM
   SMART_LITHIUM = 0x05,
   // TODO
   INVERTER_RS = 0x06,
@@ -577,6 +577,40 @@ struct VICTRON_BLE_RECORD_DCDC_CONVERTER {  // NOLINT(readability-identifier-nam
   u_int32_t off_reason;
 } __attribute__((packed));
 
+struct VICTRON_BLE_RECORD_SMART_LITHIUM {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  // TODO
+  u_int32_t bms_flags;
+  // TODO
+  u_int16_t SmartLithium_error;
+  // 0.01 V, 2.60 .. 3.86 V
+  // 0x00 ( 0) when cell voltage < 2.61V
+  // 0x01 ( 1) when cell voltage == 2.61V
+  // 0x7D (125) when cell voltage == 3.85V
+  // 0x7E (126) when cell voltage > 3.85
+  // 0x7F (127) when cell voltage is not available / unknown
+  u_int16_t cell1 : 7;
+  // 0.01 V, 2.60 .. 3.86 V - details see cell1
+  u_int16_t cell2 : 7;
+  // 0.01 V, 2.60 .. 3.86 V - details see cell1
+  u_int16_t cell3 : 7;
+  // 0.01 V, 2.60 .. 3.86 V - details see cell1
+  u_int16_t cell4 : 7;
+  // 0.01 V, 2.60 .. 3.86 V - details see cell1
+  u_int16_t cell5 : 7;
+  // 0.01 V, 2.60 .. 3.86 V - details see cell1
+  u_int16_t cell6 : 7;
+  // 0.01 V, 2.60 .. 3.86 V - details see cell1
+  u_int16_t cell7 : 7;
+  // 0.01 V, 2.60 .. 3.86 V - details see cell1
+  u_int16_t cell8 : 7;
+  // 0.01 V, 0 .. 40.94 V
+  u_int16_t battery_voltage : 12;
+  // TODO - 0 .. 15
+  u_int8_t balancer_status : 4;
+  // 1 °C,  -40 .. 86 °C - Temperature = Record value - 40
+  u_int8_t battery_temperature : 7;
+} __attribute__((packed));
+
 class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public PollingComponent {
  public:
   void dump_config() override;
@@ -612,6 +646,9 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   void add_on_dcdc_converter_message_callback(std::function<void(const VICTRON_BLE_RECORD_DCDC_CONVERTER *)> callback) {
     this->on_dcdc_converter_message_callback_.add(std::move(callback));
   }
+  void add_on_smart_lithium_message_callback(std::function<void(const VICTRON_BLE_RECORD_SMART_LITHIUM *)> callback) {
+    this->on_smart_lithium_message_callback_.add(std::move(callback));
+  }
 
  protected:
   uint64_t address_;
@@ -627,6 +664,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   VICTRON_MESSAGE_STORAGE(solar_charger, VICTRON_BLE_RECORD_SOLAR_CHARGER)
   VICTRON_MESSAGE_STORAGE(inverter, VICTRON_BLE_RECORD_INVERTER)
   VICTRON_MESSAGE_STORAGE(dcdc_converter, VICTRON_BLE_RECORD_DCDC_CONVERTER)
+  VICTRON_MESSAGE_STORAGE(smart_lithium, VICTRON_BLE_RECORD_SMART_LITHIUM)
 
 #undef VICTRON_MESSAGE_STORAGE
 

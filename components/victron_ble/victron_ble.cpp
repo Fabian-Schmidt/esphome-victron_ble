@@ -32,6 +32,10 @@ void VictronBle::update() {
     this->dcdc_converter_updated_ = false;
     this->on_dcdc_converter_message_callback_.call(&this->dcdc_converter_message_);
   }
+  if (this->smart_lithium_updated_) {
+    this->smart_lithium_updated_ = false;
+    this->on_smart_lithium_message_callback_.call(&this->smart_lithium_message_);
+  }
 }
 
 /**
@@ -150,6 +154,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
         return true;
       }
       break;
+    case VICTRON_BLE_RECORD_TYPE::SMART_LITHIUM:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_SMART_LITHIUM)) {
+        return true;
+      }
+      break;
     default:
       ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), record_type);
       return false;
@@ -181,6 +190,11 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const
       this->dcdc_converter_message_ = *(const VICTRON_BLE_RECORD_DCDC_CONVERTER *) encrypted_data;
       this->dcdc_converter_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved DCDC_CONVERTER message.", this->address_str().c_str());
+      break;
+    case VICTRON_BLE_RECORD_TYPE::SMART_LITHIUM:
+      this->smart_lithium_message_ = *(const VICTRON_BLE_RECORD_SMART_LITHIUM *) encrypted_data;
+      this->smart_lithium_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved SMART_LITHIUM message.", this->address_str().c_str());
       break;
     default:
       break;

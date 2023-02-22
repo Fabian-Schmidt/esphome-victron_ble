@@ -120,7 +120,7 @@ void VictronTextSensor::setup() {
     case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_DEVICE_STATE:
     case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_CHARGER_ERROR:
     case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
-      this->parent_->add_on_multi_rs_message_callback([this](const VICTRON_BLE_RECORD_MULTI_RS_ *val) {
+      this->parent_->add_on_multi_rs_message_callback([this](const VICTRON_BLE_RECORD_MULTI_RS *val) {
         switch (this->type_) {
           case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_DEVICE_STATE:
             this->publish_state_(val->device_state);
@@ -130,6 +130,25 @@ void VictronTextSensor::setup() {
             break;
           case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
             this->publish_state_(val->active_ac_in);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
+    case VICTRON_TEXT_SENSOR_TYPE::VE_BUS_DEVICE_STATE:
+    case VICTRON_TEXT_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN:
+    case VICTRON_TEXT_SENSOR_TYPE::VE_BUS_ALARM:
+      this->parent_->add_on_ve_bus_message_callback([this](const VICTRON_BLE_RECORD_VE_BUS *val) {
+        switch (this->type_) {
+          case VICTRON_TEXT_SENSOR_TYPE::VE_BUS_DEVICE_STATE:
+            this->publish_state_(val->device_state);
+            break;
+          case VICTRON_TEXT_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN:
+            this->publish_state_(val->active_ac_in);
+            break;
+          case VICTRON_TEXT_SENSOR_TYPE::VE_BUS_ALARM:
+            this->publish_state_(val->alarm);
             break;
           default:
             break;
@@ -504,6 +523,22 @@ void VictronTextSensor::publish_state_(VE_REG_AC_IN_ACTIVE val) {
       break;
     case VE_REG_AC_IN_ACTIVE::UNKOWN:
       this->publish_state("Unkown");
+      break;
+    default:
+      break;
+  }
+}
+
+void VictronTextSensor::publish_state_(VE_REG_ALARM_NOTIFICATION val) {
+  switch (val) {
+    case VE_REG_ALARM_NOTIFICATION::NO_ALARM:
+      this->publish_state("");
+      break;
+    case VE_REG_ALARM_NOTIFICATION::WARNING:
+      this->publish_state("Warning");
+      break;
+    case VE_REG_ALARM_NOTIFICATION::ALARM:
+      this->publish_state("Alarm");
       break;
     default:
       break;

@@ -252,7 +252,7 @@ void VictronSensor::setup() {
             this->publish_state((u_int8_t) val->balancer_status);
             break;
           case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BATTERY_TEMPERATURE:
-            this->publish_state(val->battery_temperature - 40);
+            this->publish_state(-40.0f + val->battery_temperature);
             break;
           default:
             break;
@@ -370,7 +370,7 @@ void VictronSensor::setup() {
             this->publish_state(0.1f * val->consumed_ah);
             break;
           case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_TEMPERATURE:
-            this->publish_state(val->temperature - 40);
+            this->publish_state(-40.0f + val->temperature);
             break;
           default:
             break;
@@ -414,6 +414,53 @@ void VictronSensor::setup() {
             break;
           case VICTRON_SENSOR_TYPE::MULTI_RS_YIELD_TODAY:
             this->publish_state(0.01f * val->yield_today);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
+    case VICTRON_SENSOR_TYPE::VE_BUS_DEVICE_STATE:
+    case VICTRON_SENSOR_TYPE::VE_BUS_ERROR:
+    case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_CURRENT:
+    case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN:
+    case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN_POWER:
+    case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_OUT_POWER:
+    case VICTRON_SENSOR_TYPE::VE_BUS_ALARM:
+    case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_TEMPERATURE:
+    case VICTRON_SENSOR_TYPE::VE_BUS_STATE_OF_CHARGE:
+      this->parent_->add_on_ve_bus_message_callback([this](const VICTRON_BLE_RECORD_VE_BUS *val) {
+        switch (this->type_) {
+          case VICTRON_SENSOR_TYPE::VE_BUS_DEVICE_STATE:
+            this->publish_state((u_int8_t) val->device_state);
+            break;
+          case VICTRON_SENSOR_TYPE::VE_BUS_ERROR:
+            this->publish_state((u_int16_t) val->ve_bus_error);
+            break;
+          case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_CURRENT:
+            this->publish_state(0.1f * val->battery_current);
+            break;
+          case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_VOLTAGE:
+            this->publish_state(0.01f * val->battery_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN:
+            this->publish_state((u_int8_t) val->active_ac_in);
+            break;
+          case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN_POWER:
+            this->publish_state(val->active_ac_in_power);
+            break;
+          case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_OUT_POWER:
+            this->publish_state(val->active_ac_out_power);
+            break;
+          case VICTRON_SENSOR_TYPE::VE_BUS_ALARM:
+            this->publish_state((u_int8_t) val->alarm);
+            break;
+          case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_TEMPERATURE:
+            this->publish_state(-40.0f + val->battery_temperature);
+            break;
+          case VICTRON_SENSOR_TYPE::VE_BUS_STATE_OF_CHARGE:
+            this->publish_state(val->soc);
             break;
           default:
             break;

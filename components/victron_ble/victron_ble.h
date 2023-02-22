@@ -256,20 +256,31 @@ struct VICTRON_BLE_MANUFACTURER_DATA {  // NOLINT(readability-identifier-naming,
 enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   // VICTRON_BLE_RECORD_TEST
   TEST_RECORD = 0x00,
-  // VICTRON_BLE_SOLAR_CHARGER
+  // VICTRON_BLE_RECORD_SOLAR_CHARGER
   SOLAR_CHARGER = 0x01,
   // VICTRON_BLE_RECORD_BATTERY_MONITOR
   BATTERY_MONITOR = 0x02,
+  // VICTRON_BLE_RECORD_INVERTER
   INVERTER = 0x03,
+  // TODO
   DCDC_CONVERTER = 0x04,
+  // TODO
   SMART_LITHIUM = 0x05,
+  // TODO
   INVERTER_RS = 0x06,
+  // Not defined
   GX_DEVICE = 0x07,
+  // Not defined
   AC_CHARGER = 0x08,
+  // TODO
   SMART_BATTERY_PROTECT = 0x09,
+  // TODO
   LYNX_SMART_BMS = 0x0A,
+  // TODO
   MULTI_RS = 0x0B,
+  // TODO
   VE_BUS = 0x0C,
+  // TODO
   DC_ENERGY_METER = 0x0D,
 };
 
@@ -462,7 +473,7 @@ enum class VE_REG_CHR_ERROR_CODE : u_int8_t {
   INTERNAL_SUPPLY_D = 215,
 };
 
-struct VICTRON_BLE_SOLAR_CHARGER {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+struct VICTRON_BLE_RECORD_SOLAR_CHARGER {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
   VE_REG_CHR_ERROR_CODE charger_error;
   // 0.01 V, -327.68 .. 327.66 V
@@ -542,6 +553,19 @@ struct VICTRON_BLE_RECORD_BATTERY_MONITOR {  // NOLINT(readability-identifier-na
   u_int16_t state_of_charge : 10;
 } __attribute__((packed));
 
+struct VICTRON_BLE_RECORD_INVERTER {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  VE_REG_DEVICE_STATE device_state;
+  VE_REG_ALARM_REASON alarm_reason;
+  // 0.01 V, -327.68 .. 327.66 V
+  int16_t battery_voltage;
+  // 1 VA, 0 .. 65534 VA
+  int16_t ac_apparent_power;
+  // 0.01 V, 0 .. 327.66 V
+  int16_t ac_voltage:15;
+  // 0.1 A, 0 .. 204.6 A
+  int16_t ac_current:11;
+} __attribute__((packed));
+
 class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public PollingComponent {
  public:
   void dump_config() override;
@@ -568,8 +592,11 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
       std::function<void(const VICTRON_BLE_RECORD_BATTERY_MONITOR *)> callback) {
     this->on_battery_monitor_message_callback_.add(std::move(callback));
   }
-  void add_on_solar_charger_message_callback(std::function<void(const VICTRON_BLE_SOLAR_CHARGER *)> callback) {
+  void add_on_solar_charger_message_callback(std::function<void(const VICTRON_BLE_RECORD_SOLAR_CHARGER *)> callback) {
     this->on_solar_charger_message_callback_.add(std::move(callback));
+  }
+  void add_on_inverter_message_callback(std::function<void(const VICTRON_BLE_RECORD_INVERTER *)> callback) {
+    this->on_inverter_message_callback_.add(std::move(callback));
   }
 
  protected:
@@ -583,7 +610,8 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   CallbackManager<void(const type *)> on_##name##_message_callback_{};
 
   VICTRON_MESSAGE_STORAGE(battery_monitor, VICTRON_BLE_RECORD_BATTERY_MONITOR)
-  VICTRON_MESSAGE_STORAGE(solar_charger, VICTRON_BLE_SOLAR_CHARGER)
+  VICTRON_MESSAGE_STORAGE(solar_charger, VICTRON_BLE_RECORD_SOLAR_CHARGER)
+  VICTRON_MESSAGE_STORAGE(inverter, VICTRON_BLE_RECORD_INVERTER)
 
 #undef VICTRON_MESSAGE_STORAGE
 

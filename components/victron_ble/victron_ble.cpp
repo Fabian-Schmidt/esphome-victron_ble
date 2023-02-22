@@ -24,6 +24,10 @@ void VictronBle::update() {
     this->on_solar_charger_message_callback_.call(&this->solar_charger_message_);
     this->solar_charger_updated_ = false;
   }
+  if (this->inverter_updated_) {
+    this->on_inverter_message_callback_.call(&this->inverter_message_);
+    this->inverter_updated_ = false;
+  }
 }
 
 /**
@@ -122,13 +126,18 @@ bool VictronBle::encrypt_message_(const u_int8_t *crypted_data, const u_int8_t c
 
 bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_type, const u_int8_t crypted_len) {
   switch (record_type) {
+    case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_SOLAR_CHARGER)) {
+        return true;
+      }
+      break;
     case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
       if (crypted_len >= sizeof(VICTRON_BLE_RECORD_BATTERY_MONITOR)) {
         return true;
       }
       break;
-    case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
-      if (crypted_len >= sizeof(VICTRON_BLE_SOLAR_CHARGER)) {
+    case VICTRON_BLE_RECORD_TYPE::INVERTER:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_INVERTER)) {
         return true;
       }
       break;
@@ -144,15 +153,20 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
 
 void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const u_int8_t encrypted_data[32]) {
   switch (record_type) {
+    case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+      this->solar_charger_message_ = *(const VICTRON_BLE_RECORD_SOLAR_CHARGER *) encrypted_data;
+      this->solar_charger_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved SOLAR_CHARGER message.", this->address_str().c_str());
+      break;
     case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
       this->battery_monitor_message_ = *(const VICTRON_BLE_RECORD_BATTERY_MONITOR *) encrypted_data;
       this->battery_monitor_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved BATTERY_MONITOR message.", this->address_str().c_str());
       break;
-    case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
-      this->solar_charger_message_ = *(const VICTRON_BLE_SOLAR_CHARGER *) encrypted_data;
-      this->solar_charger_updated_ = true;
-      ESP_LOGD(TAG, "[%s] Recieved SOLAR_CHARGER message.", this->address_str().c_str());
+    case VICTRON_BLE_RECORD_TYPE::INVERTER:
+      this->inverter_message_ = *(const VICTRON_BLE_RECORD_INVERTER *) encrypted_data;
+      this->inverter_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved INVERTER message.", this->address_str().c_str());
       break;
     default:
       break;

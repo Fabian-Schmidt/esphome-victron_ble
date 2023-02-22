@@ -35,7 +35,7 @@ void VictronBinarySensor::setup() {
     case VICTRON_BINARY_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE_AUTO_EQUALIZE:
     case VICTRON_BINARY_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE_EXTERNAL_CONTROL:
     case VICTRON_BINARY_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
-      this->parent_->add_on_solar_charger_message_callback([this](const VICTRON_BLE_SOLAR_CHARGER *solar) {
+      this->parent_->add_on_solar_charger_message_callback([this](const VICTRON_BLE_RECORD_SOLAR_CHARGER *solar) {
         switch (this->type_) {
           case VICTRON_BINARY_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE_OFF:
             this->publish_state(solar->device_state == VE_REG_DEVICE_STATE::OFF);

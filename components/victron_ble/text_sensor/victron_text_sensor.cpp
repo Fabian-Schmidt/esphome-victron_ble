@@ -57,7 +57,7 @@ void VictronTextSensor::setup() {
       break;
     case VICTRON_TEXT_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE:
     case VICTRON_TEXT_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
-      this->parent_->add_on_solar_charger_message_callback([this](const VICTRON_BLE_SOLAR_CHARGER *solar) {
+      this->parent_->add_on_solar_charger_message_callback([this](const VICTRON_BLE_RECORD_SOLAR_CHARGER *solar) {
         switch (this->type_) {
           case VICTRON_TEXT_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE:
             switch (solar->device_state) {

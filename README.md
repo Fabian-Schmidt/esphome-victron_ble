@@ -19,7 +19,7 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
       - Missing definition for `output_state`
     - (Lynx Smart) BMS
       - Missing definition for `error`, `io_status` and `warnings_alarms`
-    - Multi RS (basic)
+    - Multi RS
     - VE.Bus (basic)
     - DC Energy Meter (basic)
 
@@ -181,15 +181,15 @@ The following `type` are supported by the `sensor` component:
 - `DCDC_CONVERTER_OUTPUT_VOLTAGE`
 - `DCDC_CONVERTER_OFF_REASON`
 - `SMART_LITHIUM_BMS_FLAGS`
-- `SMART_LITHIUM_ERROR`,`
-- `SMART_LITHIUM_CELL1`,`
-- `SMART_LITHIUM_CELL2`,`
-- `SMART_LITHIUM_CELL3`,`
-- `SMART_LITHIUM_CELL4`,`
-- `SMART_LITHIUM_CELL5`,`
-- `SMART_LITHIUM_CELL6`,`
-- `SMART_LITHIUM_CELL7`,`
-- `SMART_LITHIUM_CELL8`,`
+- `SMART_LITHIUM_ERROR`
+- `SMART_LITHIUM_CELL1`
+- `SMART_LITHIUM_CELL2`
+- `SMART_LITHIUM_CELL3`
+- `SMART_LITHIUM_CELL4`
+- `SMART_LITHIUM_CELL5`
+- `SMART_LITHIUM_CELL6`
+- `SMART_LITHIUM_CELL7`
+- `SMART_LITHIUM_CELL8`
 - `SMART_LITHIUM_BATTERY_VOLTAGE`
 - `SMART_LITHIUM_BALANCER_STATUS`
 - `SMART_LITHIUM_BATTERY_TEMPERATURE`
@@ -217,6 +217,15 @@ The following `type` are supported by the `sensor` component:
 - `LYNX_SMART_BMS_STATE_OF_CHARGE`
 - `LYNX_SMART_BMS_CONSUMED_AH`
 - `LYNX_SMART_BMS_TEMPERATURE`
+- `MULTI_RS_DEVICE_STATE`
+- `MULTI_RS_CHARGER_ERROR`
+- `MULTI_RS_BATTERY_CURRENT`
+- `MULTI_RS_BATTERY_VOLTAGE`
+- `MULTI_RS_ACTIVE_AC_IN`
+- `MULTI_RS_ACTIVE_AC_IN_POWER`
+- `MULTI_RS_ACTIVE_AC_OUT_POWER`
+- `MULTI_RS_PV_POWER`
+- `MULTI_RS_YIELD_TODAY`
 
 ### Binary Sensor
 
@@ -257,6 +266,9 @@ The following `type` are supported by the `text_sensor` component:
 - `SMART_BATTERY_PROTECT_ALARM_REASON`
 - `SMART_BATTERY_PROTECT_WARNING_REASON`
 - `SMART_BATTERY_PROTECT_OFF_REASON`
+- `MULTI_RS_DEVICE_STATE`
+- `MULTI_RS_CHARGER_ERROR`
+- `MULTI_RS_ACTIVE_AC_IN`
 
 ### Trigger
 

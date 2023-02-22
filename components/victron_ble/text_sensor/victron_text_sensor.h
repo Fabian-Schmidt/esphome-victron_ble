@@ -27,6 +27,10 @@ enum class VICTRON_TEXT_SENSOR_TYPE {
   SMART_BATTERY_PROTECT_ALARM_REASON,
   SMART_BATTERY_PROTECT_WARNING_REASON,
   SMART_BATTERY_PROTECT_OFF_REASON,
+
+  MULTI_RS_DEVICE_STATE,
+  MULTI_RS_CHARGER_ERROR,
+  MULTI_RS_ACTIVE_AC_IN,
 };
 
 class VictronTextSensor : public Component, public text_sensor::TextSensor, public Parented<VictronBle> {
@@ -43,6 +47,7 @@ class VictronTextSensor : public Component, public text_sensor::TextSensor, publ
   void publish_state_(VE_REG_DEVICE_STATE val);
   void publish_state_(VE_REG_CHR_ERROR_CODE val);
   void publish_state_(VE_REG_DEVICE_OFF_REASON_2 val);
+  void publish_state_(VE_REG_AC_IN_ACTIVE val);
 };
 }  // namespace victron_ble
 }  // namespace esphome

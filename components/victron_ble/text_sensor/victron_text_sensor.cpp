@@ -117,6 +117,25 @@ void VictronTextSensor::setup() {
             }
           });
       break;
+    case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_DEVICE_STATE:
+    case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_CHARGER_ERROR:
+    case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
+      this->parent_->add_on_multi_rs_message_callback([this](const VICTRON_BLE_RECORD_MULTI_RS_ *val) {
+        switch (this->type_) {
+          case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_DEVICE_STATE:
+            this->publish_state_(val->device_state);
+            break;
+          case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_CHARGER_ERROR:
+            this->publish_state_(val->charger_error);
+            break;
+          case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
+            this->publish_state_(val->active_ac_in);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }
@@ -469,6 +488,25 @@ void VictronTextSensor::publish_state_(VE_REG_DEVICE_OFF_REASON_2 val) {
   }
   if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::INPUT_VOLTATE) != 0) {
     this->publish_state("Analysing input voltage");
+  }
+}
+
+void VictronTextSensor::publish_state_(VE_REG_AC_IN_ACTIVE val) {
+  switch (val) {
+    case VE_REG_AC_IN_ACTIVE::AC_IN_1:
+      this->publish_state("AC in 1");
+      break;
+    case VE_REG_AC_IN_ACTIVE::AC_IN_2:
+      this->publish_state("AC in 2");
+      break;
+    case VE_REG_AC_IN_ACTIVE::NOT_CONNECTED:
+      this->publish_state("Not connected");
+      break;
+    case VE_REG_AC_IN_ACTIVE::UNKOWN:
+      this->publish_state("Unkown");
+      break;
+    default:
+      break;
   }
 }
 

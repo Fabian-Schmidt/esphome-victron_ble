@@ -155,6 +155,17 @@ void VictronTextSensor::setup() {
         }
       });
       break;
+    case VICTRON_TEXT_SENSOR_TYPE::DC_ENERGY_METER_ALARM_REASON:
+      this->parent_->add_on_dc_energy_meter_message_callback([this](const VICTRON_BLE_RECORD_DC_ENERGY_METER *val) {
+        switch (this->type_) {
+          case VICTRON_TEXT_SENSOR_TYPE::DC_ENERGY_METER_ALARM_REASON:
+            this->publish_state_(val->alarm_reason);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }

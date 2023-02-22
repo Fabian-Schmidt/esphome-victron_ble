@@ -22,7 +22,8 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - Multi RS
     - VE.Bus
       - Missing definition for `ve_bus_error`
-    - DC Energy Meter (basic)
+    - DC Energy Meter
+      - Missing definition for `bmv_monitor_mode`
 
 - [Bluetooth connection protocol](https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html) - Component `victron_ble_connect`.
   - This solution is using the [PR#4258 of ESPHome](https://github.com/esphome/esphome/pull/4258).
@@ -237,6 +238,12 @@ The following `type` are supported by the `sensor` component:
 - `VE_BUS_ALARM`
 - `VE_BUS_BATTERY_TEMPERATURE`
 - `VE_BUS_STATE_OF_CHARGE`
+- `DC_ENERGY_METER_BMV_MONITOR_MODE`
+- `DC_ENERGY_METER_BATTERY_VOLTAGE`
+- `DC_ENERGY_METER_ALARM_REASON`
+- `DC_ENERGY_METER_AUX_VOLTAGE`
+- `DC_ENERGY_METER_TEMPERATURE`
+- `DC_ENERGY_METER_BATTERY_CURRENT`
 
 ### Binary Sensor
 
@@ -283,6 +290,7 @@ The following `type` are supported by the `text_sensor` component:
 - `VE_BUS_DEVICE_STATE`
 - `VE_BUS_ACTIVE_AC_IN`
 - `VE_BUS_ALARM`
+- `DC_ENERGY_METER_ALARM_REASON`
 
 ### Trigger
 

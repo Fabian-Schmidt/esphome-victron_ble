@@ -35,6 +35,8 @@ enum class VICTRON_TEXT_SENSOR_TYPE {
   VE_BUS_DEVICE_STATE,
   VE_BUS_ACTIVE_AC_IN,
   VE_BUS_ALARM,
+  
+  DC_ENERGY_METER_ALARM_REASON,
 };
 
 class VictronTextSensor : public Component, public text_sensor::TextSensor, public Parented<VictronBle> {

@@ -467,6 +467,47 @@ void VictronSensor::setup() {
         }
       });
       break;
+    case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BMV_MONITOR_MODE:
+    case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BATTERY_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_ALARM_REASON:
+    case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_AUX_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_TEMPERATURE:
+    case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BATTERY_CURRENT:
+      this->parent_->add_on_dc_energy_meter_message_callback([this](const VICTRON_BLE_RECORD_DC_ENERGY_METER *val) {
+        switch (this->type_) {
+          case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BMV_MONITOR_MODE:
+            this->publish_state((int16_t) val->bmv_monitor_mode);
+            break;
+          case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BATTERY_VOLTAGE:
+            this->publish_state(0.01f * val->battery_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_ALARM_REASON:
+            this->publish_state((u_int16_t) val->alarm_reason);
+            break;
+          case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_AUX_VOLTAGE:
+            if (val->aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_DC_CHANNEL2_VOLTAGE) {
+              this->publish_state(0.01f * val->aux_input.aux_voltage);
+            } else {
+              ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration.", this->parent_->address_str().c_str());
+              this->publish_state(NAN);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_TEMPERATURE:
+            if (val->aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_BAT_TEMPERATURE) {
+              this->publish_state(0.01f * val->aux_input.temperature - 273.15f);
+            } else {
+              ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration.", this->parent_->address_str().c_str());
+              this->publish_state(NAN);
+            }
+            break;
+          case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BATTERY_CURRENT:
+            this->publish_state(0.001f * val->battery_current);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }

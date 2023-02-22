@@ -52,6 +52,10 @@ void VictronBle::update() {
     this->multi_rs_updated_ = false;
     this->on_multi_rs_message_callback_.call(&this->multi_rs_message_);
   }
+  if (this->ve_bus_updated_) {
+    this->ve_bus_updated_ = false;
+    this->on_ve_bus_message_callback_.call(&this->ve_bus_message_);
+  }
 }
 
 /**
@@ -195,6 +199,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
         return true;
       }
       break;
+    case VICTRON_BLE_RECORD_TYPE::VE_BUS:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_VE_BUS)) {
+        return true;
+      }
+      break;
     default:
       ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), record_type);
       return false;
@@ -251,6 +260,11 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const
       this->multi_rs_message_ = *(const VICTRON_BLE_RECORD_MULTI_RS *) encrypted_data;
       this->multi_rs_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved MULTI_RS message.", this->address_str().c_str());
+      break;
+    case VICTRON_BLE_RECORD_TYPE::VE_BUS:
+      this->ve_bus_message_ = *(const VICTRON_BLE_RECORD_VE_BUS *) encrypted_data;
+      this->ve_bus_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved VE_BUS message.", this->address_str().c_str());
       break;
     default:
       break;

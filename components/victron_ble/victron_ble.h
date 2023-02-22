@@ -278,7 +278,7 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   LYNX_SMART_BMS = 0x0A,
   // VICTRON_BLE_RECORD_MULTI_RS
   MULTI_RS = 0x0B,
-  // TODO
+  // VICTRON_BLE_RECORD_VE_BUS
   VE_BUS = 0x0C,
   // TODO
   DC_ENERGY_METER = 0x0D,
@@ -691,6 +691,32 @@ struct VICTRON_BLE_RECORD_MULTI_RS {  // NOLINT(readability-identifier-naming,al
   u_int16_t yield_today;
 } __attribute__((packed));
 
+enum class VE_REG_ALARM_NOTIFICATION : u_int8_t {
+  NO_ALARM = 0,
+  WARNING = 1,
+  ALARM = 2,
+};
+
+struct VICTRON_BLE_RECORD_VE_BUS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  VE_REG_DEVICE_STATE device_state;
+  // TODO
+  u_int16_t ve_bus_error;
+  // 0.1 A, -3276.8 .. 3276.6 A
+  int16_t battery_current;
+  // 0.01 V, 0 .. 163.83 V
+  u_int16_t battery_voltage : 14;
+  VE_REG_AC_IN_ACTIVE active_ac_in : 2;
+  // 1 W, -262,144 .. 262,142 W
+  int32_t active_ac_in_power : 19;
+  // 1 W, -262,144 .. 262,142 W
+  int32_t active_ac_out_power : 19;
+  VE_REG_ALARM_NOTIFICATION alarm : 2;
+  // 1 °C, -40 .. 86 °C - Temperature = Record value - 40
+  u_int8_t battery_temperature : 7;
+  // 1 %, 0 .. 126 %
+  u_int16_t soc : 7;
+} __attribute__((packed));
+
 class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public PollingComponent {
  public:
   void dump_config() override;
@@ -742,6 +768,9 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   void add_on_multi_rs_message_callback(std::function<void(const VICTRON_BLE_RECORD_MULTI_RS *)> callback) {
     this->on_multi_rs_message_callback_.add(std::move(callback));
   }
+  void add_on_ve_bus_message_callback(std::function<void(const VICTRON_BLE_RECORD_VE_BUS *)> callback) {
+    this->on_ve_bus_message_callback_.add(std::move(callback));
+  }
 
  protected:
   uint64_t address_;
@@ -762,6 +791,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   VICTRON_MESSAGE_STORAGE(smart_battery_protect, VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)
   VICTRON_MESSAGE_STORAGE(lynx_smart_bms, VICTRON_BLE_RECORD_LYNX_SMART_BMS)
   VICTRON_MESSAGE_STORAGE(multi_rs, VICTRON_BLE_RECORD_MULTI_RS)
+  VICTRON_MESSAGE_STORAGE(ve_bus, VICTRON_BLE_RECORD_VE_BUS)
 
 #undef VICTRON_MESSAGE_STORAGE
 

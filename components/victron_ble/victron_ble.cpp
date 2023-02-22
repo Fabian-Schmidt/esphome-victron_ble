@@ -48,6 +48,10 @@ void VictronBle::update() {
     this->lynx_smart_bms_updated_ = false;
     this->on_lynx_smart_bms_message_callback_.call(&this->lynx_smart_bms_message_);
   }
+  if (this->multi_rs_updated_) {
+    this->multi_rs_updated_ = false;
+    this->on_multi_rs_message_callback_.call(&this->multi_rs_message_);
+  }
 }
 
 /**
@@ -186,6 +190,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
         return true;
       }
       break;
+    case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_MULTI_RS)) {
+        return true;
+      }
+      break;
     default:
       ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), record_type);
       return false;
@@ -237,6 +246,11 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const
       this->lynx_smart_bms_message_ = *(const VICTRON_BLE_RECORD_LYNX_SMART_BMS *) encrypted_data;
       this->lynx_smart_bms_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved LYNX_SMART_BMS message.", this->address_str().c_str());
+      break;
+    case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
+      this->multi_rs_message_ = *(const VICTRON_BLE_RECORD_MULTI_RS *) encrypted_data;
+      this->multi_rs_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved MULTI_RS message.", this->address_str().c_str());
       break;
     default:
       break;

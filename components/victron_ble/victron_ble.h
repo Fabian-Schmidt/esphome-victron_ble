@@ -280,7 +280,7 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   MULTI_RS = 0x0B,
   // VICTRON_BLE_RECORD_VE_BUS
   VE_BUS = 0x0C,
-  // TODO
+  // VICTRON_BLE_RECORD_DC_ENERGY_METER
   DC_ENERGY_METER = 0x0D,
 };
 
@@ -523,7 +523,7 @@ enum class VE_REG_ALARM_REASON : u_int16_t {
 };
 
 // source: extra-manufacturer-data-2022-12-14.pdf
-enum class VICTRON_AUX_INPUT_TYPE : u_int8_t {
+enum class VE_REG_BMV_AUX_INPUT : u_int8_t {
   VE_REG_DC_CHANNEL2_VOLTAGE = 0x0,
   VE_REG_BATTERY_MID_POINT_VOLTAGE = 0x1,
   VE_REG_BAT_TEMPERATURE = 0x2,
@@ -537,14 +537,14 @@ struct VICTRON_BLE_RECORD_BATTERY_MONITOR {  // NOLINT(readability-identifier-na
   int16_t battery_voltage;
   VE_REG_ALARM_REASON alarm_reason;
   union {
-    // Aux voltage 327.68 .. 327.64 V
+    // Aux voltage -327.68 .. 327.64 V
     int16_t aux_voltage;
     // Mid voltage 0 .. 655.34 V
     u_int16_t mid_voltage;
     // Temperature 0 .. 655.34 K
     u_int16_t temperature;
   } aux_input;
-  VICTRON_AUX_INPUT_TYPE aux_input_type : 2;
+  VE_REG_BMV_AUX_INPUT aux_input_type : 2;
   // 0.001A, -4194 .. 4194 A
   int32_t battery_current : 22;
   // 0.1 Ah, -104,857 .. 0 Ah
@@ -717,6 +717,24 @@ struct VICTRON_BLE_RECORD_VE_BUS {  // NOLINT(readability-identifier-naming,alte
   u_int16_t soc : 7;
 } __attribute__((packed));
 
+struct VICTRON_BLE_RECORD_DC_ENERGY_METER {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  // TODO
+  int16_t bmv_monitor_mode;
+  // 0.01 V, -327.68 .. 327.66 V
+  int16_t battery_voltage;
+  VE_REG_ALARM_REASON alarm_reason;
+  union {
+    // Aux voltage -327.68 .. 327.64 V
+    int16_t aux_voltage;
+    // Temperature 0 .. 655.34 K
+    u_int16_t temperature;
+  } aux_input;
+  // VE_REG_BATTERY_MID_POINT_VOLTAGE not valid.
+  VE_REG_BMV_AUX_INPUT aux_input_type : 2;
+  //  0.001A, -4194 .. 4194 A
+  int32_t battery_current : 22;
+} __attribute__((packed));
+
 class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public PollingComponent {
  public:
   void dump_config() override;
@@ -771,6 +789,10 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   void add_on_ve_bus_message_callback(std::function<void(const VICTRON_BLE_RECORD_VE_BUS *)> callback) {
     this->on_ve_bus_message_callback_.add(std::move(callback));
   }
+  void add_on_dc_energy_meter_message_callback(
+      std::function<void(const VICTRON_BLE_RECORD_DC_ENERGY_METER *)> callback) {
+    this->on_dc_energy_meter_message_callback_.add(std::move(callback));
+  }
 
  protected:
   uint64_t address_;
@@ -792,6 +814,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   VICTRON_MESSAGE_STORAGE(lynx_smart_bms, VICTRON_BLE_RECORD_LYNX_SMART_BMS)
   VICTRON_MESSAGE_STORAGE(multi_rs, VICTRON_BLE_RECORD_MULTI_RS)
   VICTRON_MESSAGE_STORAGE(ve_bus, VICTRON_BLE_RECORD_VE_BUS)
+  VICTRON_MESSAGE_STORAGE(dc_energy_meter, VICTRON_BLE_RECORD_DC_ENERGY_METER)
 
 #undef VICTRON_MESSAGE_STORAGE
 

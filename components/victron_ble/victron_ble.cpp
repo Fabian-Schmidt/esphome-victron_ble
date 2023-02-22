@@ -56,6 +56,10 @@ void VictronBle::update() {
     this->ve_bus_updated_ = false;
     this->on_ve_bus_message_callback_.call(&this->ve_bus_message_);
   }
+  if (this->dc_energy_meter_updated_) {
+    this->dc_energy_meter_updated_ = false;
+    this->on_dc_energy_meter_message_callback_.call(&this->dc_energy_meter_message_);
+  }
 }
 
 /**
@@ -204,6 +208,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
         return true;
       }
       break;
+    case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_DC_ENERGY_METER)) {
+        return true;
+      }
+      break;
     default:
       ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), record_type);
       return false;
@@ -265,6 +274,11 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const
       this->ve_bus_message_ = *(const VICTRON_BLE_RECORD_VE_BUS *) encrypted_data;
       this->ve_bus_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved VE_BUS message.", this->address_str().c_str());
+      break;
+    case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
+      this->dc_energy_meter_message_ = *(const VICTRON_BLE_RECORD_DC_ENERGY_METER *) encrypted_data;
+      this->dc_energy_meter_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved DC_ENERGY_METER message.", this->address_str().c_str());
       break;
     default:
       break;

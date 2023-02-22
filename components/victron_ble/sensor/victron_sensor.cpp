@@ -35,7 +35,7 @@ void VictronSensor::setup() {
                 this->publish_state((u_int16_t) battery_monitor->alarm_reason);
                 break;
               case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_AUX_VOLTAGE:
-                if (battery_monitor->aux_input_type == VICTRON_AUX_INPUT_TYPE::VE_REG_DC_CHANNEL2_VOLTAGE) {
+                if (battery_monitor->aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_DC_CHANNEL2_VOLTAGE) {
                   this->publish_state(0.01f * battery_monitor->aux_input.aux_voltage);
                 } else {
                   ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration in Smart Shunt.",
@@ -44,7 +44,7 @@ void VictronSensor::setup() {
                 }
                 break;
               case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_MID_VOLTAGE:
-                if (battery_monitor->aux_input_type == VICTRON_AUX_INPUT_TYPE::VE_REG_BATTERY_MID_POINT_VOLTAGE) {
+                if (battery_monitor->aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_BATTERY_MID_POINT_VOLTAGE) {
                   this->publish_state(0.01f * battery_monitor->aux_input.mid_voltage);
                 } else {
                   ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration in Smart Shunt.",
@@ -53,7 +53,7 @@ void VictronSensor::setup() {
                 }
                 break;
               case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_TEMPERATURE:
-                if (battery_monitor->aux_input_type == VICTRON_AUX_INPUT_TYPE::VE_REG_BAT_TEMPERATURE) {
+                if (battery_monitor->aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_BAT_TEMPERATURE) {
                   this->publish_state(0.01f * battery_monitor->aux_input.temperature - 273.15f);
                 } else {
                   ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration in Smart Shunt.",

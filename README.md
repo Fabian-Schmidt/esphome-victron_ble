@@ -17,7 +17,8 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - Inverter RS
     - Smart Batery Protect
       - Missing definition for `output_state`
-    - (Lynx Smart) BMS (basic)
+    - (Lynx Smart) BMS
+      - Missing definition for `error`, `io_status` and `warnings_alarms`
     - Multi RS (basic)
     - VE.Bus (basic)
     - DC Energy Meter (basic)
@@ -207,6 +208,15 @@ The following `type` are supported by the `sensor` component:
 - `SMART_BATTERY_PROTECT_INPUT_VOLTAGE`
 - `SMART_BATTERY_PROTECT_OUTPUT_VOLTAGE`
 - `SMART_BATTERY_PROTECT_OFF_REASON`
+- `LYNX_SMART_BMS_ERROR`
+- `LYNX_SMART_BMS_TIME_TO_GO`
+- `LYNX_SMART_BMS_BATTERY_VOLTAGE`
+- `LYNX_SMART_BMS_BATTERY_CURRENT`
+- `LYNX_SMART_BMS_IO_STATUS`
+- `LYNX_SMART_BMS_WARNINGS_ALARMS`
+- `LYNX_SMART_BMS_STATE_OF_CHARGE`
+- `LYNX_SMART_BMS_CONSUMED_AH`
+- `LYNX_SMART_BMS_TEMPERATURE`
 
 ### Binary Sensor
 

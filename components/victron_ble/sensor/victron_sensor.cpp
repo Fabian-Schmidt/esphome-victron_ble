@@ -334,6 +334,49 @@ void VictronSensor::setup() {
             }
           });
       break;
+    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_ERROR:
+    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_TIME_TO_GO:
+    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_BATTERY_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_BATTERY_CURRENT:
+    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_IO_STATUS:
+    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_WARNINGS_ALARMS:
+    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_STATE_OF_CHARGE:
+    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_CONSUMED_AH:
+    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_TEMPERATURE:
+      this->parent_->add_on_lynx_smart_bms_message_callback([this](const VICTRON_BLE_RECORD_LYNX_SMART_BMS *val) {
+        switch (this->type_) {
+          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_ERROR:
+            this->publish_state((u_int8_t) val->error);
+            break;
+          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_TIME_TO_GO:
+            this->publish_state(val->ttg);
+            break;
+          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_BATTERY_VOLTAGE:
+            this->publish_state(0.01f * val->battery_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_BATTERY_CURRENT:
+            this->publish_state(0.1f * val->battery_current);
+            break;
+          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_IO_STATUS:
+            this->publish_state((u_int16_t) val->io_status);
+            break;
+          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_WARNINGS_ALARMS:
+            this->publish_state((u_int32_t) val->warnings_alarms);
+            break;
+          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_STATE_OF_CHARGE:
+            this->publish_state(0.1f * val->soc);
+            break;
+          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_CONSUMED_AH:
+            this->publish_state(0.1f * val->consumed_ah);
+            break;
+          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_TEMPERATURE:
+            this->publish_state(val->temperature - 40);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }

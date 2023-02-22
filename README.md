@@ -269,25 +269,22 @@ The following `type` are supported by the `binary_sensor` component:
 
 The following `type` are supported by the `text_sensor` component:
 
-- `BATTERY_MONITOR_ALARM_REASON`
 - `SOLAR_CHARGER_CHARGER_ERROR`
-- `INVERTER_ALARM_REASON`
 - `DCDC_CONVERTER_CHARGER_ERROR`
 - `DCDC_CONVERTER_OFF_REASON`
 - `INVERTER_RS_CHARGER_ERROR`
 - `SMART_BATTERY_PROTECT_ERROR_CODE`
-- `SMART_BATTERY_PROTECT_ALARM_REASON`
 - `SMART_BATTERY_PROTECT_WARNING_REASON`
 - `SMART_BATTERY_PROTECT_OFF_REASON`
 - `MULTI_RS_CHARGER_ERROR`
 - `MULTI_RS_ACTIVE_AC_IN`
 - `VE_BUS_ACTIVE_AC_IN`
 - `VE_BUS_ALARM`
-- `DC_ENERGY_METER_ALARM_REASON`
 
 |                | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
 | -------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
 | `DEVICE_STATE` | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+| `ALARM_REASON` |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
 
 ### Trigger
 

@@ -71,6 +71,17 @@ void VictronBinarySensor::setup() {
             break;
         }
       });
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::INVERTER_ALARM:
+      this->parent_->add_on_inverter_message_callback([this](const VICTRON_BLE_RECORD_INVERTER *val) {
+        switch (this->type_) {
+          case VICTRON_BINARY_SENSOR_TYPE::INVERTER_ALARM:
+            this->publish_state(val->alarm_reason != VE_REG_ALARM_REASON::NO_ALARM);
+            break;
+          default:
+            break;
+        }
+      });
     default:
       break;
   }

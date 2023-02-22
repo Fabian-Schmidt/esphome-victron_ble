@@ -109,6 +109,38 @@ void VictronSensor::setup() {
             break;
         }
       });
+      break;
+    case VICTRON_SENSOR_TYPE::INVERTER_DEVICE_STATE:
+    case VICTRON_SENSOR_TYPE::INVERTER_ALARM_REASON:
+    case VICTRON_SENSOR_TYPE::INVERTER_BATTERY_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::INVERTER_AC_APPARENT_POWER:
+    case VICTRON_SENSOR_TYPE::INVERTER_AC_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::INVERTER_AC_CURRENT:
+      this->parent_->add_on_inverter_message_callback([this](const VICTRON_BLE_RECORD_INVERTER *val) {
+        switch (this->type_) {
+          case VICTRON_SENSOR_TYPE::INVERTER_DEVICE_STATE:
+            this->publish_state((u_int8_t) val->device_state);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_ALARM_REASON:
+            this->publish_state((u_int16_t) val->alarm_reason);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_BATTERY_VOLTAGE:
+            this->publish_state(0.01f * val->battery_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_AC_APPARENT_POWER:
+            this->publish_state(val->ac_apparent_power);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_AC_VOLTAGE:
+            this->publish_state(0.01f * val->ac_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_AC_CURRENT:
+            this->publish_state(0.1f * val->ac_current);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }

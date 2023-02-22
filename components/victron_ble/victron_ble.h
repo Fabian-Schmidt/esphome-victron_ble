@@ -520,6 +520,8 @@ enum class VE_REG_ALARM_REASON : u_int16_t {
   SHORT_CIRCUIT = 0x1000,
   // BMS Lockout
   BMS_LOCKOUT = 0x2000,
+  UNKOWN_A = 0x4000,
+  UNKOWN_B = 0x8000,
 };
 
 // source: extra-manufacturer-data-2022-12-14.pdf

@@ -11,6 +11,9 @@ enum class VICTRON_TEXT_SENSOR_TYPE {
 
   SOLAR_CHARGER_DEVICE_STATE,
   SOLAR_CHARGER_CHARGER_ERROR,
+
+  INVERTER_DEVICE_STATE,
+  INVERTER_ALARM_REASON,
 };
 
 class VictronTextSensor : public Component, public text_sensor::TextSensor, public Parented<VictronBle> {
@@ -22,6 +25,10 @@ class VictronTextSensor : public Component, public text_sensor::TextSensor, publ
 
  protected:
   VICTRON_TEXT_SENSOR_TYPE type_;
+
+  void publish_state_(VE_REG_ALARM_REASON val);
+  void publish_state_(VE_REG_DEVICE_STATE val);
+  void publish_state_(VE_REG_CHR_ERROR_CODE val);
 };
 }  // namespace victron_ble
 }  // namespace esphome

@@ -165,6 +165,12 @@ The following `type` are supported by the `sensor` component:
 - `SOLAR_CHARGER_YIELD_TODAY`
 - `SOLAR_CHARGER_PV_POWER`
 - `SOLAR_CHARGER_LOAD_CURRENT`
+- `INVERTER_DEVICE_STATE`
+- `INVERTER_ALARM_REASON`
+- `INVERTER_BATTERY_VOLTAGE`
+- `INVERTER_AC_APPARENT_POWER`
+- `INVERTER_AC_VOLTAGE`
+- `INVERTER_AC_CURRENT`
 
 ### Binary Sensor
 
@@ -181,6 +187,7 @@ The following `type` are supported by the `binary_sensor` component:
 - `SOLAR_CHARGER_DEVICE_STATE_AUTO_EQUALIZE`
 - `SOLAR_CHARGER_DEVICE_STATE_EXTERNAL_CONTROL`
 - `SOLAR_CHARGER_CHARGER_ERROR`
+- `INVERTER_ALARM`
 
 ### Text Sensor
 
@@ -189,6 +196,8 @@ The following `type` are supported by the `text_sensor` component:
 - `BATTERY_MONITOR_ALARM_REASON`
 - `SOLAR_CHARGER_DEVICE_STATE`
 - `SOLAR_CHARGER_CHARGER_ERROR`
+- `INVERTER_DEVICE_STATE`
+- `INVERTER_ALARM_REASON`
 
 ### Trigger
 

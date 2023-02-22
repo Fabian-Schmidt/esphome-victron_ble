@@ -19,6 +19,8 @@ enum class VICTRON_BINARY_SENSOR_TYPE {
   SOLAR_CHARGER_DEVICE_STATE_AUTO_EQUALIZE,
   SOLAR_CHARGER_DEVICE_STATE_EXTERNAL_CONTROL,
   SOLAR_CHARGER_CHARGER_ERROR,
+
+  INVERTER_ALARM,
 };
 
 class VictronBinarySensor : public Component, public binary_sensor::BinarySensor, public Parented<VictronBle> {

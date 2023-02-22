@@ -16,49 +16,53 @@ void VictronBle::dump_config() {
 }
 
 void VictronBle::update() {
+  if (this->last_package_updated_) {
+    this->last_package_updated_ = false;
+    this->on_message_callback_.call(&this->last_package_);
+  }
   if (this->battery_monitor_updated_) {
     this->battery_monitor_updated_ = false;
-    this->on_battery_monitor_message_callback_.call(&this->battery_monitor_message_);
+    this->on_battery_monitor_message_callback_.call(&this->last_package_.data.battery_monitor);
   }
   if (this->solar_charger_updated_) {
     this->solar_charger_updated_ = false;
-    this->on_solar_charger_message_callback_.call(&this->solar_charger_message_);
+    this->on_solar_charger_message_callback_.call(&this->last_package_.data.solar_charger);
   }
   if (this->inverter_updated_) {
     this->inverter_updated_ = false;
-    this->on_inverter_message_callback_.call(&this->inverter_message_);
+    this->on_inverter_message_callback_.call(&this->last_package_.data.inverter);
   }
   if (this->dcdc_converter_updated_) {
     this->dcdc_converter_updated_ = false;
-    this->on_dcdc_converter_message_callback_.call(&this->dcdc_converter_message_);
+    this->on_dcdc_converter_message_callback_.call(&this->last_package_.data.dcdc_converter);
   }
   if (this->smart_lithium_updated_) {
     this->smart_lithium_updated_ = false;
-    this->on_smart_lithium_message_callback_.call(&this->smart_lithium_message_);
+    this->on_smart_lithium_message_callback_.call(&this->last_package_.data.smart_lithium);
   }
   if (this->inverter_rs_updated_) {
     this->inverter_rs_updated_ = false;
-    this->on_inverter_rs_message_callback_.call(&this->inverter_rs_message_);
+    this->on_inverter_rs_message_callback_.call(&this->last_package_.data.inverter_rs);
   }
   if (this->smart_battery_protect_updated_) {
     this->smart_battery_protect_updated_ = false;
-    this->on_smart_battery_protect_message_callback_.call(&this->smart_battery_protect_message_);
+    this->on_smart_battery_protect_message_callback_.call(&this->last_package_.data.smart_battery_protect);
   }
   if (this->lynx_smart_bms_updated_) {
     this->lynx_smart_bms_updated_ = false;
-    this->on_lynx_smart_bms_message_callback_.call(&this->lynx_smart_bms_message_);
+    this->on_lynx_smart_bms_message_callback_.call(&this->last_package_.data.lynx_smart_bms);
   }
   if (this->multi_rs_updated_) {
     this->multi_rs_updated_ = false;
-    this->on_multi_rs_message_callback_.call(&this->multi_rs_message_);
+    this->on_multi_rs_message_callback_.call(&this->last_package_.data.multi_rs);
   }
   if (this->ve_bus_updated_) {
     this->ve_bus_updated_ = false;
-    this->on_ve_bus_message_callback_.call(&this->ve_bus_message_);
+    this->on_ve_bus_message_callback_.call(&this->last_package_.data.ve_bus);
   }
   if (this->dc_energy_meter_updated_) {
     this->dc_energy_meter_updated_ = false;
-    this->on_dc_energy_meter_message_callback_.call(&this->dc_energy_meter_message_);
+    this->on_dc_energy_meter_message_callback_.call(&this->last_package_.data.dc_energy_meter);
   }
 }
 
@@ -101,7 +105,7 @@ bool VictronBle::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   }
 
   // Filter out duplicate messages
-  if ((victron_data->data_counter_lsb | (victron_data->data_counter_msb << 8)) == this->last_package_data_counter_) {
+  if ((victron_data->data_counter_lsb | (victron_data->data_counter_msb << 8)) == this->last_package_.data_counter) {
     return false;
   }
 
@@ -132,7 +136,7 @@ bool VictronBle::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   this->handle_record_(victron_data->record_type, encrypted_data);
 
   // Save the last recieved data counter
-  this->last_package_data_counter_ = victron_data->data_counter_lsb | (victron_data->data_counter_msb << 8);
+  this->last_package_.data_counter = victron_data->data_counter_lsb | (victron_data->data_counter_msb << 8);
   return false;
 }
 
@@ -232,65 +236,68 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
 }
 
 void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const u_int8_t encrypted_data[32]) {
+  this->last_package_.record_type = record_type;
   switch (record_type) {
     case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
-      this->solar_charger_message_ = *(const VICTRON_BLE_RECORD_SOLAR_CHARGER *) encrypted_data;
+      this->last_package_.data.solar_charger = *(const VICTRON_BLE_RECORD_SOLAR_CHARGER *) encrypted_data;
       this->solar_charger_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved SOLAR_CHARGER message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
-      this->battery_monitor_message_ = *(const VICTRON_BLE_RECORD_BATTERY_MONITOR *) encrypted_data;
+      this->last_package_.data.battery_monitor = *(const VICTRON_BLE_RECORD_BATTERY_MONITOR *) encrypted_data;
       this->battery_monitor_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved BATTERY_MONITOR message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::INVERTER:
-      this->inverter_message_ = *(const VICTRON_BLE_RECORD_INVERTER *) encrypted_data;
+      this->last_package_.data.inverter = *(const VICTRON_BLE_RECORD_INVERTER *) encrypted_data;
       this->inverter_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved INVERTER message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
-      this->dcdc_converter_message_ = *(const VICTRON_BLE_RECORD_DCDC_CONVERTER *) encrypted_data;
+      this->last_package_.data.dcdc_converter = *(const VICTRON_BLE_RECORD_DCDC_CONVERTER *) encrypted_data;
       this->dcdc_converter_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved DCDC_CONVERTER message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::SMART_LITHIUM:
-      this->smart_lithium_message_ = *(const VICTRON_BLE_RECORD_SMART_LITHIUM *) encrypted_data;
+      this->last_package_.data.smart_lithium = *(const VICTRON_BLE_RECORD_SMART_LITHIUM *) encrypted_data;
       this->smart_lithium_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved SMART_LITHIUM message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
-      this->inverter_rs_message_ = *(const VICTRON_BLE_RECORD_INVERTER_RS *) encrypted_data;
+      this->last_package_.data.inverter_rs = *(const VICTRON_BLE_RECORD_INVERTER_RS *) encrypted_data;
       this->inverter_rs_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved INVERTER_RS message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
-      this->smart_battery_protect_message_ = *(const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *) encrypted_data;
+      this->last_package_.data.smart_battery_protect =
+          *(const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *) encrypted_data;
       this->smart_battery_protect_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved SMART_BATTERY_PROTECT message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::LYNX_SMART_BMS:
-      this->lynx_smart_bms_message_ = *(const VICTRON_BLE_RECORD_LYNX_SMART_BMS *) encrypted_data;
+      this->last_package_.data.lynx_smart_bms = *(const VICTRON_BLE_RECORD_LYNX_SMART_BMS *) encrypted_data;
       this->lynx_smart_bms_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved LYNX_SMART_BMS message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
-      this->multi_rs_message_ = *(const VICTRON_BLE_RECORD_MULTI_RS *) encrypted_data;
+      this->last_package_.data.multi_rs = *(const VICTRON_BLE_RECORD_MULTI_RS *) encrypted_data;
       this->multi_rs_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved MULTI_RS message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::VE_BUS:
-      this->ve_bus_message_ = *(const VICTRON_BLE_RECORD_VE_BUS *) encrypted_data;
+      this->last_package_.data.ve_bus = *(const VICTRON_BLE_RECORD_VE_BUS *) encrypted_data;
       this->ve_bus_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved VE_BUS message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
-      this->dc_energy_meter_message_ = *(const VICTRON_BLE_RECORD_DC_ENERGY_METER *) encrypted_data;
+      this->last_package_.data.dc_energy_meter = *(const VICTRON_BLE_RECORD_DC_ENERGY_METER *) encrypted_data;
       this->dc_energy_meter_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved DC_ENERGY_METER message.", this->address_str().c_str());
       break;
     default:
       break;
   }
+  this->last_package_updated_ = true;
   if (this->update_interval_ == SCHEDULER_DONT_RUN) {
     // Polling is set to never. Call update for every data.
     this->update();

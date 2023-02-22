@@ -760,6 +760,25 @@ struct VICTRON_BLE_RECORD_DC_ENERGY_METER {  // NOLINT(readability-identifier-na
   int32_t battery_current : 22;
 } __attribute__((packed));
 
+struct VictronBleData {
+  u_int16_t data_counter = 0;
+  VICTRON_BLE_RECORD_TYPE record_type = VICTRON_BLE_RECORD_TYPE::TEST_RECORD;
+  // Assumption: One device (class instance) will send only one type of record.
+  union {
+    VICTRON_BLE_RECORD_BATTERY_MONITOR battery_monitor;
+    VICTRON_BLE_RECORD_SOLAR_CHARGER solar_charger;
+    VICTRON_BLE_RECORD_INVERTER inverter;
+    VICTRON_BLE_RECORD_DCDC_CONVERTER dcdc_converter;
+    VICTRON_BLE_RECORD_SMART_LITHIUM smart_lithium;
+    VICTRON_BLE_RECORD_INVERTER_RS inverter_rs;
+    VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT smart_battery_protect;
+    VICTRON_BLE_RECORD_LYNX_SMART_BMS lynx_smart_bms;
+    VICTRON_BLE_RECORD_MULTI_RS multi_rs;
+    VICTRON_BLE_RECORD_VE_BUS ve_bus;
+    VICTRON_BLE_RECORD_DC_ENERGY_METER dc_energy_meter;
+  } data;
+};
+
 class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public PollingComponent {
  public:
   void dump_config() override;
@@ -818,16 +837,21 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
       std::function<void(const VICTRON_BLE_RECORD_DC_ENERGY_METER *)> callback) {
     this->on_dc_energy_meter_message_callback_.add(std::move(callback));
   }
+  void add_on_message_callback(
+      std::function<void(const VictronBleData *)> callback) {
+    this->on_message_callback_.add(std::move(callback));
+  }
 
  protected:
   uint64_t address_;
   std::string address_str_{};
   std::array<uint8_t, 16> bindkey_;
-  u_int16_t last_package_data_counter_ = 0;
+  bool last_package_updated_ = false;
+  VictronBleData last_package_{};
+  CallbackManager<void(const VictronBleData *)> on_message_callback_{};
 
 #define VICTRON_MESSAGE_STORAGE(name, type) \
   bool name##_updated_ = false; \
-  type name##_message_{}; \
   CallbackManager<void(const type *)> on_##name##_message_callback_{};
 
   VICTRON_MESSAGE_STORAGE(battery_monitor, VICTRON_BLE_RECORD_BATTERY_MONITOR)

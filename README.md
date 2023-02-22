@@ -1,28 +1,42 @@
 # ESPHome victron_ble component
 
-This ESPHome component supports both official Victron Bluetooth BLE Protocols:
+**This repository is in no way approved by or affiliated with the official Victron Energy repository.**
 
-- <https://community.victronenergy.com/questions/187303/victron-bluetooth-advertising-protocol.html>
-  (Recommended) Component `victron_ble`. See <https://github.com/keshavdv/victron-ble> how to fetch your encryption keys.
-  - Smart Shunt
-  - Smart Solar
-  - More to come
+**I am not responsible for any problems or damages with your devices or this code**
 
-- <https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html>
-  Component `victron_ble_connect`.
-  This solution is using the [PR#4258 of ESPHome](https://github.com/esphome/esphome/pull/4258) for connecting to Victron Smart Shunt.
-  Supported Devices:
-  - Smart Shunt
+This [ESPHome](https://esphome.io) component supports both official Victron Bluetooth BLE Protocols:
+
+- (Recommended) [Bluetooth accouncement protocol](https://community.victronenergy.com/questions/187303/victron-bluetooth-advertising-protocol.html) - Component `victron_ble`.
+  - Supported Devices:
+    - Smart Shunt (full)
+    - Smart Solar (full)
+    - Inverter (basic)
+    - DC/DC convert (basic)
+    - SmartLithium (basic)
+    - Smart Batery Protect
+    - (Lynx Smart) BMS
+    - Multi RS
+    - VE.Bus
+    - DC Energy Meter
+
+- [Bluetooth connection protocol](https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html) - Component `victron_ble_connect`.
+  - This solution is using the [PR#4258 of ESPHome](https://github.com/esphome/esphome/pull/4258).
+  - Supported Devices:
+    - Smart Shunt
 
 ## `victron_ble` component (Recommended)
 
 ### Steps
 
 1. Update your Victron device.
-2. Enable `Instant readout via Bluetooth`.
-3. Get Mac and Encryption key from Victron Software. See <https://github.com/keshavdv/victron-ble> for details.
+2. Enable `Instant readout via Bluetooth` via Victron app.
+3. Get Mac address and Encryption key from Victron Software.
 
-### Example
+### Fetching Mac address and Encryption key
+
+See <https://github.com/keshavdv/victron-ble> for details.
+
+### Example ESPHome configuration for `victron_ble`
 
 See [victron_ble.yaml](/victron_ble.yaml) for a full example.
 
@@ -131,6 +145,67 @@ text_sensor:
     type: SOLAR_CHARGER_CHARGER_ERROR
 ```
 
+### Sensor
+
+The following `type` are supported by the `sensor` component:
+
+- `BATTERY_MONITOR_TIME_TO_GO`
+- `BATTERY_MONITOR_BATTERY_VOLTAGE`
+- `BATTERY_MONITOR_ALARM_REASON`
+- `BATTERY_MONITOR_AUX_VOLTAGE`
+- `BATTERY_MONITOR_MID_VOLTAGE`
+- `BATTERY_MONITOR_TEMPERATURE`
+- `BATTERY_MONITOR_BATTERY_CURRENT`
+- `BATTERY_MONITOR_CONSUMED_AH`
+- `BATTERY_MONITOR_STATE_OF_CHARGE`
+- `SOLAR_CHARGER_DEVICE_STATE`
+- `SOLAR_CHARGER_CHARGER_ERROR`
+- `SOLAR_CHARGER_BATTERY_VOLTAGE`
+- `SOLAR_CHARGER_BATTERY_CURRENT`
+- `SOLAR_CHARGER_YIELD_TODAY`
+- `SOLAR_CHARGER_PV_POWER`
+- `SOLAR_CHARGER_LOAD_CURRENT`
+
+### Binary Sensor
+
+The following `type` are supported by the `binary_sensor` component:
+
+- `BATTERY_MONITOR_ALARM`
+- `SOLAR_CHARGER_DEVICE_STATE_OFF`
+- `SOLAR_CHARGER_DEVICE_STATE_FAULT`
+- `SOLAR_CHARGER_DEVICE_STATE_BULK`
+- `SOLAR_CHARGER_DEVICE_STATE_ABSORPTION`
+- `SOLAR_CHARGER_DEVICE_STATE_FLOAT`
+- `SOLAR_CHARGER_DEVICE_STATE_EQUALIZE_MANUAL`
+- `SOLAR_CHARGER_DEVICE_STATE_STARTING_UP`
+- `SOLAR_CHARGER_DEVICE_STATE_AUTO_EQUALIZE`
+- `SOLAR_CHARGER_DEVICE_STATE_EXTERNAL_CONTROL`
+- `SOLAR_CHARGER_CHARGER_ERROR`
+
+### Text Sensor
+
+The following `type` are supported by the `text_sensor` component:
+
+- `BATTERY_MONITOR_ALARM_REASON`
+- `SOLAR_CHARGER_DEVICE_STATE`
+- `SOLAR_CHARGER_CHARGER_ERROR`
+
+### Trigger
+
+The following ESP Home actions exists for advanced users:
+
+- `on_battery_monitor_message`
+- `on_solar_charger_message`
+- `on_inverter_message`
+- `on_dcdc_converter_message`
+- `on_smart_lithium_message`
+- `on_inverter_rs_message`
+- `on_smart_battery_protect_message`
+- `on_lynx_smart_bms_message`
+- `on_multi_rs_message`
+- `on_ve_bus_message`
+- `on_dc_energy_meter_message`
+
 ## `victron_ble_connect` component
 
 ### Steps
@@ -176,7 +251,7 @@ Check the console of ESP Home to find the message like this:
 [I][victron_scanner:044]: FOUND SMART SHUNT 500A/50mV 'My SmartShunt' at AB:CD:EF:01:02:03
 ```
 
-### Example ESPHome config
+### Example ESPHome configuration for `victron_ble_connect`
 
 ```yaml
 esphome:
@@ -223,7 +298,3 @@ sensor:
 
 See [victron_ble_all.yaml](/victron_ble_all.yaml) for a full example.
 Assumption is you are having a `secret.yaml` in the same folder.
-
-## TODO
-
-- In `notify` mode Victron SmartShunt submits on change max every second one value. It send to the sensor api with `update_interval` (default 2min). Currently the last value is submitted. Implement an average function between sensor submits.  

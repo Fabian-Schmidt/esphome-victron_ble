@@ -94,6 +94,17 @@ void VictronBinarySensor::setup() {
         }
       });
       break;
+    case VICTRON_BINARY_SENSOR_TYPE::INVERTER_RS_ERROR:
+      this->parent_->add_on_inverter_rs_message_callback([this](const VICTRON_BLE_RECORD_INVERTER_RS *val) {
+        switch (this->type_) {
+          case VICTRON_BINARY_SENSOR_TYPE::INVERTER_RS_ERROR:
+            this->publish_state(val->charger_error != VE_REG_CHR_ERROR_CODE::NO_ERROR);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }

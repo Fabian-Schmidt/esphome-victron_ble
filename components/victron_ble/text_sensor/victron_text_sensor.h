@@ -18,6 +18,9 @@ enum class VICTRON_TEXT_SENSOR_TYPE {
   DCDC_CONVERTER_DEVICE_STATE,
   DCDC_CONVERTER_CHARGER_ERROR,
   DCDC_CONVERTER_OFF_REASON,
+
+  INVERTER_RS_DEVICE_STATE,
+  INVERTER_RS_CHARGER_ERROR,
 };
 
 class VictronTextSensor : public Component, public text_sensor::TextSensor, public Parented<VictronBle> {

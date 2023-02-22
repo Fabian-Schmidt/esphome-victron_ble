@@ -34,7 +34,6 @@ void VictronTextSensor::setup() {
             break;
           case VICTRON_TEXT_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
             this->publish_state_(solar->charger_error);
-
             break;
           default:
             break;
@@ -50,6 +49,8 @@ void VictronTextSensor::setup() {
             break;
           case VICTRON_TEXT_SENSOR_TYPE::INVERTER_ALARM_REASON:
             this->publish_state_(val->alarm_reason);
+            break;
+          default:
             break;
         }
       });
@@ -67,6 +68,23 @@ void VictronTextSensor::setup() {
             break;
           case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
             this->publish_state_(val->off_reason);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
+    case VICTRON_TEXT_SENSOR_TYPE::INVERTER_RS_DEVICE_STATE:
+    case VICTRON_TEXT_SENSOR_TYPE::INVERTER_RS_CHARGER_ERROR:
+      this->parent_->add_on_inverter_rs_message_callback([this](const VICTRON_BLE_RECORD_INVERTER_RS *val) {
+        switch (this->type_) {
+          case VICTRON_TEXT_SENSOR_TYPE::INVERTER_RS_DEVICE_STATE:
+            this->publish_state_(val->device_state);
+            break;
+          case VICTRON_TEXT_SENSOR_TYPE::INVERTER_RS_CHARGER_ERROR:
+            this->publish_state_(val->charger_error);
+            break;
+          default:
             break;
         }
       });

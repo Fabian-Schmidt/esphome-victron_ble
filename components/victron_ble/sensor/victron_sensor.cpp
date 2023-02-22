@@ -259,6 +259,41 @@ void VictronSensor::setup() {
         }
       });
       break;
+    case VICTRON_SENSOR_TYPE::INVERTER_RS_DEVICE_STATE:
+    case VICTRON_SENSOR_TYPE::INVERTER_RS_CHARGER_ERROR:
+    case VICTRON_SENSOR_TYPE::INVERTER_RS_BATTERY_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::INVERTER_RS_BATTERY_CURRENT:
+    case VICTRON_SENSOR_TYPE::INVERTER_RS_PV_POWER:
+    case VICTRON_SENSOR_TYPE::INVERTER_RS_YIELD_TODAY:
+    case VICTRON_SENSOR_TYPE::INVERTER_RS_AC_OUT_POWER:
+      this->parent_->add_on_inverter_rs_message_callback([this](const VICTRON_BLE_RECORD_INVERTER_RS *val) {
+        switch (this->type_) {
+          case VICTRON_SENSOR_TYPE::INVERTER_RS_DEVICE_STATE:
+            this->publish_state((u_int8_t) val->device_state);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_RS_CHARGER_ERROR:
+            this->publish_state((u_int8_t) val->charger_error);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_RS_BATTERY_VOLTAGE:
+            this->publish_state(0.01f * val->battery_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_RS_BATTERY_CURRENT:
+            this->publish_state(0.1f * val->battery_current);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_RS_PV_POWER:
+            this->publish_state(val->pv_power);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_RS_YIELD_TODAY:
+            this->publish_state(0.01f * val->yield_today);
+            break;
+          case VICTRON_SENSOR_TYPE::INVERTER_RS_AC_OUT_POWER:
+            this->publish_state(val->ac_out_power);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }

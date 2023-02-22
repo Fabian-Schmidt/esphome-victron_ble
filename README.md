@@ -14,6 +14,7 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - DC/DC convert
     - SmartLithium
       - Missing definition for `bms_flags`, `error` and `balancer_status`
+    - Inverter RS
     - Smart Batery Protect (basic)
     - (Lynx Smart) BMS (basic)
     - Multi RS (basic)
@@ -190,6 +191,13 @@ The following `type` are supported by the `sensor` component:
 - `SMART_LITHIUM_BATTERY_VOLTAGE`
 - `SMART_LITHIUM_BALANCER_STATUS`
 - `SMART_LITHIUM_BATTERY_TEMPERATURE`
+- `INVERTER_RS_DEVICE_STATE`
+- `INVERTER_RS_CHARGER_ERROR`
+- `INVERTER_RS_BATTERY_VOLTAGE`
+- `INVERTER_RS_BATTERY_CURRENT`
+- `INVERTER_RS_PV_POWER`
+- `INVERTER_RS_YIELD_TODAY`
+- `INVERTER_RS_AC_OUT_POWER`
 
 ### Binary Sensor
 
@@ -208,6 +216,7 @@ The following `type` are supported by the `binary_sensor` component:
 - `SOLAR_CHARGER_CHARGER_ERROR`
 - `INVERTER_ALARM`
 - `DCDC_CONVERTER_ERROR`
+- `INVERTER_RS_ERROR`
 
 ### Text Sensor
 
@@ -221,6 +230,8 @@ The following `type` are supported by the `text_sensor` component:
 - `DCDC_CONVERTER_DEVICE_STATE`
 - `DCDC_CONVERTER_CHARGER_ERROR`
 - `DCDC_CONVERTER_OFF_REASON`
+- `INVERTER_RS_DEVICE_STATE`
+- `INVERTER_RS_CHARGER_ERROR`
 
 ### Trigger
 

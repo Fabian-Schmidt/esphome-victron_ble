@@ -61,10 +61,6 @@ sensor:
     type: BATTERY_MONITOR_BATTERY_VOLTAGE
   - platform: victron_ble
     victron_ble_id: MySmartShunt
-    name: "Alarm"
-    type: BATTERY_MONITOR_ALARM_REASON
-  - platform: victron_ble
-    victron_ble_id: MySmartShunt
     name: "Starter Battery"
     # BATTERY_MONITOR_AUX_VOLTAGE or BATTERY_MONITOR_MID_VOLTAGE or BATTERY_MONITOR_TEMPERATURE.
     # Depending on configuration of SmartShunt
@@ -85,14 +81,6 @@ sensor:
   # MySmartSolar
   - platform: victron_ble
     victron_ble_id: MySmartSolar
-    name: "Device state"
-    type: SOLAR_CHARGER_DEVICE_STATE
-  - platform: victron_ble
-    victron_ble_id: MySmartSolar
-    name: "Charger error"
-    type: SOLAR_CHARGER_CHARGER_ERROR
-  - platform: victron_ble
-    victron_ble_id: MySmartSolar
     name: "Battery Voltage"
     type: SOLAR_CHARGER_BATTERY_VOLTAGE
   - platform: victron_ble
@@ -111,6 +99,36 @@ sensor:
     victron_ble_id: MySmartSolar
     name: "Load Current"
     type: SOLAR_CHARGER_LOAD_CURRENT
+
+binary_sensor:
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Battery has Alarm"
+    type: BATTERY_MONITOR_ALARM
+
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "MPPT is in Fault state"
+    type: SOLAR_CHARGER_DEVICE_STATE_FAULT
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "MPPT has Error"
+    type: SOLAR_CHARGER_CHARGER_ERROR
+
+text_sensor:
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Battery Alarm reason"
+    type: BATTERY_MONITOR_ALARM_REASON
+
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "MPPT state"
+    type: SOLAR_CHARGER_DEVICE_STATE
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "MPPT Error reason"
+    type: SOLAR_CHARGER_CHARGER_ERROR
 ```
 
 ## `victron_ble_connect` component

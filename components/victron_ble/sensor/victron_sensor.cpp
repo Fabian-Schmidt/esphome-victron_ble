@@ -32,7 +32,7 @@ void VictronSensor::setup() {
                 this->publish_state(0.01f * battery_monitor->battery_voltage);
                 break;
               case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_ALARM_REASON:
-                this->publish_state(battery_monitor->alarm_reason);
+                this->publish_state((u_int16_t) battery_monitor->alarm_reason);
                 break;
               case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_AUX_VOLTAGE:
                 if (battery_monitor->aux_input_type == VICTRON_AUX_INPUT_TYPE::VE_REG_DC_CHANNEL2_VOLTAGE) {
@@ -85,10 +85,10 @@ void VictronSensor::setup() {
       this->parent_->add_on_solar_charger_message_callback([this](const VICTRON_BLE_SOLAR_CHARGER *solar) {
         switch (this->type_) {
           case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE:
-            this->publish_state(solar->device_state);
+            this->publish_state((u_int8_t) solar->device_state);
             break;
           case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
-            this->publish_state(solar->charger_error);
+            this->publish_state((u_int8_t) solar->charger_error);
             break;
           case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_BATTERY_VOLTAGE:
             this->publish_state(0.01f * solar->battery_voltage);

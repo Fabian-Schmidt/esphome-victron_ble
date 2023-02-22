@@ -274,7 +274,7 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   AC_CHARGER = 0x08,
   // VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT
   SMART_BATTERY_PROTECT = 0x09,
-  // TODO
+  // VICTRON_BLE_RECORD_LYNX_SMART_BMS
   LYNX_SMART_BMS = 0x0A,
   // TODO
   MULTI_RS = 0x0B,
@@ -642,6 +642,27 @@ struct VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT {  // NOLINT(readability-identif
   u_int32_t off_reason;
 } __attribute__((packed));
 
+struct VICTRON_BLE_RECORD_LYNX_SMART_BMS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  // TODO
+  u_int8_t error;
+  // 1 min, 0 .. 45.5 days
+  u_int16_t ttg;
+  // 0.01 V, -327.68 .. 327.66 V
+  int16_t battery_voltage;
+  // 0.1A -3276.8 .. 3276.6 A
+  int16_t battery_current;
+  // TODO
+  u_int16_t io_status;
+  // TODO
+  u_int32_t warnings_alarms : 18;
+  // 0.1%, 0 .. 100.0%
+  u_int16_t soc : 10;
+  // 0.1 Ah -104,857 .. 0 Ah - Consumed Ah = -Record value
+  u_int32_t consumed_ah : 20;
+  // 1 °C, -40 .. 86 °C - Temperature = Record value - 40
+  u_int8_t temperature : 7;
+} __attribute__((packed));
+
 class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public PollingComponent {
  public:
   void dump_config() override;
@@ -683,8 +704,12 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   void add_on_inverter_rs_message_callback(std::function<void(const VICTRON_BLE_RECORD_INVERTER_RS *)> callback) {
     this->on_inverter_rs_message_callback_.add(std::move(callback));
   }
-  void add_on_smart_battery_protect_message_callback(std::function<void(const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *)> callback) {
+  void add_on_smart_battery_protect_message_callback(
+      std::function<void(const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *)> callback) {
     this->on_smart_battery_protect_message_callback_.add(std::move(callback));
+  }
+  void add_on_lynx_smart_bms_message_callback(std::function<void(const VICTRON_BLE_RECORD_LYNX_SMART_BMS *)> callback) {
+    this->on_lynx_smart_bms_message_callback_.add(std::move(callback));
   }
 
  protected:
@@ -704,6 +729,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   VICTRON_MESSAGE_STORAGE(smart_lithium, VICTRON_BLE_RECORD_SMART_LITHIUM)
   VICTRON_MESSAGE_STORAGE(inverter_rs, VICTRON_BLE_RECORD_INVERTER_RS)
   VICTRON_MESSAGE_STORAGE(smart_battery_protect, VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)
+  VICTRON_MESSAGE_STORAGE(lynx_smart_bms, VICTRON_BLE_RECORD_LYNX_SMART_BMS)
 
 #undef VICTRON_MESSAGE_STORAGE
 

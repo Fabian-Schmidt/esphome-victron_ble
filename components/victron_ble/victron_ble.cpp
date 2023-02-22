@@ -17,16 +17,20 @@ void VictronBle::dump_config() {
 
 void VictronBle::update() {
   if (this->battery_monitor_updated_) {
-    this->on_battery_monitor_message_callback_.call(&this->battery_monitor_message_);
     this->battery_monitor_updated_ = false;
+    this->on_battery_monitor_message_callback_.call(&this->battery_monitor_message_);
   }
   if (this->solar_charger_updated_) {
-    this->on_solar_charger_message_callback_.call(&this->solar_charger_message_);
     this->solar_charger_updated_ = false;
+    this->on_solar_charger_message_callback_.call(&this->solar_charger_message_);
   }
   if (this->inverter_updated_) {
-    this->on_inverter_message_callback_.call(&this->inverter_message_);
     this->inverter_updated_ = false;
+    this->on_inverter_message_callback_.call(&this->inverter_message_);
+  }
+  if (this->dcdc_converter_updated_) {
+    this->dcdc_converter_updated_ = false;
+    this->on_dcdc_converter_message_callback_.call(&this->dcdc_converter_message_);
   }
 }
 
@@ -141,6 +145,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
         return true;
       }
       break;
+    case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_DCDC_CONVERTER)) {
+        return true;
+      }
+      break;
     default:
       ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), record_type);
       return false;
@@ -167,6 +176,11 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const
       this->inverter_message_ = *(const VICTRON_BLE_RECORD_INVERTER *) encrypted_data;
       this->inverter_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved INVERTER message.", this->address_str().c_str());
+      break;
+    case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
+      this->dcdc_converter_message_ = *(const VICTRON_BLE_RECORD_DCDC_CONVERTER *) encrypted_data;
+      this->dcdc_converter_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved DCDC_CONVERTER message.", this->address_str().c_str());
       break;
     default:
       break;

@@ -262,7 +262,7 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   BATTERY_MONITOR = 0x02,
   // VICTRON_BLE_RECORD_INVERTER
   INVERTER = 0x03,
-  // TODO
+  // VICTRON_BLE_RECORD_DCDC_CONVERTER
   DCDC_CONVERTER = 0x04,
   // TODO
   SMART_LITHIUM = 0x05,
@@ -561,9 +561,20 @@ struct VICTRON_BLE_RECORD_INVERTER {  // NOLINT(readability-identifier-naming,al
   // 1 VA, 0 .. 65534 VA
   int16_t ac_apparent_power;
   // 0.01 V, 0 .. 327.66 V
-  int16_t ac_voltage:15;
+  int16_t ac_voltage : 15;
   // 0.1 A, 0 .. 204.6 A
-  int16_t ac_current:11;
+  int16_t ac_current : 11;
+} __attribute__((packed));
+
+struct VICTRON_BLE_RECORD_DCDC_CONVERTER {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  VE_REG_DEVICE_STATE device_state;
+  VE_REG_CHR_ERROR_CODE charger_error;
+  // 0.01 V, 0 .. 655.34 V
+  u_int16_t input_voltage;
+  // 0.01 V, -327.68 .. 327.66 V
+  int16_t output_voltage;
+  // TODO
+  u_int32_t off_reason;
 } __attribute__((packed));
 
 class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public PollingComponent {
@@ -598,6 +609,9 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   void add_on_inverter_message_callback(std::function<void(const VICTRON_BLE_RECORD_INVERTER *)> callback) {
     this->on_inverter_message_callback_.add(std::move(callback));
   }
+  void add_on_dcdc_converter_message_callback(std::function<void(const VICTRON_BLE_RECORD_DCDC_CONVERTER *)> callback) {
+    this->on_dcdc_converter_message_callback_.add(std::move(callback));
+  }
 
  protected:
   uint64_t address_;
@@ -612,6 +626,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   VICTRON_MESSAGE_STORAGE(battery_monitor, VICTRON_BLE_RECORD_BATTERY_MONITOR)
   VICTRON_MESSAGE_STORAGE(solar_charger, VICTRON_BLE_RECORD_SOLAR_CHARGER)
   VICTRON_MESSAGE_STORAGE(inverter, VICTRON_BLE_RECORD_INVERTER)
+  VICTRON_MESSAGE_STORAGE(dcdc_converter, VICTRON_BLE_RECORD_DCDC_CONVERTER)
 
 #undef VICTRON_MESSAGE_STORAGE
 

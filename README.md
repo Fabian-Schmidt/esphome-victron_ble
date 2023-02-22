@@ -15,7 +15,8 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - SmartLithium
       - Missing definition for `bms_flags`, `error` and `balancer_status`
     - Inverter RS
-    - Smart Batery Protect (basic)
+    - Smart Batery Protect
+      - Missing definition for `output_state`
     - (Lynx Smart) BMS (basic)
     - Multi RS (basic)
     - VE.Bus (basic)
@@ -198,6 +199,14 @@ The following `type` are supported by the `sensor` component:
 - `INVERTER_RS_PV_POWER`
 - `INVERTER_RS_YIELD_TODAY`
 - `INVERTER_RS_AC_OUT_POWER`
+- `SMART_BATTERY_PROTECT_DEVICE_STATE`
+- `SMART_BATTERY_PROTECT_OUTPUT_STATE`
+- `SMART_BATTERY_PROTECT_ERROR_CODE`
+- `SMART_BATTERY_PROTECT_ALARM_REASON`
+- `SMART_BATTERY_PROTECT_WARNING_REASON`
+- `SMART_BATTERY_PROTECT_INPUT_VOLTAGE`
+- `SMART_BATTERY_PROTECT_OUTPUT_VOLTAGE`
+- `SMART_BATTERY_PROTECT_OFF_REASON`
 
 ### Binary Sensor
 
@@ -217,6 +226,7 @@ The following `type` are supported by the `binary_sensor` component:
 - `INVERTER_ALARM`
 - `DCDC_CONVERTER_ERROR`
 - `INVERTER_RS_ERROR`
+- `SMART_BATTERY_PROTECT_ERROR`
 
 ### Text Sensor
 
@@ -232,6 +242,11 @@ The following `type` are supported by the `text_sensor` component:
 - `DCDC_CONVERTER_OFF_REASON`
 - `INVERTER_RS_DEVICE_STATE`
 - `INVERTER_RS_CHARGER_ERROR`
+- `SMART_BATTERY_PROTECT_DEVICE_STATE`
+- `SMART_BATTERY_PROTECT_ERROR_CODE`
+- `SMART_BATTERY_PROTECT_ALARM_REASON`
+- `SMART_BATTERY_PROTECT_WARNING_REASON`
+- `SMART_BATTERY_PROTECT_OFF_REASON`
 
 ### Trigger
 

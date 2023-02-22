@@ -89,6 +89,34 @@ void VictronTextSensor::setup() {
         }
       });
       break;
+    case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_DEVICE_STATE:
+    case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_ERROR_CODE:
+    case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_ALARM_REASON:
+    case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_WARNING_REASON:
+    case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_OFF_REASON:
+      this->parent_->add_on_smart_battery_protect_message_callback(
+          [this](const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *val) {
+            switch (this->type_) {
+              case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_DEVICE_STATE:
+                this->publish_state_(val->device_state);
+                break;
+              case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_ERROR_CODE:
+                this->publish_state_(val->error_code);
+                break;
+              case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_ALARM_REASON:
+                this->publish_state_(val->alarm_reason);
+                break;
+              case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_WARNING_REASON:
+                this->publish_state_(val->warning_reason);
+                break;
+              case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_OFF_REASON:
+                this->publish_state_(val->off_reason);
+                break;
+              default:
+                break;
+            }
+          });
+      break;
     default:
       break;
   }

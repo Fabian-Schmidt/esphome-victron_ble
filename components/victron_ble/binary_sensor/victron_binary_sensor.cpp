@@ -105,6 +105,18 @@ void VictronBinarySensor::setup() {
         }
       });
       break;
+    case VICTRON_BINARY_SENSOR_TYPE::SMART_BATTERY_PROTECT_ERROR:
+      this->parent_->add_on_smart_battery_protect_message_callback(
+          [this](const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *val) {
+            switch (this->type_) {
+              case VICTRON_BINARY_SENSOR_TYPE::SMART_BATTERY_PROTECT_ERROR:
+                this->publish_state(val->error_code != VE_REG_CHR_ERROR_CODE::NO_ERROR);
+                break;
+              default:
+                break;
+            }
+          });
+      break;
     default:
       break;
   }

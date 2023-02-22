@@ -656,14 +656,15 @@ struct VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT {  // NOLINT(readability-identif
   u_int8_t output_state;
   VE_REG_CHR_ERROR_CODE error_code;
   VE_REG_ALARM_REASON alarm_reason;
-  // TODO
-  u_int16_t warning_reason;
+  // Warnings always represent the current status of the measured parameter.
+  // This is different than for alarm reason AR. AR remembers the reason what caused the inverter to switch off (active
+  // protection) until it is switched on again.
+  VE_REG_ALARM_REASON warning_reason;
   // 0.01 V, 327.68 .. 327.66 V
   int16_t input_voltage;
   // 0.01 V, 0 .. 655.34 V
   u_int16_t output_voltage;
-  // TODO
-  u_int32_t off_reason;
+  VE_REG_DEVICE_OFF_REASON_2 off_reason;
 } __attribute__((packed));
 
 struct VICTRON_BLE_RECORD_LYNX_SMART_BMS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)

@@ -294,6 +294,46 @@ void VictronSensor::setup() {
         }
       });
       break;
+    case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_DEVICE_STATE:
+    case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_OUTPUT_STATE:
+    case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_ERROR_CODE:
+    case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_ALARM_REASON:
+    case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_WARNING_REASON:
+    case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_INPUT_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_OUTPUT_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_OFF_REASON:
+      this->parent_->add_on_smart_battery_protect_message_callback(
+          [this](const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *val) {
+            switch (this->type_) {
+              case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_DEVICE_STATE:
+                this->publish_state((u_int8_t) val->device_state);
+                break;
+              case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_OUTPUT_STATE:
+                this->publish_state((u_int8_t) val->output_state);
+                break;
+              case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_ERROR_CODE:
+                this->publish_state((u_int8_t) val->error_code);
+                break;
+              case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_ALARM_REASON:
+                this->publish_state((u_int16_t) val->alarm_reason);
+                break;
+              case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_WARNING_REASON:
+                this->publish_state((u_int16_t) val->warning_reason);
+                break;
+              case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_INPUT_VOLTAGE:
+                this->publish_state(0.01f * val->input_voltage);
+                break;
+              case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_OUTPUT_VOLTAGE:
+                this->publish_state(0.01f * val->output_voltage);
+                break;
+              case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_OFF_REASON:
+                this->publish_state((u_int32_t) val->off_reason);
+                break;
+              default:
+                break;
+            }
+          });
+      break;
     default:
       break;
   }

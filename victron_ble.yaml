@@ -98,28 +98,28 @@ binary_sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Battery has Alarm"
-    type: BATTERY_MONITOR_ALARM
+    type: ALARM
 
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT is in Fault state"
-    type: SOLAR_CHARGER_DEVICE_STATE_FAULT
+    type: DEVICE_STATE_FAULT
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT has Error"
-    type: SOLAR_CHARGER_CHARGER_ERROR
+    type: CHARGER_ERROR
 
 text_sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Battery Alarm reason"
-    type: BATTERY_MONITOR_ALARM_REASON
+    type: ALARM_REASON
 
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT state"
-    type: SOLAR_CHARGER_DEVICE_STATE
+    type: DEVICE_STATE
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT Error reason"
-    type: SOLAR_CHARGER_CHARGER_ERROR
+    type: CHARGER_ERROR

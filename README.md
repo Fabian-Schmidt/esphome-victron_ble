@@ -124,31 +124,31 @@ binary_sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Battery has Alarm"
-    type: BATTERY_MONITOR_ALARM
+    type: ALARM
 
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT is in Fault state"
-    type: SOLAR_CHARGER_DEVICE_STATE_FAULT
+    type: DEVICE_STATE_FAULT
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT has Error"
-    type: SOLAR_CHARGER_CHARGER_ERROR
+    type: CHARGER_ERROR
 
 text_sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Battery Alarm reason"
-    type: BATTERY_MONITOR_ALARM_REASON
+    type: ALARM_REASON
 
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT state"
-    type: SOLAR_CHARGER_DEVICE_STATE
+    type: DEVICE_STATE
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT Error reason"
-    type: SOLAR_CHARGER_CHARGER_ERROR
+    type: CHARGER_ERROR
 ```
 
 ### Sensor
@@ -249,42 +249,39 @@ The following `type` are supported by the `sensor` component:
 
 The following `type` are supported by the `binary_sensor` component:
 
-- `BATTERY_MONITOR_ALARM`
-- `SOLAR_CHARGER_DEVICE_STATE_OFF`
-- `SOLAR_CHARGER_DEVICE_STATE_FAULT`
-- `SOLAR_CHARGER_DEVICE_STATE_BULK`
-- `SOLAR_CHARGER_DEVICE_STATE_ABSORPTION`
-- `SOLAR_CHARGER_DEVICE_STATE_FLOAT`
-- `SOLAR_CHARGER_DEVICE_STATE_EQUALIZE_MANUAL`
-- `SOLAR_CHARGER_DEVICE_STATE_STARTING_UP`
-- `SOLAR_CHARGER_DEVICE_STATE_AUTO_EQUALIZE`
-- `SOLAR_CHARGER_DEVICE_STATE_EXTERNAL_CONTROL`
-- `SOLAR_CHARGER_CHARGER_ERROR`
-- `INVERTER_ALARM`
-- `DCDC_CONVERTER_ERROR`
-- `INVERTER_RS_ERROR`
-- `SMART_BATTERY_PROTECT_ERROR`
+|                                 | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
+| ------------------------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
+| `ALARM`                         |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
+| `CHARGER_ERROR`                 | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
+| `DEVICE_STATE_OFF`              | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+| `DEVICE_STATE_FAULT`            | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+| `DEVICE_STATE_BULK`             | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_ABSORPTION`       | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_FLOAT`            | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_EQUALIZE_MANUAL`  | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_STARTING_UP`      | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_AUTO_EQUALIZE`    | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_EXTERNAL_CONTROL` | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
 
 ### Text Sensor
 
 The following `type` are supported by the `text_sensor` component:
 
-- `SOLAR_CHARGER_CHARGER_ERROR`
-- `DCDC_CONVERTER_CHARGER_ERROR`
+|                 | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
+| --------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
+| `ALARM_REASON`  |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
+| `CHARGER_ERROR` | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
+| `DEVICE_STATE`  | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+
+Device specific:
+
 - `DCDC_CONVERTER_OFF_REASON`
-- `INVERTER_RS_CHARGER_ERROR`
 - `SMART_BATTERY_PROTECT_ERROR_CODE`
 - `SMART_BATTERY_PROTECT_WARNING_REASON`
 - `SMART_BATTERY_PROTECT_OFF_REASON`
-- `MULTI_RS_CHARGER_ERROR`
 - `MULTI_RS_ACTIVE_AC_IN`
 - `VE_BUS_ACTIVE_AC_IN`
 - `VE_BUS_ALARM`
-
-|                | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
-| -------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
-| `DEVICE_STATE` | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
-| `ALARM_REASON` |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
 
 ### Trigger
 

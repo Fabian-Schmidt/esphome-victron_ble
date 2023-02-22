@@ -13,6 +13,53 @@ void VictronTextSensor::dump_config() {
 
 void VictronTextSensor::setup() {
   switch (this->type_) {
+    case VICTRON_TEXT_SENSOR_TYPE::ALARM_REASON:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
+            this->publish_state_(msg->data.battery_monitor.alarm_reason);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::INVERTER:
+            this->publish_state_(msg->data.inverter.alarm_reason);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
+            this->publish_state_(msg->data.smart_battery_protect.alarm_reason);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
+            this->publish_state_(msg->data.dc_energy_meter.alarm_reason);
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no alarm reason.", this->parent_->address_str().c_str());
+            this->publish_state("");
+            break;
+        }
+      });
+      break;
+    case VICTRON_TEXT_SENSOR_TYPE::CHARGER_ERROR:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+            this->publish_state_(msg->data.solar_charger.charger_error);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
+            this->publish_state_(msg->data.dcdc_converter.charger_error);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
+            this->publish_state_(msg->data.inverter_rs.charger_error);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
+            this->publish_state_(msg->data.smart_battery_protect.error_code);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
+            this->publish_state_(msg->data.multi_rs.charger_error);
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no charger error.", this->parent_->address_str().c_str());
+            this->publish_state("");
+            break;
+        }
+      });
+      break;
     case VICTRON_TEXT_SENSOR_TYPE::DEVICE_STATE:
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
@@ -44,59 +91,11 @@ void VictronTextSensor::setup() {
         }
       });
       break;
-    case VICTRON_TEXT_SENSOR_TYPE::ALARM_REASON:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
-        switch (msg->record_type) {
-          case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
-            this->publish_state_(msg->data.battery_monitor.alarm_reason);
-            break;
-          case VICTRON_BLE_RECORD_TYPE::INVERTER:
-            this->publish_state_(msg->data.inverter.alarm_reason);
-            break;
-          case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
-            this->publish_state_(msg->data.smart_battery_protect.alarm_reason);
-            break;
-          case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
-            this->publish_state_(msg->data.dc_energy_meter.alarm_reason);
-            break;
-          default:
-            ESP_LOGW(TAG, "[%s] Device has no alarm reason.", this->parent_->address_str().c_str());
-            this->publish_state("");
-            break;
-        }
-      });
-      break;
-    case VICTRON_TEXT_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
-      this->parent_->add_on_solar_charger_message_callback([this](const VICTRON_BLE_RECORD_SOLAR_CHARGER *solar) {
-        switch (this->type_) {
-          case VICTRON_TEXT_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
-            this->publish_state_(solar->charger_error);
-            break;
-          default:
-            break;
-        }
-      });
-      break;
-    case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_CHARGER_ERROR:
     case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
       this->parent_->add_on_dcdc_converter_message_callback([this](const VICTRON_BLE_RECORD_DCDC_CONVERTER *val) {
         switch (this->type_) {
-          case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_CHARGER_ERROR:
-            this->publish_state_(val->charger_error);
-            break;
           case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
             this->publish_state_(val->off_reason);
-            break;
-          default:
-            break;
-        }
-      });
-      break;
-    case VICTRON_TEXT_SENSOR_TYPE::INVERTER_RS_CHARGER_ERROR:
-      this->parent_->add_on_inverter_rs_message_callback([this](const VICTRON_BLE_RECORD_INVERTER_RS *val) {
-        switch (this->type_) {
-          case VICTRON_TEXT_SENSOR_TYPE::INVERTER_RS_CHARGER_ERROR:
-            this->publish_state_(val->charger_error);
             break;
           default:
             break;
@@ -123,13 +122,9 @@ void VictronTextSensor::setup() {
             }
           });
       break;
-    case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_CHARGER_ERROR:
     case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
       this->parent_->add_on_multi_rs_message_callback([this](const VICTRON_BLE_RECORD_MULTI_RS *val) {
         switch (this->type_) {
-          case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_CHARGER_ERROR:
-            this->publish_state_(val->charger_error);
-            break;
           case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
             this->publish_state_(val->active_ac_in);
             break;

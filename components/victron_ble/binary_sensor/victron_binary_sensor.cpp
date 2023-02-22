@@ -82,6 +82,18 @@ void VictronBinarySensor::setup() {
             break;
         }
       });
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DCDC_CONVERTER_ERROR:
+      this->parent_->add_on_dcdc_converter_message_callback([this](const VICTRON_BLE_RECORD_DCDC_CONVERTER *val) {
+        switch (this->type_) {
+          case VICTRON_BINARY_SENSOR_TYPE::DCDC_CONVERTER_ERROR:
+            this->publish_state(val->charger_error != VE_REG_CHR_ERROR_CODE::NO_ERROR);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }

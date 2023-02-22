@@ -21,6 +21,8 @@ enum class VICTRON_BINARY_SENSOR_TYPE {
   SOLAR_CHARGER_CHARGER_ERROR,
 
   INVERTER_ALARM,
+
+  DCDC_CONVERTER_ERROR,
 };
 
 class VictronBinarySensor : public Component, public binary_sensor::BinarySensor, public Parented<VictronBle> {

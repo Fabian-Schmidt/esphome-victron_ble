@@ -141,6 +141,33 @@ void VictronSensor::setup() {
         }
       });
       break;
+    case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_DEVICE_STATE:
+    case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_CHARGER_ERROR:
+    case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_INPUT_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_OUTPUT_VOLTAGE:
+    case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
+      this->parent_->add_on_dcdc_converter_message_callback([this](const VICTRON_BLE_RECORD_DCDC_CONVERTER *val) {
+        switch (this->type_) {
+          case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_DEVICE_STATE:
+            this->publish_state((u_int8_t) val->device_state);
+            break;
+          case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_CHARGER_ERROR:
+            this->publish_state((u_int8_t) val->charger_error);
+            break;
+          case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_INPUT_VOLTAGE:
+            this->publish_state(0.01f * val->input_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_OUTPUT_VOLTAGE:
+            this->publish_state(0.01f * val->output_voltage);
+            break;
+          case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
+            this->publish_state((u_int32_t) val->device_state);
+            break;
+          default:
+            break;
+        }
+      });
+      break;
     default:
       break;
   }

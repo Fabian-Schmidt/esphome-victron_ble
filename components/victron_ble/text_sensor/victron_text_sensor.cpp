@@ -54,6 +54,23 @@ void VictronTextSensor::setup() {
         }
       });
       break;
+    case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_DEVICE_STATE:
+    case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_CHARGER_ERROR:
+    case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
+      this->parent_->add_on_dcdc_converter_message_callback([this](const VICTRON_BLE_RECORD_DCDC_CONVERTER *val) {
+        switch (this->type_) {
+          case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_DEVICE_STATE:
+            this->publish_state_(val->device_state);
+            break;
+          case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_CHARGER_ERROR:
+            this->publish_state_(val->charger_error);
+            break;
+          case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
+            this->publish_state_(val->off_reason);
+            break;
+        }
+      });
+      break;
     default:
       break;
   }
@@ -162,9 +179,8 @@ void VictronTextSensor::publish_state_(VE_REG_DEVICE_STATE val) {
       this->publish_state("External Control");
       break;
     default:
-      ESP_LOGW(TAG, "[%s] Unkown device state (%u).", this->parent_->address_str().c_str(),
-               (u_int8_t) solar->device_state);
-      this->publish_state(to_string((u_int8_t) solar->device_state));
+      ESP_LOGW(TAG, "[%s] Unkown device state (%u).", this->parent_->address_str().c_str(), (u_int8_t) val);
+      this->publish_state(to_string((u_int8_t) val));
       break;
   }
 }
@@ -373,6 +389,40 @@ void VictronTextSensor::publish_state_(VE_REG_CHR_ERROR_CODE val) {
       ESP_LOGW(TAG, "[%s] Unkown device error (%u).", this->parent_->address_str().c_str(), (u_int8_t) val);
       this->publish_state(to_string((u_int8_t) val));
       break;
+  }
+}
+
+void VictronTextSensor::publish_state_(VE_REG_DEVICE_OFF_REASON_2 val) {
+  if ((u_int16_t) val == (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::NOTHING) {
+    this->publish_state("");
+    return;
+  }
+  if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::NO_INPUT_POWER) != 0) {
+    this->publish_state("No input power");
+  }
+  if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::SWITCHED_OFF_SWITCH) != 0) {
+    this->publish_state("Switched off (power switch)");
+  }
+  if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::SWITCHED_OFF_REGISTER) != 0) {
+    this->publish_state("Switched off (device mode register)");
+  }
+  if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::REMOTE_INPUT) != 0) {
+    this->publish_state("Remote input");
+  }
+  if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::PROTECTION) != 0) {
+    this->publish_state("Protection active");
+  }
+  if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::PAYGO) != 0) {
+    this->publish_state("Paygo");
+  }
+  if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::BMS) != 0) {
+    this->publish_state("BMS");
+  }
+  if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::ENGINE) != 0) {
+    this->publish_state("Engine shutdown detection");
+  }
+  if (((u_int16_t) val & (u_int16_t) VE_REG_DEVICE_OFF_REASON_2::INPUT_VOLTATE) != 0) {
+    this->publish_state("Analysing input voltage");
   }
 }
 

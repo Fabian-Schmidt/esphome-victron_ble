@@ -568,6 +568,29 @@ struct VICTRON_BLE_RECORD_INVERTER {  // NOLINT(readability-identifier-naming,al
   int16_t ac_current : 11;
 } __attribute__((packed));
 
+// source: VE.Direct-Protocol-3.32.pdf
+enum struct VE_REG_DEVICE_OFF_REASON_2 : u_int32_t {
+  NOTHING = 0,
+  // No input power
+  NO_INPUT_POWER = 0x00000001,
+  // Switched off (power switch)
+  SWITCHED_OFF_SWITCH = 0x00000002,
+  // Switched off (device mode register)
+  SWITCHED_OFF_REGISTER = 0x00000004,
+  // Remote input
+  REMOTE_INPUT = 0x00000008,
+  // Protection active
+  PROTECTION = 0x00000010,
+  // Paygo
+  PAYGO = 0x00000020,
+  // BMS
+  BMS = 0x00000040,
+  // Engine shutdown detection
+  ENGINE = 0x00000080,
+  // Analysing input voltage
+  INPUT_VOLTATE = 0x00000100,
+};
+
 struct VICTRON_BLE_RECORD_DCDC_CONVERTER {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
   VE_REG_CHR_ERROR_CODE charger_error;
@@ -575,8 +598,7 @@ struct VICTRON_BLE_RECORD_DCDC_CONVERTER {  // NOLINT(readability-identifier-nam
   u_int16_t input_voltage;
   // 0.01 V, -327.68 .. 327.66 V
   int16_t output_voltage;
-  // TODO
-  u_int32_t off_reason;
+  VE_REG_DEVICE_OFF_REASON_2 off_reason;
 } __attribute__((packed));
 
 struct VICTRON_BLE_RECORD_SMART_LITHIUM {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)

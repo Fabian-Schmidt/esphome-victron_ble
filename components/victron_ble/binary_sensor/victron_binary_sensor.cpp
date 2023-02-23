@@ -100,6 +100,9 @@ void VictronBinarySensor::publish_state_(VE_REG_DEVICE_STATE device_state) {
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_OFF:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::OFF);
       break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_LOW_POWER:
+      this->publish_state(device_state == VE_REG_DEVICE_STATE::LOW_POWER);
+      break;
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_FAULT:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::FAULT);
       break;
@@ -112,14 +115,29 @@ void VictronBinarySensor::publish_state_(VE_REG_DEVICE_STATE device_state) {
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_FLOAT:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::FLOAT);
       break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_STORAGE:
+      this->publish_state(device_state == VE_REG_DEVICE_STATE::STORAGE);
+      break;
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_EQUALIZE_MANUAL:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::EQUALIZE_MANUAL);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_INVERTING:
+      this->publish_state(device_state == VE_REG_DEVICE_STATE::INVERTING);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_POWER_SUPPLY:
+      this->publish_state(device_state == VE_REG_DEVICE_STATE::POWER_SUPPLY);
       break;
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_STARTING_UP:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::STARTING_UP);
       break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_REPEATED_ABSORPTION:
+      this->publish_state(device_state == VE_REG_DEVICE_STATE::REPEATED_ABSORPTION);
+      break;
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_AUTO_EQUALIZE:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::AUTO_EQUALIZE);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_BATTERY_SAFE:
+      this->publish_state(device_state == VE_REG_DEVICE_STATE::BATTERY_SAFE);
       break;
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_EXTERNAL_CONTROL:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::EXTERNAL_CONTROL);

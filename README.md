@@ -208,19 +208,27 @@ The following `type` are supported by the `sensor` component:
 
 The following `type` are supported by the `binary_sensor` component:
 
-|                                 | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
-| ------------------------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
-| `ALARM`                         |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
-| `CHARGER_ERROR`                 | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
-| `DEVICE_STATE_OFF`              | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
-| `DEVICE_STATE_FAULT`            | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
-| `DEVICE_STATE_BULK`             | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
-| `DEVICE_STATE_ABSORPTION`       | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
-| `DEVICE_STATE_FLOAT`            | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
-| `DEVICE_STATE_EQUALIZE_MANUAL`  | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
-| `DEVICE_STATE_STARTING_UP`      | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
-| `DEVICE_STATE_AUTO_EQUALIZE`    | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
-| `DEVICE_STATE_EXTERNAL_CONTROL` | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+|                                    | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
+| ---------------------------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
+| `ALARM`                            |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
+| `CHARGER_ERROR`                    | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
+| `DEVICE_STATE_OFF`                 | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+| `DEVICE_STATE_LOW_POWER`           |               |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_FAULT`               | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+| `DEVICE_STATE_BULK`                | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_ABSORPTION`          | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_FLOAT`               | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_STORAGE`             |               |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_EQUALIZE_MANUAL`     | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_INVERTING`           |               |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_POWER_SUPPLY`        |               |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_STARTING_UP`         | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_REPEATED_ABSORPTION` |               |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_AUTO_EQUALIZE`       | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_BATTERY_SAFE`        |               |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+| `DEVICE_STATE_EXTERNAL_CONTROL`    | X             |                 |          |                 |              | ?           |                       |                  | ?        | ?      |                 |
+
+? - Device submits a device state. Not sure if it can enter this stage.
 
 ### Text Sensor
 

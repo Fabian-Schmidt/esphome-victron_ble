@@ -48,7 +48,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Time remaining"
-    type: BATTERY_MONITOR_TIME_TO_GO
+    type: TIME_TO_GO
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Battery voltage"
@@ -56,9 +56,9 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Starter Battery"
-    # BATTERY_MONITOR_AUX_VOLTAGE or BATTERY_MONITOR_MID_VOLTAGE or BATTERY_MONITOR_TEMPERATURE.
+    # BAUX_VOLTAGE or MID_VOLTAGE or TEMPERATURE.
     # Depending on configuration of SmartShunt
-    type: BATTERY_MONITOR_AUX_VOLTAGE
+    type: AUX_VOLTAGE
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Current"
@@ -66,7 +66,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Consumed Ah"
-    type: BATTERY_MONITOR_CONSUMED_AH
+    type: CONSUMED_AH
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "State of charge"

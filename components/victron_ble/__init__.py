@@ -7,6 +7,7 @@ from esphome.const import (
     CONF_ID,
     CONF_MAC_ADDRESS,
     CONF_TRIGGER_ID,
+    CONF_ON_MESSAGE,
 )
 from esphome.yaml_util import ESPHomeDumper
 
@@ -31,6 +32,12 @@ MULTI_CONF = True
 victron_ble_ns = cg.esphome_ns.namespace("victron_ble")
 VictronBle = victron_ble_ns \
     .class_("VictronBle", esp32_ble_tracker.ESPBTDeviceListener, cg.PollingComponent)
+
+VictronBleDataConstPtr = victron_ble_ns \
+    .struct("VictronBleData") \
+    .operator("ptr").operator("const")
+MessageTrigger = victron_ble_ns \
+    .class_("MessageTrigger", automation.Trigger.template(VictronBleDataConstPtr))
 
 BatteryMonitorMessageConstPtr = victron_ble_ns \
     .struct("VICTRON_BLE_RECORD_BATTERY_MONITOR") \
@@ -134,6 +141,9 @@ CONFIG_SCHEMA = cv.All(
             cv.Required(CONF_MAC_ADDRESS): cv.mac_address,
             # TODO: Optional
             cv.Required(CONF_BINDKEY): bind_key_array,
+            cv.Optional(CONF_ON_MESSAGE): automation.validate_automation({
+                cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(MessageTrigger),
+            }),
             cv.Optional(CONF_ON_BATTERY_MONITOR_MESSAGE): automation.validate_automation({
                 cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(BatteryMonitorMessageTrigger),
             }),
@@ -183,6 +193,10 @@ async def to_code(config):
         cg.add(var.set_address(config[CONF_MAC_ADDRESS].as_hex))
     if CONF_BINDKEY in config:
         cg.add(var.set_bindkey(config[CONF_BINDKEY].as_array))
+
+    for conf in config.get(CONF_ON_MESSAGE, []):
+        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
+        await automation.build_automation(trigger, [(VictronBleDataConstPtr, "message")], conf)
 
     for conf in config.get(CONF_ON_BATTERY_MONITOR_MESSAGE, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)

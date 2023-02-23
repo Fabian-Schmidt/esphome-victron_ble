@@ -74,7 +74,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Time remaining"
-    type: BATTERY_MONITOR_TIME_TO_GO
+    type: TIME_TO_GO
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Battery voltage"
@@ -82,9 +82,9 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Starter Battery"
-    # BATTERY_MONITOR_AUX_VOLTAGE or BATTERY_MONITOR_MID_VOLTAGE or BATTERY_MONITOR_TEMPERATURE.
-    # Depending on configuration of SmartShunt
-    type: BATTERY_MONITOR_AUX_VOLTAGE
+    # AUX_VOLTAGE or MID_VOLTAGE or TEMPERATURE.
+    # Depending on configuration of SmartShunt.
+    type: AUX_VOLTAGE
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Current"
@@ -92,7 +92,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Consumed Ah"
-    type: BATTERY_MONITOR_CONSUMED_AH
+    type: CONSUMED_AH
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "State of charge"
@@ -157,22 +157,25 @@ The following `type` are supported by the `sensor` component:
 
 |                   | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
 | ----------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
+| `AC_OUT_POWER`    |               |                 |          |                 |              | X           |                       |                  | X        | X      |                 |
 | `ALARM_REASON`    |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
+| `AUX_VOLTAGE`     |               | X(1)            |          |                 |              |             |                       |                  |          |        | X(1)            |
 | `BATTERY_CURRENT` | X             | X               |          |                 |              | X           |                       | X                | X        | X      | X               |
 | `BATTERY_VOLTAGE` | X             | X               | X        |                 | X            | X           |                       | X                | X        | X      | X               |
 | `CHARGER_ERROR`   | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
+| `CONSUMED_AH`     |               | X               |          |                 |              |             |                       | X                |          |        |                 |
 | `DEVICE_STATE`    | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
 | `LOAD_CURRENT`    | X             |                 |          |                 |              |             |                       |                  |          |        |                 |
+| `MID_VOLTAGE`     |               | X(1)            |          |                 |              |             |                       |                  |          |        |                 |
 | `PV_POWER`        | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
 | `STATE_OF_CHARGE` |               | X               |          |                 |              |             |                       | X                |          | X      |                 |
-| `TEMPERATURE`     |               | X               |          |                 | X            |             |                       | X                |          | X      | X               |
+| `TEMPERATURE`     |               | X(1)            |          |                 | X            |             |                       | X                |          | X      | X(1)            |
 | `TIME_TO_GO`      |               | X               |          |                 |              |             |                       | X                |          |        |                 |
 | `YIELD_TODAY`     | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
 | ``                |               |                 |          |                 |              |             |                       |                  |          |        |                 |
 
-- `BATTERY_MONITOR_AUX_VOLTAGE`
-- `BATTERY_MONITOR_MID_VOLTAGE`
-- `BATTERY_MONITOR_CONSUMED_AH`
+(1) - Available if device aux port is configured.
+
 - `INVERTER_AC_APPARENT_POWER`
 - `INVERTER_AC_VOLTAGE`
 - `INVERTER_AC_CURRENT`
@@ -190,7 +193,6 @@ The following `type` are supported by the `sensor` component:
 - `SMART_LITHIUM_CELL7`
 - `SMART_LITHIUM_CELL8`
 - `SMART_LITHIUM_BALANCER_STATUS`
-- `INVERTER_RS_AC_OUT_POWER`
 - `SMART_BATTERY_PROTECT_OUTPUT_STATE`
 - `SMART_BATTERY_PROTECT_ERROR_CODE`
 - `SMART_BATTERY_PROTECT_WARNING_REASON`
@@ -200,17 +202,13 @@ The following `type` are supported by the `sensor` component:
 - `LYNX_SMART_BMS_ERROR`
 - `LYNX_SMART_BMS_IO_STATUS`
 - `LYNX_SMART_BMS_WARNINGS_ALARMS`
-- `LYNX_SMART_BMS_CONSUMED_AH`
 - `MULTI_RS_ACTIVE_AC_IN`
 - `MULTI_RS_ACTIVE_AC_IN_POWER`
-- `MULTI_RS_ACTIVE_AC_OUT_POWER`
 - `VE_BUS_ERROR`
 - `VE_BUS_ACTIVE_AC_IN`
 - `VE_BUS_ACTIVE_AC_IN_POWER`
-- `VE_BUS_ACTIVE_AC_OUT_POWER`
 - `VE_BUS_ALARM`
 - `DC_ENERGY_METER_BMV_MONITOR_MODE`
-- `DC_ENERGY_METER_AUX_VOLTAGE`
 
 ### Binary Sensor
 
@@ -234,26 +232,22 @@ The following `type` are supported by the `binary_sensor` component:
 
 The following `type` are supported by the `text_sensor` component:
 
-|                 | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
-| --------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
-| `ALARM_REASON`  |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
-| `CHARGER_ERROR` | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
-| `DEVICE_STATE`  | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
-
-Device specific:
-
-- `DCDC_CONVERTER_OFF_REASON`
-- `SMART_BATTERY_PROTECT_ERROR_CODE`
-- `SMART_BATTERY_PROTECT_WARNING_REASON`
-- `SMART_BATTERY_PROTECT_OFF_REASON`
-- `MULTI_RS_ACTIVE_AC_IN`
-- `VE_BUS_ACTIVE_AC_IN`
-- `VE_BUS_ALARM`
+|                  | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
+| ---------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
+| `ACTIVE_AC_IN`   |               |                 |          |                 |              |             |                       |                  | X        | X      |                 |
+| `ALARM_REASON`   |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
+| `CHARGER_ERROR`  | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
+| `DEVICE_STATE`   | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+| `OFF_REASON`     |               |                 |          | X               |              |             | X                     |                  |          |        |                 |
+| `ERROR_CODE`     |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
+| `WARNING_REASON` |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
+| `ALARM`          |               |                 |          |                 |              |             |                       |                  |          | X      |                 |
 
 ### Trigger
 
 The following ESP Home actions exists for advanced users:
 
+- `on_message`
 - `on_battery_monitor_message`
 - `on_solar_charger_message`
 - `on_inverter_message`

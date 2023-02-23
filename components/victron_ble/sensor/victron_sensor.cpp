@@ -13,6 +13,26 @@ void VictronSensor::dump_config() {
 
 void VictronSensor::setup() {
   switch (this->type_) {
+    case VICTRON_SENSOR_TYPE::AC_OUT_POWER:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
+            this->publish_state((u_int16_t) msg->data.inverter_rs.ac_out_power);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
+            this->publish_state((u_int16_t) msg->data.multi_rs.active_ac_out_power);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::VE_BUS:
+            this->publish_state((u_int16_t) msg->data.ve_bus.active_ac_out_power);
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no ac out power.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+
     case VICTRON_SENSOR_TYPE::ALARM_REASON:
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
@@ -30,6 +50,33 @@ void VictronSensor::setup() {
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no alarm reason.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+
+    case VICTRON_SENSOR_TYPE::AUX_VOLTAGE:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
+            if (msg->data.battery_monitor.aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_DC_CHANNEL2_VOLTAGE) {
+              this->publish_state(0.01f * msg->data.battery_monitor.aux_input.aux_voltage);
+            } else {
+              ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration.", this->parent_->address_str().c_str());
+              this->publish_state(NAN);
+            }
+            break;
+          case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
+            if (msg->data.dc_energy_meter.aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_DC_CHANNEL2_VOLTAGE) {
+              this->publish_state(0.01f * msg->data.dc_energy_meter.aux_input.aux_voltage );
+            } else {
+              ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration.", this->parent_->address_str().c_str());
+              this->publish_state(NAN);
+            }
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no aux voltage.", this->parent_->address_str().c_str());
             this->publish_state(NAN);
             break;
         }
@@ -132,6 +179,23 @@ void VictronSensor::setup() {
       });
       break;
 
+    case VICTRON_SENSOR_TYPE::CONSUMED_AH:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
+            this->publish_state(-0.1f * msg->data.battery_monitor.consumed_ah);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::LYNX_SMART_BMS:
+            this->publish_state(-0.1f * msg->data.lynx_smart_bms.consumed_ah);
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no consumed Ah.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+
     case VICTRON_SENSOR_TYPE::DEVICE_STATE:
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
@@ -172,6 +236,25 @@ void VictronSensor::setup() {
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no load current.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+
+    case VICTRON_SENSOR_TYPE::MID_VOLTAGE:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
+            if (msg->data.battery_monitor.aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_BATTERY_MID_POINT_VOLTAGE) {
+              this->publish_state(0.01f * msg->data.battery_monitor.aux_input.mid_voltage);
+            } else {
+              ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration.", this->parent_->address_str().c_str());
+              this->publish_state(NAN);
+            }
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no mid voltage.", this->parent_->address_str().c_str());
             this->publish_state(NAN);
             break;
         }
@@ -258,7 +341,7 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
-            this->publish_state(msg->data.solar_charger.time_to_go);
+            this->publish_state(msg->data.battery_monitor.time_to_go);
             break;
           case VICTRON_BLE_RECORD_TYPE::LYNX_SMART_BMS:
             this->publish_state(msg->data.lynx_smart_bms.ttg);
@@ -289,39 +372,6 @@ void VictronSensor::setup() {
             break;
         }
       });
-      break;
-
-    case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_AUX_VOLTAGE:
-    case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_MID_VOLTAGE:
-    case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_CONSUMED_AH:
-      this->parent_->add_on_battery_monitor_message_callback(
-          [this](const VICTRON_BLE_RECORD_BATTERY_MONITOR *battery_monitor) {
-            switch (this->type_) {
-              case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_AUX_VOLTAGE:
-                if (battery_monitor->aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_DC_CHANNEL2_VOLTAGE) {
-                  this->publish_state(0.01f * battery_monitor->aux_input.aux_voltage);
-                } else {
-                  ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration in Smart Shunt.",
-                           this->parent_->address_str().c_str());
-                  this->publish_state(NAN);
-                }
-                break;
-              case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_MID_VOLTAGE:
-                if (battery_monitor->aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_BATTERY_MID_POINT_VOLTAGE) {
-                  this->publish_state(0.01f * battery_monitor->aux_input.mid_voltage);
-                } else {
-                  ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration in Smart Shunt.",
-                           this->parent_->address_str().c_str());
-                  this->publish_state(NAN);
-                }
-                break;
-              case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_CONSUMED_AH:
-                this->publish_state(-0.1f * battery_monitor->consumed_ah);
-                break;
-              default:
-                break;
-            }
-          });
       break;
 
     case VICTRON_SENSOR_TYPE::INVERTER_AC_APPARENT_POWER:
@@ -447,18 +497,6 @@ void VictronSensor::setup() {
       });
       break;
 
-    case VICTRON_SENSOR_TYPE::INVERTER_RS_AC_OUT_POWER:
-      this->parent_->add_on_inverter_rs_message_callback([this](const VICTRON_BLE_RECORD_INVERTER_RS *val) {
-        switch (this->type_) {
-          case VICTRON_SENSOR_TYPE::INVERTER_RS_AC_OUT_POWER:
-            this->publish_state(val->ac_out_power);
-            break;
-          default:
-            break;
-        }
-      });
-      break;
-
     case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_OUTPUT_STATE:
     case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_ERROR_CODE:
     case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_WARNING_REASON:
@@ -494,7 +532,6 @@ void VictronSensor::setup() {
     case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_ERROR:
     case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_IO_STATUS:
     case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_WARNINGS_ALARMS:
-    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_CONSUMED_AH:
       this->parent_->add_on_lynx_smart_bms_message_callback([this](const VICTRON_BLE_RECORD_LYNX_SMART_BMS *val) {
         switch (this->type_) {
           case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_ERROR:
@@ -506,9 +543,6 @@ void VictronSensor::setup() {
           case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_WARNINGS_ALARMS:
             this->publish_state((u_int32_t) val->warnings_alarms);
             break;
-          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_CONSUMED_AH:
-            this->publish_state(0.1f * val->consumed_ah);
-            break;
           default:
             break;
         }
@@ -517,7 +551,6 @@ void VictronSensor::setup() {
 
     case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
     case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN_POWER:
-    case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_OUT_POWER:
       this->parent_->add_on_multi_rs_message_callback([this](const VICTRON_BLE_RECORD_MULTI_RS *val) {
         switch (this->type_) {
           case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
@@ -525,9 +558,6 @@ void VictronSensor::setup() {
             break;
           case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN_POWER:
             this->publish_state(val->active_ac_in_power);
-            break;
-          case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_OUT_POWER:
-            this->publish_state(val->active_ac_out_power);
             break;
           default:
             break;
@@ -538,7 +568,6 @@ void VictronSensor::setup() {
     case VICTRON_SENSOR_TYPE::VE_BUS_ERROR:
     case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN:
     case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN_POWER:
-    case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_OUT_POWER:
     case VICTRON_SENSOR_TYPE::VE_BUS_ALARM:
       this->parent_->add_on_ve_bus_message_callback([this](const VICTRON_BLE_RECORD_VE_BUS *val) {
         switch (this->type_) {
@@ -551,9 +580,6 @@ void VictronSensor::setup() {
           case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN_POWER:
             this->publish_state(val->active_ac_in_power);
             break;
-          case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_OUT_POWER:
-            this->publish_state(val->active_ac_out_power);
-            break;
           case VICTRON_SENSOR_TYPE::VE_BUS_ALARM:
             this->publish_state((u_int8_t) val->alarm);
             break;
@@ -563,19 +589,10 @@ void VictronSensor::setup() {
       });
       break;
     case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BMV_MONITOR_MODE:
-    case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_AUX_VOLTAGE:
       this->parent_->add_on_dc_energy_meter_message_callback([this](const VICTRON_BLE_RECORD_DC_ENERGY_METER *val) {
         switch (this->type_) {
           case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BMV_MONITOR_MODE:
             this->publish_state((int16_t) val->bmv_monitor_mode);
-            break;
-          case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_AUX_VOLTAGE:
-            if (val->aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_DC_CHANNEL2_VOLTAGE) {
-              this->publish_state(0.01f * val->aux_input.aux_voltage);
-            } else {
-              ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration.", this->parent_->address_str().c_str());
-              this->publish_state(NAN);
-            }
             break;
           default:
             break;

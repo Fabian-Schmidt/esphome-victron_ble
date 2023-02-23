@@ -7,20 +7,14 @@ namespace esphome {
 namespace victron_ble {
 
 enum class VICTRON_TEXT_SENSOR_TYPE {
+  ALARM,
+  ACTIVE_AC_IN,
   ALARM_REASON,
   CHARGER_ERROR,
   DEVICE_STATE,
-
-  DCDC_CONVERTER_OFF_REASON,
-
-  SMART_BATTERY_PROTECT_ERROR_CODE,
-  SMART_BATTERY_PROTECT_WARNING_REASON,
-  SMART_BATTERY_PROTECT_OFF_REASON,
-
-  MULTI_RS_ACTIVE_AC_IN,
-
-  VE_BUS_ACTIVE_AC_IN,
-  VE_BUS_ALARM,
+  ERROR_CODE,
+  OFF_REASON,
+  WARNING_REASON,
 };
 
 class VictronTextSensor : public Component, public text_sensor::TextSensor, public Parented<VictronBle> {

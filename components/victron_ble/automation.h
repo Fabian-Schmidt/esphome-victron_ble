@@ -6,6 +6,14 @@
 namespace esphome {
 namespace victron_ble {
 
+class MessageTrigger : public Trigger<const VictronBleData *> {
+ public:
+  explicit MessageTrigger(VictronBle *parent) {
+    parent->add_on_message_callback(
+        [this](const VictronBleData *message) { this->trigger(message); });
+  }
+};
+
 class BatteryMonitorMessageTrigger : public Trigger<const VICTRON_BLE_RECORD_BATTERY_MONITOR *> {
  public:
   explicit BatteryMonitorMessageTrigger(VictronBle *parent) {

@@ -415,13 +415,13 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
-            this->publish_state(msg->data.solar_charger.yield_today);
+            this->publish_state(msg->data.solar_charger.pv_power);
             break;
           case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
-            this->publish_state(msg->data.inverter_rs.yield_today);
+            this->publish_state(msg->data.inverter_rs.pv_power);
             break;
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
-            this->publish_state(msg->data.multi_rs.yield_today);
+            this->publish_state(msg->data.multi_rs.pv_power);
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `PV power` field.", this->parent_->address_str().c_str());

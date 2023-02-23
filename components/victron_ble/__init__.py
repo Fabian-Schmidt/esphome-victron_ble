@@ -137,9 +137,7 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(VictronBle),
-            # TODO: Optional
             cv.Required(CONF_MAC_ADDRESS): cv.mac_address,
-            # TODO: Optional
             cv.Required(CONF_BINDKEY): bind_key_array,
             cv.Optional(CONF_ON_MESSAGE): automation.validate_automation({
                 cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(MessageTrigger),

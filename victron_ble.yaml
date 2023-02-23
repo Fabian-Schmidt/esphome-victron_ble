@@ -62,7 +62,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Current"
-    type: BATTERY_MONITOR_BATTERY_CURRENT
+    type: BATTERY_CURRENT
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Consumed Ah"
@@ -70,7 +70,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "State of charge"
-    type: BATTERY_MONITOR_STATE_OF_CHARGE
+    type: STATE_OF_CHARGE
 
   # MySmartSolar
   - platform: victron_ble
@@ -80,19 +80,19 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Battery Current"
-    type: SOLAR_CHARGER_BATTERY_CURRENT
+    type: BATTERY_CURRENT
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Yield Today"
-    type: SOLAR_CHARGER_YIELD_TODAY
+    type: YIELD_TODAY
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "PV Power"
-    type: SOLAR_CHARGER_PV_POWER
+    type: PV_POWER
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Load Current"
-    type: SOLAR_CHARGER_LOAD_CURRENT
+    type: LOAD_CURRENT
 
 binary_sensor:
   - platform: victron_ble

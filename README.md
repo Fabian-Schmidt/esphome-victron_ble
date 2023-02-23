@@ -88,7 +88,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Current"
-    type: BATTERY_MONITOR_BATTERY_CURRENT
+    type: BATTERY_CURRENT
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Consumed Ah"
@@ -96,7 +96,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "State of charge"
-    type: BATTERY_MONITOR_STATE_OF_CHARGE
+    type: STATE_OF_CHARGE
 
   # MySmartSolar
   - platform: victron_ble
@@ -106,19 +106,19 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Battery Current"
-    type: SOLAR_CHARGER_BATTERY_CURRENT
+    type: BATTERY_CURRENT
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Yield Today"
-    type: SOLAR_CHARGER_YIELD_TODAY
+    type: YIELD_TODAY
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "PV Power"
-    type: SOLAR_CHARGER_PV_POWER
+    type: PV_POWER
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Load Current"
-    type: SOLAR_CHARGER_LOAD_CURRENT
+    type: LOAD_CURRENT
 
 binary_sensor:
   - platform: victron_ble
@@ -157,26 +157,22 @@ The following `type` are supported by the `sensor` component:
 
 |                   | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
 | ----------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
+| `ALARM_REASON`    |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
+| `BATTERY_CURRENT` | X             | X               |          |                 |              | X           |                       | X                | X        | X      | X               |
 | `BATTERY_VOLTAGE` | X             | X               | X        |                 | X            | X           |                       | X                | X        | X      | X               |
 | `CHARGER_ERROR`   | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
 | `DEVICE_STATE`    | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
-| ``                |               |                 |          |                 |              |             |                       |                  |          |        |                 |
-| ``                |               |                 |          |                 |              |             |                       |                  |          |        |                 |
+| `LOAD_CURRENT`    | X             |                 |          |                 |              |             |                       |                  |          |        |                 |
+| `PV_POWER`        | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
+| `STATE_OF_CHARGE` |               | X               |          |                 |              |             |                       | X                |          | X      |                 |
+| `TEMPERATURE`     |               | X               |          |                 | X            |             |                       | X                |          | X      | X               |
+| `TIME_TO_GO`      |               | X               |          |                 |              |             |                       | X                |          |        |                 |
+| `YIELD_TODAY`     | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
 | ``                |               |                 |          |                 |              |             |                       |                  |          |        |                 |
 
-- `BATTERY_MONITOR_TIME_TO_GO`
-- `BATTERY_MONITOR_ALARM_REASON`
 - `BATTERY_MONITOR_AUX_VOLTAGE`
 - `BATTERY_MONITOR_MID_VOLTAGE`
-- `BATTERY_MONITOR_TEMPERATURE`
-- `BATTERY_MONITOR_BATTERY_CURRENT`
 - `BATTERY_MONITOR_CONSUMED_AH`
-- `BATTERY_MONITOR_STATE_OF_CHARGE`
-- `SOLAR_CHARGER_BATTERY_CURRENT`
-- `SOLAR_CHARGER_YIELD_TODAY`
-- `SOLAR_CHARGER_PV_POWER`
-- `SOLAR_CHARGER_LOAD_CURRENT`
-- `INVERTER_ALARM_REASON`
 - `INVERTER_AC_APPARENT_POWER`
 - `INVERTER_AC_VOLTAGE`
 - `INVERTER_AC_CURRENT`
@@ -194,45 +190,27 @@ The following `type` are supported by the `sensor` component:
 - `SMART_LITHIUM_CELL7`
 - `SMART_LITHIUM_CELL8`
 - `SMART_LITHIUM_BALANCER_STATUS`
-- `SMART_LITHIUM_BATTERY_TEMPERATURE`
-- `INVERTER_RS_BATTERY_CURRENT`
-- `INVERTER_RS_PV_POWER`
-- `INVERTER_RS_YIELD_TODAY`
 - `INVERTER_RS_AC_OUT_POWER`
 - `SMART_BATTERY_PROTECT_OUTPUT_STATE`
 - `SMART_BATTERY_PROTECT_ERROR_CODE`
-- `SMART_BATTERY_PROTECT_ALARM_REASON`
 - `SMART_BATTERY_PROTECT_WARNING_REASON`
 - `SMART_BATTERY_PROTECT_INPUT_VOLTAGE`
 - `SMART_BATTERY_PROTECT_OUTPUT_VOLTAGE`
 - `SMART_BATTERY_PROTECT_OFF_REASON`
 - `LYNX_SMART_BMS_ERROR`
-- `LYNX_SMART_BMS_TIME_TO_GO`
-- `LYNX_SMART_BMS_BATTERY_CURRENT`
 - `LYNX_SMART_BMS_IO_STATUS`
 - `LYNX_SMART_BMS_WARNINGS_ALARMS`
-- `LYNX_SMART_BMS_STATE_OF_CHARGE`
 - `LYNX_SMART_BMS_CONSUMED_AH`
-- `LYNX_SMART_BMS_TEMPERATURE`
-- `MULTI_RS_BATTERY_CURRENT`
 - `MULTI_RS_ACTIVE_AC_IN`
 - `MULTI_RS_ACTIVE_AC_IN_POWER`
 - `MULTI_RS_ACTIVE_AC_OUT_POWER`
-- `MULTI_RS_PV_POWER`
-- `MULTI_RS_YIELD_TODAY`
 - `VE_BUS_ERROR`
-- `VE_BUS_BATTERY_CURRENT`
 - `VE_BUS_ACTIVE_AC_IN`
 - `VE_BUS_ACTIVE_AC_IN_POWER`
 - `VE_BUS_ACTIVE_AC_OUT_POWER`
 - `VE_BUS_ALARM`
-- `VE_BUS_BATTERY_TEMPERATURE`
-- `VE_BUS_STATE_OF_CHARGE`
 - `DC_ENERGY_METER_BMV_MONITOR_MODE`
-- `DC_ENERGY_METER_ALARM_REASON`
 - `DC_ENERGY_METER_AUX_VOLTAGE`
-- `DC_ENERGY_METER_TEMPERATURE`
-- `DC_ENERGY_METER_BATTERY_CURRENT`
 
 ### Binary Sensor
 

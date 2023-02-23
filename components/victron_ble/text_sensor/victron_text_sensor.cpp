@@ -8,7 +8,7 @@ static const char *const TAG = "victron_ble.text_sensor";
 
 void VictronTextSensor::dump_config() {
   LOG_TEXT_SENSOR("", "Victron Text Sensor", this);
-  ESP_LOGCONFIG(TAG, "Type %u", this->type_);
+  ESP_LOGCONFIG(TAG, "Type %u", (size_t) this->type_);
 }
 
 void VictronTextSensor::setup() {

@@ -8,7 +8,7 @@ static const char *const TAG = "victron_ble.binary_sensor";
 
 void VictronBinarySensor::dump_config() {
   LOG_BINARY_SENSOR("", "Victron Binary Sensor", this);
-  ESP_LOGCONFIG(TAG, "Type %u", this->type_);
+  ESP_LOGCONFIG(TAG, "Type %u", (size_t) this->type_);
 }
 
 void VictronBinarySensor::setup() {

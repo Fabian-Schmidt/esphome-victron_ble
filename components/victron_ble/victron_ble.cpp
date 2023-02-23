@@ -224,11 +224,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
       }
       break;
     default:
-      ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), record_type);
+      ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), (u_int8_t) record_type);
       return false;
       break;
   }
-  ESP_LOGW(TAG, "[%s] Record type %02X message is too short (%u).", this->address_str().c_str(), record_type,
+  ESP_LOGW(TAG, "[%s] Record type %02X message is too short (%u).", this->address_str().c_str(), (u_int8_t)  record_type,
            crypted_len);
   return false;
 }

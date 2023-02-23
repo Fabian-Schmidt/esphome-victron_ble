@@ -12,23 +12,21 @@ void VictronTextSensor::dump_config() {
 }
 
 void VictronTextSensor::setup() {
-  switch (this->type_) {
-    case VICTRON_TEXT_SENSOR_TYPE::ALARM:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+  this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+    switch (this->type_) {
+      case VICTRON_TEXT_SENSOR_TYPE::ALARM:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
             this->publish_state_(msg->data.ve_bus.alarm);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no alarm.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `alarm` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    case VICTRON_TEXT_SENSOR_TYPE::ACTIVE_AC_IN:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+      case VICTRON_TEXT_SENSOR_TYPE::ACTIVE_AC_IN:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
             this->publish_state_(msg->data.multi_rs.active_ac_in);
@@ -37,15 +35,13 @@ void VictronTextSensor::setup() {
             this->publish_state_(msg->data.ve_bus.active_ac_in);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no active ac in.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `active ac in` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    case VICTRON_TEXT_SENSOR_TYPE::ALARM_REASON:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+      case VICTRON_TEXT_SENSOR_TYPE::ALARM_REASON:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
             this->publish_state_(msg->data.battery_monitor.alarm_reason);
@@ -60,15 +56,13 @@ void VictronTextSensor::setup() {
             this->publish_state_(msg->data.dc_energy_meter.alarm_reason);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no alarm reason.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `alarm reason` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    case VICTRON_TEXT_SENSOR_TYPE::CHARGER_ERROR:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+      case VICTRON_TEXT_SENSOR_TYPE::CHARGER_ERROR:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
             this->publish_state_(msg->data.solar_charger.charger_error);
@@ -86,15 +80,13 @@ void VictronTextSensor::setup() {
             this->publish_state_(msg->data.multi_rs.charger_error);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no charger error.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `charger error` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    case VICTRON_TEXT_SENSOR_TYPE::DEVICE_STATE:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+      case VICTRON_TEXT_SENSOR_TYPE::DEVICE_STATE:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
             this->publish_state_(msg->data.solar_charger.device_state);
@@ -118,29 +110,25 @@ void VictronTextSensor::setup() {
             this->publish_state_(msg->data.ve_bus.device_state);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no device state.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `device state` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    case VICTRON_TEXT_SENSOR_TYPE::ERROR_CODE:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+      case VICTRON_TEXT_SENSOR_TYPE::ERROR_CODE:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
             this->publish_state_(msg->data.smart_battery_protect.error_code);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no error code.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `error code` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    case VICTRON_TEXT_SENSOR_TYPE::OFF_REASON:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+      case VICTRON_TEXT_SENSOR_TYPE::OFF_REASON:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
             this->publish_state_(msg->data.dcdc_converter.off_reason);
@@ -149,30 +137,28 @@ void VictronTextSensor::setup() {
             this->publish_state_(msg->data.smart_battery_protect.off_reason);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no off reason.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `off reason` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    case VICTRON_TEXT_SENSOR_TYPE::WARNING_REASON:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+      case VICTRON_TEXT_SENSOR_TYPE::WARNING_REASON:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
             this->publish_state_(msg->data.smart_battery_protect.warning_reason);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no warning reason.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `warning reason` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    default:
-      break;
-  }
+      default:
+        break;
+    }
+  });
 }
 
 void VictronTextSensor::publish_state_(VE_REG_ALARM_REASON val) {

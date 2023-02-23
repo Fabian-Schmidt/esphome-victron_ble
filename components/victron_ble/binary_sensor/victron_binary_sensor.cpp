@@ -12,9 +12,9 @@ void VictronBinarySensor::dump_config() {
 }
 
 void VictronBinarySensor::setup() {
-  switch (this->type_) {
-    case VICTRON_BINARY_SENSOR_TYPE::ALARM:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+  this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+    switch (this->type_) {
+      case VICTRON_BINARY_SENSOR_TYPE::ALARM:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
             this->publish_state(msg->data.battery_monitor.alarm_reason != VE_REG_ALARM_REASON::NO_ALARM);
@@ -29,15 +29,13 @@ void VictronBinarySensor::setup() {
             this->publish_state(msg->data.dc_energy_meter.alarm_reason != VE_REG_ALARM_REASON::NO_ALARM);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no alarm.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `alarm` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    case VICTRON_BINARY_SENSOR_TYPE::CHARGER_ERROR:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+      case VICTRON_BINARY_SENSOR_TYPE::CHARGER_ERROR:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
             this->publish_state(msg->data.solar_charger.charger_error != VE_REG_CHR_ERROR_CODE::NO_ERROR);
@@ -55,15 +53,13 @@ void VictronBinarySensor::setup() {
             this->publish_state(msg->data.multi_rs.charger_error != VE_REG_CHR_ERROR_CODE::NO_ERROR);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no charger error.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `charger error` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_OFF:
-      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+      case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_OFF:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
             this->publish_state_(msg->data.solar_charger.device_state);
@@ -87,16 +83,16 @@ void VictronBinarySensor::setup() {
             this->publish_state_(msg->data.ve_bus.device_state);
             break;
           default:
-            ESP_LOGW(TAG, "[%s] Device has no device state.", this->parent_->address_str().c_str());
+            ESP_LOGW(TAG, "[%s] Device has no `device state` field.", this->parent_->address_str().c_str());
             this->publish_state("");
             break;
         }
-      });
-      break;
+        break;
 
-    default:
-      break;
-  }
+      default:
+        break;
+    }
+  });
 }
 
 void VictronBinarySensor::publish_state_(VE_REG_DEVICE_STATE device_state) {

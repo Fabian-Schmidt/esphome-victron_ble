@@ -13,17 +13,21 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - Inverter
     - DC/DC convert
     - SmartLithium
-      - Missing definition for `bms_flags`, `error` and `balancer_status`
+      - Missing definition for `bms_flags`, `error` and `balancer_status`.
     - Inverter RS
+    - GX-Device
+      - Not suported. Awaiting final documentation.
+    - AC Charger
+      - Not suported. Awaiting final documentation.
     - Smart Batery Protect
-      - Missing definition for `output_state`
+      - Missing definition for `output_state`.
     - (Lynx Smart) BMS
-      - Missing definition for `error`, `io_status` and `warnings_alarms`
+      - Missing definition for `error`, `io_status` and `warnings_alarms`.
     - Multi RS
     - VE.Bus
-      - Missing definition for `ve_bus_error`
+      - Missing definition for `ve_bus_error`.
     - DC Energy Meter
-      - Missing definition for `bmv_monitor_mode`
+      - Missing definition for `bmv_monitor_mode`.
 
 - [Bluetooth connection protocol](https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html) - Component `victron_ble_connect`.
   - This solution is using the [PR#4258 of ESPHome](https://github.com/esphome/esphome/pull/4258).
@@ -155,60 +159,50 @@ text_sensor:
 
 The following `type` are supported by the `sensor` component:
 
-|                   | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
-| ----------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
-| `AC_OUT_POWER`    |               |                 |          |                 |              | X           |                       |                  | X        | X      |                 |
-| `ALARM_REASON`    |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
-| `AUX_VOLTAGE`     |               | X(1)            |          |                 |              |             |                       |                  |          |        | X(1)            |
-| `BATTERY_CURRENT` | X             | X               |          |                 |              | X           |                       | X                | X        | X      | X               |
-| `BATTERY_VOLTAGE` | X             | X               | X        |                 | X            | X           |                       | X                | X        | X      | X               |
-| `CHARGER_ERROR`   | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
-| `CONSUMED_AH`     |               | X               |          |                 |              |             |                       | X                |          |        |                 |
-| `DEVICE_STATE`    | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
-| `LOAD_CURRENT`    | X             |                 |          |                 |              |             |                       |                  |          |        |                 |
-| `MID_VOLTAGE`     |               | X(1)            |          |                 |              |             |                       |                  |          |        |                 |
-| `PV_POWER`        | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
-| `STATE_OF_CHARGE` |               | X               |          |                 |              |             |                       | X                |          | X      |                 |
-| `TEMPERATURE`     |               | X(1)            |          |                 | X            |             |                       | X                |          | X      | X(1)            |
-| `TIME_TO_GO`      |               | X               |          |                 |              |             |                       | X                |          |        |                 |
-| `YIELD_TODAY`     | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
-| ``                |               |                 |          |                 |              |             |                       |                  |          |        |                 |
+|                      | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
+| -------------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
+| `ACTIVE_AC_IN`       |               |                 |          |                 |              |             |                       |                  | X        | X      |                 |
+| `ACTIVE_AC_IN_POWER` |               |                 |          |                 |              |             |                       |                  | X        | X      |                 |
+| `AC_APPARENT_POWER`  |               |                 | X        |                 |              |             |                       |                  |          |        |                 |
+| `AC_CURRENT`         |               |                 | X        |                 |              |             |                       |                  |          |        |                 |
+| `AC_OUT_POWER`       |               |                 |          |                 |              | X           |                       |                  | X        | X      |                 |
+| `AC_VOLTAGE`         |               |                 | X        |                 |              |             |                       |                  |          |        |                 |
+| `ALARM_REASON`       |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
+| `AUX_VOLTAGE`        |               | X(1)            |          |                 |              |             |                       |                  |          |        | X(1)            |
+| `BATTERY_CURRENT`    | X             | X               |          |                 |              | X           |                       | X                | X        | X      | X               |
+| `BATTERY_VOLTAGE`    | X             | X               | X        |                 | X            | X           |                       | X                | X        | X      | X               |
+| `CHARGER_ERROR`      | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
+| `CONSUMED_AH`        |               | X               |          |                 |              |             |                       | X                |          |        |                 |
+| `DEVICE_STATE`       | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+| `ERROR`              |               |                 |          |                 | X            |             | X                     | X                |          | X      |                 |
+| `INPUT_VOLTAGE`      |               |                 |          | X               |              |             | X                     |                  |          |        |                 |
+| `LOAD_CURRENT`       | X             |                 |          |                 |              |             |                       |                  |          |        |                 |
+| `OFF_REASON`         |               |                 |          | X               |              |             | X                     |                  |          |        |                 |
+| `OUTPUT_VOLTAGE`     |               |                 |          | X               |              |             | X                     |                  |          |        |                 |
+| `MID_VOLTAGE`        |               | X(1)            |          |                 |              |             |                       |                  |          |        |                 |
+| `PV_POWER`           | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
+| `STATE_OF_CHARGE`    |               | X               |          |                 |              |             |                       | X                |          | X      |                 |
+| `TEMPERATURE`        |               | X(1)            |          |                 | X            |             |                       | X                |          | X      | X(1)            |
+| `TIME_TO_GO`         |               | X               |          |                 |              |             |                       | X                |          |        |                 |
+| `YIELD_TODAY`        | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
+| `BALANCER_STATUS`    |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `BMS_FLAGS`          |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `CELL1`              |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `CELL2`              |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `CELL3`              |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `CELL4`              |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `CELL5`              |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `CELL6`              |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `CELL7`              |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `CELL8`              |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
+| `OUTPUT_STATE`       |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
+| `WARNING_REASON`     |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
+| `IO_STATUS`          |               |                 |          |                 |              |             |                       | X                |          |        |                 |
+| `WARNINGS_ALARMS`    |               |                 |          |                 |              |             |                       | X                |          |        |                 |
+| `ALARM`              |               |                 |          |                 |              |             |                       |                  |          | X      |                 |
+| `BMV_MONITOR_MODE`   |               |                 |          |                 |              |             |                       |                  |          |        | X               |
 
 (1) - Available if device aux port is configured.
-
-- `INVERTER_AC_APPARENT_POWER`
-- `INVERTER_AC_VOLTAGE`
-- `INVERTER_AC_CURRENT`
-- `DCDC_CONVERTER_INPUT_VOLTAGE`
-- `DCDC_CONVERTER_OUTPUT_VOLTAGE`
-- `DCDC_CONVERTER_OFF_REASON`
-- `SMART_LITHIUM_BMS_FLAGS`
-- `SMART_LITHIUM_ERROR`
-- `SMART_LITHIUM_CELL1`
-- `SMART_LITHIUM_CELL2`
-- `SMART_LITHIUM_CELL3`
-- `SMART_LITHIUM_CELL4`
-- `SMART_LITHIUM_CELL5`
-- `SMART_LITHIUM_CELL6`
-- `SMART_LITHIUM_CELL7`
-- `SMART_LITHIUM_CELL8`
-- `SMART_LITHIUM_BALANCER_STATUS`
-- `SMART_BATTERY_PROTECT_OUTPUT_STATE`
-- `SMART_BATTERY_PROTECT_ERROR_CODE`
-- `SMART_BATTERY_PROTECT_WARNING_REASON`
-- `SMART_BATTERY_PROTECT_INPUT_VOLTAGE`
-- `SMART_BATTERY_PROTECT_OUTPUT_VOLTAGE`
-- `SMART_BATTERY_PROTECT_OFF_REASON`
-- `LYNX_SMART_BMS_ERROR`
-- `LYNX_SMART_BMS_IO_STATUS`
-- `LYNX_SMART_BMS_WARNINGS_ALARMS`
-- `MULTI_RS_ACTIVE_AC_IN`
-- `MULTI_RS_ACTIVE_AC_IN_POWER`
-- `VE_BUS_ERROR`
-- `VE_BUS_ACTIVE_AC_IN`
-- `VE_BUS_ACTIVE_AC_IN_POWER`
-- `VE_BUS_ALARM`
-- `DC_ENERGY_METER_BMV_MONITOR_MODE`
 
 ### Binary Sensor
 

@@ -15,6 +15,7 @@ void VictronBle::dump_config() {
   ESP_LOGCONFIG(TAG, "  Address: %s", this->address_str().c_str());
 }
 
+// Submit update to sensors & callbacks.
 void VictronBle::update() {
   if (this->last_package_updated_) {
     this->last_package_updated_ = false;
@@ -68,9 +69,6 @@ void VictronBle::update() {
 
 /**
  * Parse all incoming BLE payloads to see if it is a Victron BLE advertisement.
- * Currently this supports the following products:
- *
- *   SMART SHUNT 500A/50mV
  */
 
 bool VictronBle::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {

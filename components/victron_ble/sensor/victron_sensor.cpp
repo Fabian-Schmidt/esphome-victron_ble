@@ -13,8 +13,103 @@ void VictronSensor::dump_config() {
 
 void VictronSensor::setup() {
   switch (this->type_) {
+    case VICTRON_SENSOR_TYPE::BATTERY_VOLTAGE:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+            this->publish_state(0.01f * msg->data.solar_charger.battery_voltage);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
+            this->publish_state(0.01f * msg->data.battery_monitor.battery_voltage);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::INVERTER:
+            this->publish_state(0.01f * msg->data.inverter.battery_voltage);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::SMART_LITHIUM:
+            this->publish_state(0.01f * msg->data.smart_lithium.battery_voltage);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
+            this->publish_state(0.01f * msg->data.inverter_rs.battery_voltage);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::LYNX_SMART_BMS:
+            this->publish_state(0.01f * msg->data.lynx_smart_bms.battery_voltage);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
+            this->publish_state(0.01f * msg->data.multi_rs.battery_voltage);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::VE_BUS:
+            this->publish_state(0.01f * msg->data.ve_bus.battery_voltage);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
+            this->publish_state(0.01f * msg->data.dc_energy_meter.battery_voltage);
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no battery voltage.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+
+    case VICTRON_SENSOR_TYPE::CHARGER_ERROR:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+            this->publish_state((u_int8_t) msg->data.solar_charger.charger_error);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
+            this->publish_state((u_int8_t) msg->data.dcdc_converter.charger_error);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
+            this->publish_state((u_int8_t) msg->data.inverter_rs.charger_error);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
+            this->publish_state((u_int8_t) msg->data.smart_battery_protect.error_code);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
+            this->publish_state((u_int8_t) msg->data.multi_rs.charger_error);
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no charger error.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+
+    case VICTRON_SENSOR_TYPE::DEVICE_STATE:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+            this->publish_state((u_int8_t) msg->data.solar_charger.device_state);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::INVERTER:
+            this->publish_state((u_int8_t) msg->data.inverter.device_state);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
+            this->publish_state((u_int8_t) msg->data.dcdc_converter.device_state);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
+            this->publish_state((u_int8_t) msg->data.inverter_rs.device_state);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
+            this->publish_state((u_int8_t) msg->data.smart_battery_protect.device_state);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
+            this->publish_state((u_int8_t) msg->data.multi_rs.device_state);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::VE_BUS:
+            this->publish_state((u_int8_t) msg->data.ve_bus.device_state);
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no device state.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+
     case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_TIME_TO_GO:
-    case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_BATTERY_VOLTAGE:
     case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_ALARM_REASON:
     case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_AUX_VOLTAGE:
     case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_MID_VOLTAGE:
@@ -27,9 +122,6 @@ void VictronSensor::setup() {
             switch (this->type_) {
               case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_TIME_TO_GO:
                 this->publish_state(battery_monitor->time_to_go);
-                break;
-              case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_BATTERY_VOLTAGE:
-                this->publish_state(0.01f * battery_monitor->battery_voltage);
                 break;
               case VICTRON_SENSOR_TYPE::BATTERY_MONITOR_ALARM_REASON:
                 this->publish_state((u_int16_t) battery_monitor->alarm_reason);
@@ -75,24 +167,13 @@ void VictronSensor::setup() {
             }
           });
       break;
-    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE:
-    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
-    case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_BATTERY_VOLTAGE:
+
     case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_BATTERY_CURRENT:
     case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_YIELD_TODAY:
     case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_PV_POWER:
     case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_LOAD_CURRENT:
       this->parent_->add_on_solar_charger_message_callback([this](const VICTRON_BLE_RECORD_SOLAR_CHARGER *solar) {
         switch (this->type_) {
-          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_DEVICE_STATE:
-            this->publish_state((u_int8_t) solar->device_state);
-            break;
-          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_CHARGER_ERROR:
-            this->publish_state((u_int8_t) solar->charger_error);
-            break;
-          case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_BATTERY_VOLTAGE:
-            this->publish_state(0.01f * solar->battery_voltage);
-            break;
           case VICTRON_SENSOR_TYPE::SOLAR_CHARGER_BATTERY_CURRENT:
             this->publish_state(0.1f * solar->battery_current);
             break;
@@ -110,22 +191,15 @@ void VictronSensor::setup() {
         }
       });
       break;
-    case VICTRON_SENSOR_TYPE::INVERTER_DEVICE_STATE:
+
     case VICTRON_SENSOR_TYPE::INVERTER_ALARM_REASON:
-    case VICTRON_SENSOR_TYPE::INVERTER_BATTERY_VOLTAGE:
     case VICTRON_SENSOR_TYPE::INVERTER_AC_APPARENT_POWER:
     case VICTRON_SENSOR_TYPE::INVERTER_AC_VOLTAGE:
     case VICTRON_SENSOR_TYPE::INVERTER_AC_CURRENT:
       this->parent_->add_on_inverter_message_callback([this](const VICTRON_BLE_RECORD_INVERTER *val) {
         switch (this->type_) {
-          case VICTRON_SENSOR_TYPE::INVERTER_DEVICE_STATE:
-            this->publish_state((u_int8_t) val->device_state);
-            break;
           case VICTRON_SENSOR_TYPE::INVERTER_ALARM_REASON:
             this->publish_state((u_int16_t) val->alarm_reason);
-            break;
-          case VICTRON_SENSOR_TYPE::INVERTER_BATTERY_VOLTAGE:
-            this->publish_state(0.01f * val->battery_voltage);
             break;
           case VICTRON_SENSOR_TYPE::INVERTER_AC_APPARENT_POWER:
             this->publish_state(val->ac_apparent_power);
@@ -141,19 +215,12 @@ void VictronSensor::setup() {
         }
       });
       break;
-    case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_DEVICE_STATE:
-    case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_CHARGER_ERROR:
+
     case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_INPUT_VOLTAGE:
     case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_OUTPUT_VOLTAGE:
     case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
       this->parent_->add_on_dcdc_converter_message_callback([this](const VICTRON_BLE_RECORD_DCDC_CONVERTER *val) {
         switch (this->type_) {
-          case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_DEVICE_STATE:
-            this->publish_state((u_int8_t) val->device_state);
-            break;
-          case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_CHARGER_ERROR:
-            this->publish_state((u_int8_t) val->charger_error);
-            break;
           case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_INPUT_VOLTAGE:
             this->publish_state(0.01f * val->input_voltage);
             break;
@@ -161,7 +228,7 @@ void VictronSensor::setup() {
             this->publish_state(0.01f * val->output_voltage);
             break;
           case VICTRON_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
-            this->publish_state((u_int32_t) val->device_state);
+            this->publish_state((u_int32_t) val->off_reason);
             break;
           default:
             break;
@@ -178,7 +245,6 @@ void VictronSensor::setup() {
     case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL6:
     case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL7:
     case VICTRON_SENSOR_TYPE::SMART_LITHIUM_CELL8:
-    case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BATTERY_VOLTAGE:
     case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BALANCER_STATUS:
     case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BATTERY_TEMPERATURE:
       this->parent_->add_on_smart_lithium_message_callback([this](const VICTRON_BLE_RECORD_SMART_LITHIUM *val) {
@@ -245,9 +311,6 @@ void VictronSensor::setup() {
               this->publish_state(0.01f * val->cell8 + 2.60f);
             }
             break;
-          case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BATTERY_VOLTAGE:
-            this->publish_state(0.01f * val->battery_voltage);
-            break;
           case VICTRON_SENSOR_TYPE::SMART_LITHIUM_BALANCER_STATUS:
             this->publish_state((u_int8_t) val->balancer_status);
             break;
@@ -259,26 +322,15 @@ void VictronSensor::setup() {
         }
       });
       break;
-    case VICTRON_SENSOR_TYPE::INVERTER_RS_DEVICE_STATE:
-    case VICTRON_SENSOR_TYPE::INVERTER_RS_CHARGER_ERROR:
+
     case VICTRON_SENSOR_TYPE::INVERTER_RS_BATTERY_VOLTAGE:
-    case VICTRON_SENSOR_TYPE::INVERTER_RS_BATTERY_CURRENT:
     case VICTRON_SENSOR_TYPE::INVERTER_RS_PV_POWER:
     case VICTRON_SENSOR_TYPE::INVERTER_RS_YIELD_TODAY:
     case VICTRON_SENSOR_TYPE::INVERTER_RS_AC_OUT_POWER:
       this->parent_->add_on_inverter_rs_message_callback([this](const VICTRON_BLE_RECORD_INVERTER_RS *val) {
         switch (this->type_) {
-          case VICTRON_SENSOR_TYPE::INVERTER_RS_DEVICE_STATE:
-            this->publish_state((u_int8_t) val->device_state);
-            break;
-          case VICTRON_SENSOR_TYPE::INVERTER_RS_CHARGER_ERROR:
-            this->publish_state((u_int8_t) val->charger_error);
-            break;
           case VICTRON_SENSOR_TYPE::INVERTER_RS_BATTERY_VOLTAGE:
             this->publish_state(0.01f * val->battery_voltage);
-            break;
-          case VICTRON_SENSOR_TYPE::INVERTER_RS_BATTERY_CURRENT:
-            this->publish_state(0.1f * val->battery_current);
             break;
           case VICTRON_SENSOR_TYPE::INVERTER_RS_PV_POWER:
             this->publish_state(val->pv_power);
@@ -294,7 +346,7 @@ void VictronSensor::setup() {
         }
       });
       break;
-    case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_DEVICE_STATE:
+
     case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_OUTPUT_STATE:
     case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_ERROR_CODE:
     case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_ALARM_REASON:
@@ -305,9 +357,6 @@ void VictronSensor::setup() {
       this->parent_->add_on_smart_battery_protect_message_callback(
           [this](const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *val) {
             switch (this->type_) {
-              case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_DEVICE_STATE:
-                this->publish_state((u_int8_t) val->device_state);
-                break;
               case VICTRON_SENSOR_TYPE::SMART_BATTERY_PROTECT_OUTPUT_STATE:
                 this->publish_state((u_int8_t) val->output_state);
                 break;
@@ -336,7 +385,6 @@ void VictronSensor::setup() {
       break;
     case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_ERROR:
     case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_TIME_TO_GO:
-    case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_BATTERY_VOLTAGE:
     case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_BATTERY_CURRENT:
     case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_IO_STATUS:
     case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_WARNINGS_ALARMS:
@@ -350,9 +398,6 @@ void VictronSensor::setup() {
             break;
           case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_TIME_TO_GO:
             this->publish_state(val->ttg);
-            break;
-          case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_BATTERY_VOLTAGE:
-            this->publish_state(0.01f * val->battery_voltage);
             break;
           case VICTRON_SENSOR_TYPE::LYNX_SMART_BMS_BATTERY_CURRENT:
             this->publish_state(0.1f * val->battery_current);
@@ -377,10 +422,8 @@ void VictronSensor::setup() {
         }
       });
       break;
-    case VICTRON_SENSOR_TYPE::MULTI_RS_DEVICE_STATE:
-    case VICTRON_SENSOR_TYPE::MULTI_RS_CHARGER_ERROR:
+
     case VICTRON_SENSOR_TYPE::MULTI_RS_BATTERY_CURRENT:
-    case VICTRON_SENSOR_TYPE::MULTI_RS_BATTERY_VOLTAGE:
     case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
     case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN_POWER:
     case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_OUT_POWER:
@@ -388,17 +431,8 @@ void VictronSensor::setup() {
     case VICTRON_SENSOR_TYPE::MULTI_RS_YIELD_TODAY:
       this->parent_->add_on_multi_rs_message_callback([this](const VICTRON_BLE_RECORD_MULTI_RS *val) {
         switch (this->type_) {
-          case VICTRON_SENSOR_TYPE::MULTI_RS_DEVICE_STATE:
-            this->publish_state((u_int8_t) val->device_state);
-            break;
-          case VICTRON_SENSOR_TYPE::MULTI_RS_CHARGER_ERROR:
-            this->publish_state((u_int8_t) val->charger_error);
-            break;
           case VICTRON_SENSOR_TYPE::MULTI_RS_BATTERY_CURRENT:
             this->publish_state(0.1f * val->battery_current);
-            break;
-          case VICTRON_SENSOR_TYPE::MULTI_RS_BATTERY_VOLTAGE:
-            this->publish_state(0.01f * val->battery_voltage);
             break;
           case VICTRON_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
             this->publish_state((u_int8_t) val->active_ac_in);
@@ -420,10 +454,9 @@ void VictronSensor::setup() {
         }
       });
       break;
-    case VICTRON_SENSOR_TYPE::VE_BUS_DEVICE_STATE:
+
     case VICTRON_SENSOR_TYPE::VE_BUS_ERROR:
     case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_CURRENT:
-    case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_VOLTAGE:
     case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN:
     case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN_POWER:
     case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_OUT_POWER:
@@ -432,17 +465,11 @@ void VictronSensor::setup() {
     case VICTRON_SENSOR_TYPE::VE_BUS_STATE_OF_CHARGE:
       this->parent_->add_on_ve_bus_message_callback([this](const VICTRON_BLE_RECORD_VE_BUS *val) {
         switch (this->type_) {
-          case VICTRON_SENSOR_TYPE::VE_BUS_DEVICE_STATE:
-            this->publish_state((u_int8_t) val->device_state);
-            break;
           case VICTRON_SENSOR_TYPE::VE_BUS_ERROR:
             this->publish_state((u_int16_t) val->ve_bus_error);
             break;
           case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_CURRENT:
             this->publish_state(0.1f * val->battery_current);
-            break;
-          case VICTRON_SENSOR_TYPE::VE_BUS_BATTERY_VOLTAGE:
-            this->publish_state(0.01f * val->battery_voltage);
             break;
           case VICTRON_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN:
             this->publish_state((u_int8_t) val->active_ac_in);
@@ -468,7 +495,6 @@ void VictronSensor::setup() {
       });
       break;
     case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BMV_MONITOR_MODE:
-    case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BATTERY_VOLTAGE:
     case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_ALARM_REASON:
     case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_AUX_VOLTAGE:
     case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_TEMPERATURE:
@@ -477,9 +503,6 @@ void VictronSensor::setup() {
         switch (this->type_) {
           case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BMV_MONITOR_MODE:
             this->publish_state((int16_t) val->bmv_monitor_mode);
-            break;
-          case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_BATTERY_VOLTAGE:
-            this->publish_state(0.01f * val->battery_voltage);
             break;
           case VICTRON_SENSOR_TYPE::DC_ENERGY_METER_ALARM_REASON:
             this->publish_state((u_int16_t) val->alarm_reason);

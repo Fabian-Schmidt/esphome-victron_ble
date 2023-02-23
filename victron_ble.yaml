@@ -52,7 +52,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Battery voltage"
-    type: BATTERY_MONITOR_BATTERY_VOLTAGE
+    type: BATTERY_VOLTAGE
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Starter Battery"
@@ -76,7 +76,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Battery Voltage"
-    type: SOLAR_CHARGER_BATTERY_VOLTAGE
+    type: BATTERY_VOLTAGE
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Battery Current"

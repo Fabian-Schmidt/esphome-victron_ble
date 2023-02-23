@@ -35,6 +35,7 @@ void VictronTextSensor::setup() {
         }
       });
       break;
+
     case VICTRON_TEXT_SENSOR_TYPE::CHARGER_ERROR:
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
@@ -60,6 +61,7 @@ void VictronTextSensor::setup() {
         }
       });
       break;
+
     case VICTRON_TEXT_SENSOR_TYPE::DEVICE_STATE:
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
@@ -91,6 +93,7 @@ void VictronTextSensor::setup() {
         }
       });
       break;
+
     case VICTRON_TEXT_SENSOR_TYPE::DCDC_CONVERTER_OFF_REASON:
       this->parent_->add_on_dcdc_converter_message_callback([this](const VICTRON_BLE_RECORD_DCDC_CONVERTER *val) {
         switch (this->type_) {
@@ -102,6 +105,7 @@ void VictronTextSensor::setup() {
         }
       });
       break;
+
     case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_ERROR_CODE:
     case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_WARNING_REASON:
     case VICTRON_TEXT_SENSOR_TYPE::SMART_BATTERY_PROTECT_OFF_REASON:
@@ -122,6 +126,7 @@ void VictronTextSensor::setup() {
             }
           });
       break;
+
     case VICTRON_TEXT_SENSOR_TYPE::MULTI_RS_ACTIVE_AC_IN:
       this->parent_->add_on_multi_rs_message_callback([this](const VICTRON_BLE_RECORD_MULTI_RS *val) {
         switch (this->type_) {
@@ -133,6 +138,7 @@ void VictronTextSensor::setup() {
         }
       });
       break;
+
     case VICTRON_TEXT_SENSOR_TYPE::VE_BUS_ACTIVE_AC_IN:
     case VICTRON_TEXT_SENSOR_TYPE::VE_BUS_ALARM:
       this->parent_->add_on_ve_bus_message_callback([this](const VICTRON_BLE_RECORD_VE_BUS *val) {
@@ -148,6 +154,7 @@ void VictronTextSensor::setup() {
         }
       });
       break;
+
     default:
       break;
   }

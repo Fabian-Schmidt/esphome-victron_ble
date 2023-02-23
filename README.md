@@ -78,7 +78,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Battery voltage"
-    type: BATTERY_MONITOR_BATTERY_VOLTAGE
+    type: BATTERY_VOLTAGE
   - platform: victron_ble
     victron_ble_id: MySmartShunt
     name: "Starter Battery"
@@ -102,7 +102,7 @@ sensor:
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Battery Voltage"
-    type: SOLAR_CHARGER_BATTERY_VOLTAGE
+    type: BATTERY_VOLTAGE
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "Battery Current"
@@ -155,8 +155,16 @@ text_sensor:
 
 The following `type` are supported by the `sensor` component:
 
+|                   | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
+| ----------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
+| `BATTERY_VOLTAGE` | X             | X               | X        |                 | X            | X           |                       | X                | X        | X      | X               |
+| `CHARGER_ERROR`   | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
+| `DEVICE_STATE`    | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+| ``                |               |                 |          |                 |              |             |                       |                  |          |        |                 |
+| ``                |               |                 |          |                 |              |             |                       |                  |          |        |                 |
+| ``                |               |                 |          |                 |              |             |                       |                  |          |        |                 |
+
 - `BATTERY_MONITOR_TIME_TO_GO`
-- `BATTERY_MONITOR_BATTERY_VOLTAGE`
 - `BATTERY_MONITOR_ALARM_REASON`
 - `BATTERY_MONITOR_AUX_VOLTAGE`
 - `BATTERY_MONITOR_MID_VOLTAGE`
@@ -164,21 +172,14 @@ The following `type` are supported by the `sensor` component:
 - `BATTERY_MONITOR_BATTERY_CURRENT`
 - `BATTERY_MONITOR_CONSUMED_AH`
 - `BATTERY_MONITOR_STATE_OF_CHARGE`
-- `SOLAR_CHARGER_DEVICE_STATE`
-- `SOLAR_CHARGER_CHARGER_ERROR`
-- `SOLAR_CHARGER_BATTERY_VOLTAGE`
 - `SOLAR_CHARGER_BATTERY_CURRENT`
 - `SOLAR_CHARGER_YIELD_TODAY`
 - `SOLAR_CHARGER_PV_POWER`
 - `SOLAR_CHARGER_LOAD_CURRENT`
-- `INVERTER_DEVICE_STATE`
 - `INVERTER_ALARM_REASON`
-- `INVERTER_BATTERY_VOLTAGE`
 - `INVERTER_AC_APPARENT_POWER`
 - `INVERTER_AC_VOLTAGE`
 - `INVERTER_AC_CURRENT`
-- `DCDC_CONVERTER_DEVICE_STATE`
-- `DCDC_CONVERTER_CHARGER_ERROR`
 - `DCDC_CONVERTER_INPUT_VOLTAGE`
 - `DCDC_CONVERTER_OUTPUT_VOLTAGE`
 - `DCDC_CONVERTER_OFF_REASON`
@@ -192,17 +193,12 @@ The following `type` are supported by the `sensor` component:
 - `SMART_LITHIUM_CELL6`
 - `SMART_LITHIUM_CELL7`
 - `SMART_LITHIUM_CELL8`
-- `SMART_LITHIUM_BATTERY_VOLTAGE`
 - `SMART_LITHIUM_BALANCER_STATUS`
 - `SMART_LITHIUM_BATTERY_TEMPERATURE`
-- `INVERTER_RS_DEVICE_STATE`
-- `INVERTER_RS_CHARGER_ERROR`
-- `INVERTER_RS_BATTERY_VOLTAGE`
 - `INVERTER_RS_BATTERY_CURRENT`
 - `INVERTER_RS_PV_POWER`
 - `INVERTER_RS_YIELD_TODAY`
 - `INVERTER_RS_AC_OUT_POWER`
-- `SMART_BATTERY_PROTECT_DEVICE_STATE`
 - `SMART_BATTERY_PROTECT_OUTPUT_STATE`
 - `SMART_BATTERY_PROTECT_ERROR_CODE`
 - `SMART_BATTERY_PROTECT_ALARM_REASON`
@@ -212,26 +208,20 @@ The following `type` are supported by the `sensor` component:
 - `SMART_BATTERY_PROTECT_OFF_REASON`
 - `LYNX_SMART_BMS_ERROR`
 - `LYNX_SMART_BMS_TIME_TO_GO`
-- `LYNX_SMART_BMS_BATTERY_VOLTAGE`
 - `LYNX_SMART_BMS_BATTERY_CURRENT`
 - `LYNX_SMART_BMS_IO_STATUS`
 - `LYNX_SMART_BMS_WARNINGS_ALARMS`
 - `LYNX_SMART_BMS_STATE_OF_CHARGE`
 - `LYNX_SMART_BMS_CONSUMED_AH`
 - `LYNX_SMART_BMS_TEMPERATURE`
-- `MULTI_RS_DEVICE_STATE`
-- `MULTI_RS_CHARGER_ERROR`
 - `MULTI_RS_BATTERY_CURRENT`
-- `MULTI_RS_BATTERY_VOLTAGE`
 - `MULTI_RS_ACTIVE_AC_IN`
 - `MULTI_RS_ACTIVE_AC_IN_POWER`
 - `MULTI_RS_ACTIVE_AC_OUT_POWER`
 - `MULTI_RS_PV_POWER`
 - `MULTI_RS_YIELD_TODAY`
-- `VE_BUS_DEVICE_STATE`
 - `VE_BUS_ERROR`
 - `VE_BUS_BATTERY_CURRENT`
-- `VE_BUS_BATTERY_VOLTAGE`
 - `VE_BUS_ACTIVE_AC_IN`
 - `VE_BUS_ACTIVE_AC_IN_POWER`
 - `VE_BUS_ACTIVE_AC_OUT_POWER`
@@ -239,7 +229,6 @@ The following `type` are supported by the `sensor` component:
 - `VE_BUS_BATTERY_TEMPERATURE`
 - `VE_BUS_STATE_OF_CHARGE`
 - `DC_ENERGY_METER_BMV_MONITOR_MODE`
-- `DC_ENERGY_METER_BATTERY_VOLTAGE`
 - `DC_ENERGY_METER_ALARM_REASON`
 - `DC_ENERGY_METER_AUX_VOLTAGE`
 - `DC_ENERGY_METER_TEMPERATURE`

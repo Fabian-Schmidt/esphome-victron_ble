@@ -228,7 +228,7 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
       return false;
       break;
   }
-  ESP_LOGW(TAG, "[%s] Record type %02X message is too short (%u).", this->address_str().c_str(), (u_int8_t)  record_type,
+  ESP_LOGW(TAG, "[%s] Record type %02X message is too short (%u).", this->address_str().c_str(), (u_int8_t) record_type,
            crypted_len);
   return false;
 }
@@ -296,8 +296,8 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const
       break;
   }
   this->last_package_updated_ = true;
-  if (this->update_interval_ == SCHEDULER_DONT_RUN) {
-    // Polling is set to never. Call update for every data.
+  if (this->submit_sensor_data_asap_) {
+    // Call update for every data.
     this->update();
   }
 }

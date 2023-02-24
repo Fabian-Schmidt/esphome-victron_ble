@@ -155,6 +155,27 @@ text_sensor:
     type: CHARGER_ERROR
 ```
 
+### `victron_ble` component configuration
+
+The following settings exist:
+
+- `mac_address` - The MAC address of your Victron device.
+- `bindkey` - The AES encryption key of your Victron device.
+- `submit_sensor_data_asap` boolean to configure if values are submitted as soon as they are available (true). Or only with the `update_interval` (false - default).
+- [Automation Triggers](https://esphome.io/guides/automations.html):
+  - `on_message` - When any message is recieved.
+  - `on_battery_monitor_message` - When a battery monitor message is recieved.
+  - `on_solar_charger_message` - When a solar charger message is recieved.
+  - `on_inverter_message` - When a inverter message is recieved.
+  - `on_dcdc_converter_message` - When a DC/DC converter message is recieved.
+  - `on_smart_lithium_message` - When a smart Lithium message is recieved.
+  - `on_inverter_rs_message` - When a Inverter RS message is recieved.
+  - `on_smart_battery_protect_message` - When a Smart Battery Protect message is recieved.
+  - `on_lynx_smart_bms_message` - When a Lynx (Smart BMS) message is recieved.
+  - `on_multi_rs_message` - When a Multi RS message is recieved.
+  - `on_ve_bus_message` - When a VE.Bus message is recieved.
+  - `on_dc_energy_meter_message` - When a DC Energy meter message is recieved.
+
 ### Sensor
 
 The following `type` are supported by the `sensor` component:
@@ -244,23 +265,6 @@ The following `type` are supported by the `text_sensor` component:
 | `ERROR_CODE`     |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
 | `WARNING_REASON` |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
 | `ALARM`          |               |                 |          |                 |              |             |                       |                  |          | X      |                 |
-
-### Trigger
-
-The following ESP Home actions exists for advanced users:
-
-- `on_message`
-- `on_battery_monitor_message`
-- `on_solar_charger_message`
-- `on_inverter_message`
-- `on_dcdc_converter_message`
-- `on_smart_lithium_message`
-- `on_inverter_rs_message`
-- `on_smart_battery_protect_message`
-- `on_lynx_smart_bms_message`
-- `on_multi_rs_message`
-- `on_ve_bus_message`
-- `on_dc_energy_meter_message`
 
 ## `victron_ble_connect` component
 

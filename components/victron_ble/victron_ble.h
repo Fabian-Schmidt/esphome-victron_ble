@@ -799,7 +799,10 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
     }
   }
   std::string address_str() const { return this->address_str_; }
+
   void set_bindkey(std::array<uint8_t, 16> key) { this->bindkey_ = key; }
+
+  void set_submit_sensor_data_asap(bool val) { this->submit_sensor_data_asap_ = val; }
 
   void add_on_battery_monitor_message_callback(
       std::function<void(const VICTRON_BLE_RECORD_BATTERY_MONITOR *)> callback) {
@@ -837,8 +840,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
       std::function<void(const VICTRON_BLE_RECORD_DC_ENERGY_METER *)> callback) {
     this->on_dc_energy_meter_message_callback_.add(std::move(callback));
   }
-  void add_on_message_callback(
-      std::function<void(const VictronBleData *)> callback) {
+  void add_on_message_callback(std::function<void(const VictronBleData *)> callback) {
     this->on_message_callback_.add(std::move(callback));
   }
 
@@ -846,6 +848,8 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   uint64_t address_;
   std::string address_str_{};
   std::array<uint8_t, 16> bindkey_;
+  bool submit_sensor_data_asap_ = false;
+  
   bool last_package_updated_ = false;
   VictronBleData last_package_{};
   CallbackManager<void(const VictronBleData *)> on_message_callback_{};

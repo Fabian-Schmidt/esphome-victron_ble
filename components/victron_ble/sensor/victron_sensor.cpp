@@ -229,6 +229,44 @@ void VictronSensor::setup() {
       });
       break;
 
+    case VICTRON_SENSOR_TYPE::BATTERY_POWER:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+            this->publish_state((0.1f * msg->data.solar_charger.battery_current) *
+                                (0.01f * msg->data.solar_charger.battery_voltage));
+            break;
+          case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
+            this->publish_state((0.001f * msg->data.battery_monitor.battery_current) *
+                                (0.01f * msg->data.battery_monitor.battery_voltage));
+            break;
+          case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
+            this->publish_state((0.1f * msg->data.inverter_rs.battery_current) *
+                                (0.01f * msg->data.inverter_rs.battery_voltage));
+            break;
+          case VICTRON_BLE_RECORD_TYPE::LYNX_SMART_BMS:
+            this->publish_state((0.1f * msg->data.lynx_smart_bms.battery_current) *
+                                (0.01f * msg->data.lynx_smart_bms.battery_voltage));
+            break;
+          case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
+            this->publish_state((0.1f * msg->data.multi_rs.battery_current) *
+                                (0.01f * msg->data.multi_rs.battery_voltage));
+            break;
+          case VICTRON_BLE_RECORD_TYPE::VE_BUS:
+            this->publish_state((0.1f * msg->data.ve_bus.battery_current) * (0.01f * msg->data.ve_bus.battery_voltage));
+            break;
+          case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
+            this->publish_state((0.001f * msg->data.dc_energy_meter.battery_current) *
+                                (0.01f * msg->data.dc_energy_meter.battery_voltage));
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no `battery power` field.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+
     case VICTRON_SENSOR_TYPE::CHARGER_ERROR:
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {

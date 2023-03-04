@@ -192,6 +192,7 @@ The following `type` are supported by the `sensor` component:
 | `AUX_VOLTAGE`        | V    |               | X(1)            |          |                 |              |             |                       |                  |          |        | X(1)            |
 | `BATTERY_CURRENT`    | A    | X             | X               |          |                 |              | X           |                       | X                | X        | X      | X               |
 | `BATTERY_VOLTAGE`    | V    | X             | X               | X        |                 | X            | X           |                       | X                | X        | X      | X               |
+| `BATTERY_POWER`      | W    | X             | X               |          |                 |              | X           |                       | X                | X        | X      | X               |
 | `CHARGER_ERROR`      |      | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
 | `CONSUMED_AH`        | Ah   |               | X               |          |                 |              |             |                       | X                |          |        |                 |
 | `DEVICE_STATE`       |      | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |

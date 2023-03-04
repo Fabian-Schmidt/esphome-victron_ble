@@ -135,7 +135,7 @@ bool VictronBle::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
 
   // Save the last recieved data counter
   this->last_package_.data_counter = victron_data->data_counter_lsb | (victron_data->data_counter_msb << 8);
-  return false;
+  return true;
 }
 
 bool VictronBle::encrypt_message_(const u_int8_t *crypted_data, const u_int8_t crypted_len, u_int8_t encrypted_data[32],

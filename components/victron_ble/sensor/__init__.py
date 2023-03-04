@@ -7,6 +7,7 @@ from esphome.const import (
     CONF_ID,
     CONF_TYPE,
     CONF_ICON,
+    CONF_STATE_CLASS,
     CONF_UNIT_OF_MEASUREMENT,
     UNIT_AMPERE,
     UNIT_CELSIUS,
@@ -29,6 +30,7 @@ from esphome.const import (
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_VOLTAGE,
     STATE_CLASS_MEASUREMENT,
+    STATE_CLASS_TOTAL_INCREASING,
 )
 from .. import victron_ble_ns, CONF_VICTRON_BLE_ID, VictronBle
 
@@ -95,7 +97,7 @@ CONF_SUPPORTED_TYPE = {
         CONF_TYPE: VICTRON_SENSOR_TYPE.BATTERY_CURRENT,
         CONF_UNIT_OF_MEASUREMENT: UNIT_AMPERE,
         CONF_ICON: ICON_BATTERY,
-        CONF_ACCURACY_DECIMALS: 3, # between 1 and 3 depending on device.
+        CONF_ACCURACY_DECIMALS: 3,  # between 1 and 3 depending on device.
         CONF_DEVICE_CLASS: DEVICE_CLASS_CURRENT,
     },
     "BATTERY_VOLTAGE":  {
@@ -177,7 +179,7 @@ CONF_SUPPORTED_TYPE = {
         CONF_TYPE: VICTRON_SENSOR_TYPE.TEMPERATURE,
         CONF_UNIT_OF_MEASUREMENT: UNIT_CELSIUS,
         CONF_ICON: ICON_THERMOMETER,
-        CONF_ACCURACY_DECIMALS: 2, # between 0 and 2 depending on device.
+        CONF_ACCURACY_DECIMALS: 2,  # between 0 and 2 depending on device.
         CONF_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
     },
     "TIME_TO_GO":  {
@@ -188,6 +190,7 @@ CONF_SUPPORTED_TYPE = {
         CONF_DEVICE_CLASS: DEVICE_CLASS_DURATION,
     },
     "YIELD_TODAY":  {
+        CONF_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
         CONF_TYPE: VICTRON_SENSOR_TYPE.YIELD_TODAY,
         CONF_UNIT_OF_MEASUREMENT: UNIT_KILOWATT_HOURS,
         CONF_ICON: ICON_POWER,
@@ -289,30 +292,42 @@ CONF_SUPPORTED_TYPE = {
 
 def set_default_based_on_type():
     def set_defaults_(config):
+        type = config[CONF_TYPE]
         # set defaults based on sensor type:
+        if CONF_STATE_CLASS not in config:
+            if CONF_STATE_CLASS in CONF_SUPPORTED_TYPE[type]:
+                config[CONF_STATE_CLASS] = sensor.validate_state_class(
+                    CONF_SUPPORTED_TYPE[type][CONF_STATE_CLASS])
+            else:
+                config[CONF_STATE_CLASS] = sensor.validate_state_class(
+                    STATE_CLASS_MEASUREMENT)
+
         if CONF_UNIT_OF_MEASUREMENT not in config and \
-           CONF_UNIT_OF_MEASUREMENT in CONF_SUPPORTED_TYPE[config[CONF_TYPE]]:
-            config[CONF_UNIT_OF_MEASUREMENT] = CONF_SUPPORTED_TYPE[config[CONF_TYPE]
-                                                                   ][CONF_UNIT_OF_MEASUREMENT]
+           CONF_UNIT_OF_MEASUREMENT in CONF_SUPPORTED_TYPE[type]:
+            config[CONF_UNIT_OF_MEASUREMENT] = \
+                CONF_SUPPORTED_TYPE[type][CONF_UNIT_OF_MEASUREMENT]
+
         if CONF_ICON not in config and \
-           CONF_ICON in CONF_SUPPORTED_TYPE[config[CONF_TYPE]]:
-            config[CONF_ICON] = CONF_SUPPORTED_TYPE[config[CONF_TYPE]][CONF_ICON]
+           CONF_ICON in CONF_SUPPORTED_TYPE[type]:
+            config[CONF_ICON] = \
+                CONF_SUPPORTED_TYPE[type][CONF_ICON]
+
         if CONF_ACCURACY_DECIMALS not in config and \
-           CONF_ACCURACY_DECIMALS in CONF_SUPPORTED_TYPE[config[CONF_TYPE]]:
-            config[CONF_ACCURACY_DECIMALS] = CONF_SUPPORTED_TYPE[config[CONF_TYPE]
-                                                                 ][CONF_ACCURACY_DECIMALS]
+           CONF_ACCURACY_DECIMALS in CONF_SUPPORTED_TYPE[type]:
+            config[CONF_ACCURACY_DECIMALS] = \
+                CONF_SUPPORTED_TYPE[type][CONF_ACCURACY_DECIMALS]
+
         if CONF_DEVICE_CLASS not in config and \
-           CONF_DEVICE_CLASS in CONF_SUPPORTED_TYPE[config[CONF_TYPE]]:
-            config[CONF_DEVICE_CLASS] = CONF_SUPPORTED_TYPE[config[CONF_TYPE]
-                                                            ][CONF_DEVICE_CLASS]
+           CONF_DEVICE_CLASS in CONF_SUPPORTED_TYPE[type]:
+            config[CONF_DEVICE_CLASS] = \
+                CONF_SUPPORTED_TYPE[type][CONF_DEVICE_CLASS]
+
         return config
 
     return set_defaults_
 
 
-CONFIG_SCHEMA = sensor.sensor_schema(
-    state_class=STATE_CLASS_MEASUREMENT
-).extend(
+CONFIG_SCHEMA = sensor.sensor_schema().extend(
     {
         cv.GenerateID(): cv.declare_id(VictronSensor),
         cv.GenerateID(CONF_VICTRON_BLE_ID): cv.use_id(VictronBle),

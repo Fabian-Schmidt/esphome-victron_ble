@@ -1,3 +1,11 @@
+substitutions:
+  # Set the MAC addresses and encryption keys of your Victron devices here
+  # The values here are examples and cannot work for your devices
+  smart_shunt_mac_address: 60:A4:23:91:8F:55
+  smart_shunt_encryption_key: 0df4d0395b7d1a876c0c33ecb9e70dcd
+  smart_solar_mac_address: 60:A4:23:91:8F:56
+  smart_solar_encryption_key: 0df4d0395b7d1a876c0c33ecb9e70aea
+
 esphome:
   name: "victron-ble"
 
@@ -14,8 +22,9 @@ esp32_ble_tracker:
 
 victron_ble:
   - id: MySmartShunt
-    mac_address: "MY SMART SHUNT MAC"    
-    bindkey: "MY AES ENCRYPTION KEY"
+    mac_address: ${smart_shunt_mac_address}
+    bindkey: ${smart_shunt_encryption_key}
+
     # Advanced users can use `on_*_message` action. The data is in the `message` variable.
     on_battery_monitor_message:
       - logger.log: "Message from Battery Monitor."
@@ -39,9 +48,10 @@ victron_ble:
       - logger.log: "Message from VE.Bus."
     on_dc_energy_meter_message:
       - logger.log: "Message from DC Energy Meter."
+
   - id: MySmartSolar
-    mac_address: "MY SMART SOLAR MAC"
-    bindkey: "MY AES ENCRYPTION KEY"
+    mac_address: ${smart_solar_mac_address}
+    bindkey: ${smart_solar_encryption_key}
 
 sensor:
   # MySmartShunt

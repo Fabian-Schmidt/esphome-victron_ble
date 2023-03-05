@@ -9,3 +9,4 @@
 /.vscode/**
 /secrets.yaml
 /local_*
+/.idea/**

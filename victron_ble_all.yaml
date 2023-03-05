@@ -1,3 +1,7 @@
+substitutions:
+  # Set the MAC address of your Victron device here
+  mac_address: 60:A4:23:91:8F:55
+
 esphome:
   name: "victron-ble-all"
 
@@ -20,14 +24,14 @@ esp32_ble:
 esp32_ble_tracker:
 
 ble_client:
-- mac_address: <MY VICTORN SMART SHUNT MAC ADDRESS>
-  id: victron_smart_shunt_ble_client_id
-  on_passkey_request:
-    then:
-      - logger.log: "Authenticating with passkey"
-      - ble_client.passkey_reply:
-          id: victron_smart_shunt_ble_client_id
-          passkey: !secret ble_passkey
+  - mac_address: ${mac_address}
+    id: victron_smart_shunt_ble_client_id
+    on_passkey_request:
+      then:
+        - logger.log: "Authenticating with passkey"
+        - ble_client.passkey_reply:
+            id: victron_smart_shunt_ble_client_id
+            passkey: !secret ble_passkey
 
 sensor:
   - platform: victron_ble_connect
@@ -37,17 +41,17 @@ sensor:
     # If notify is active then on every update_interval sensors are updated.
     # If notify is disabled then on every update_interval a new connection to victron is made.
     update_interval: 20s
-    state_of_charge: 
+    state_of_charge:
       name: "State of Charge"
-    voltage: 
+    voltage:
       name: "Voltage"
-    power: 
+    power:
       name: "Power Consumption"
-    current: 
+    current:
       name: "Current"
-    ah: 
+    ah:
       name: "Consumed Ah"
-    starter_battery_voltage: 
+    starter_battery_voltage:
       name: "Starter Battery Voltage"
-    remaining_time: 
+    remaining_time:
       name: "Remaining Time"

@@ -11,7 +11,7 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - Smart Shunt
     - Smart Solar
     - Inverter
-    - DC/DC convert
+    - DC/DC converter
     - SmartLithium
       - Missing definition for `bms_flags`, `error` and `balancer_status`.
     - Inverter RS

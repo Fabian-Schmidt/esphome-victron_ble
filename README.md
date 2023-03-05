@@ -6,12 +6,12 @@
 
 This [ESPHome](https://esphome.io) component supports both official Victron Bluetooth BLE Protocols:
 
-- (Recommended) [Bluetooth accouncement protocol](https://community.victronenergy.com/questions/187303/victron-bluetooth-advertising-protocol.html) - Component `victron_ble`.
+- (Recommended) [Bluetooth advertising protocol](https://community.victronenergy.com/questions/187303/victron-bluetooth-advertising-protocol.html) - Component `victron_ble`.
   - Supported Devices:
     - Smart Shunt
     - Smart Solar
     - Inverter
-    - DC/DC convert
+    - DC/DC converter
     - SmartLithium
       - Missing definition for `bms_flags`, `error` and `balancer_status`.
     - Inverter RS

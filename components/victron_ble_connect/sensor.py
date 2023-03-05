@@ -1,25 +1,25 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
+import esphome.core as CORE
 from esphome.components import ble_client, sensor
 from esphome.const import (
-    CONF_ID,
-    CONF_VOLTAGE,
-    CONF_POWER,
     CONF_CURRENT,
-    UNIT_AMPERE,
-    UNIT_MINUTE,
-    UNIT_PERCENT,
-    UNIT_VOLT,
-    UNIT_WATT,
-    ICON_BATTERY,
+    CONF_ID,
+    CONF_POWER,
+    CONF_VOLTAGE,
     DEVICE_CLASS_BATTERY,
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_DURATION,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_VOLTAGE,
+    ICON_BATTERY,
     STATE_CLASS_MEASUREMENT,
+    UNIT_AMPERE,
+    UNIT_MINUTE,
+    UNIT_PERCENT,
+    UNIT_VOLT,
+    UNIT_WATT,
 )
-import esphome.core as CORE
 
 DEPENDENCIES = ["esp32_ble_tracker"]
 
@@ -35,7 +35,7 @@ UNIT_AMPERE_HOURS = "Ah"
 
 victron_ble_connect_ns = cg.esphome_ns.namespace("victron_ble_connect")
 VictronBleConnect = victron_ble_connect_ns.class_(
-    "VictronBleConnect",  cg.PollingComponent, ble_client.BLEClientNode
+    "VictronBleConnect", cg.PollingComponent, ble_client.BLEClientNode
 )
 
 
@@ -47,7 +47,7 @@ def final_validate_maximum_number_of_sensors_if_notify(
 ):
     def inherit_property(config):
         # Check if `configuration` ist set
-        if config[configuration]: 
+        if config[configuration]:
             # Count number of sensors
             count_sensors = 0
             for config_item in config:
@@ -55,9 +55,11 @@ def final_validate_maximum_number_of_sensors_if_notify(
                     if isinstance(config[config_item][CONF_ID], CORE.ID):
                         if config[config_item][CONF_ID].type == sensor.Sensor:
                             count_sensors += 1
-            
+
             if count_sensors > max_number_of_sensors:
-                raise cv.Invalid(f"{name} supports maximum of {max_number_of_sensors} sensors with `{configuration}` active. Currently {count_sensors} sensors are configured.")
+                raise cv.Invalid(
+                    f"{name} supports maximum of {max_number_of_sensors} sensors with `{configuration}` active. Currently {count_sensors} sensors are configured."
+                )
 
         return config
 
@@ -134,7 +136,8 @@ CONFIG_SCHEMA = cv.All(
 )
 FINAL_VALIDATE_SCHEMA = cv.All(
     final_validate_maximum_number_of_sensors_if_notify(
-        "victron_ble", configuration=CONF_NOTIFY, max_number_of_sensors=7)
+        "victron_ble", configuration=CONF_NOTIFY, max_number_of_sensors=7
+    )
 )
 
 

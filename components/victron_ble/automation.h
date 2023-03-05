@@ -9,8 +9,7 @@ namespace victron_ble {
 class MessageTrigger : public Trigger<const VictronBleData *> {
  public:
   explicit MessageTrigger(VictronBle *parent) {
-    parent->add_on_message_callback(
-        [this](const VictronBleData *message) { this->trigger(message); });
+    parent->add_on_message_callback([this](const VictronBleData *message) { this->trigger(message); });
   }
 };
 

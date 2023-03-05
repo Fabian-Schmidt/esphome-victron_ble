@@ -56,7 +56,7 @@ void VictronBleConnect::update() {
 }
 
 void VictronBleConnect::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if,
-                                     esp_ble_gattc_cb_param_t *param) {
+                                            esp_ble_gattc_cb_param_t *param) {
   switch (event) {
     case ESP_GATTC_OPEN_EVT:
       if (param->open.status == ESP_GATT_OK) {
@@ -239,7 +239,7 @@ bool VictronBleConnect::request_read_(const uint16_t handle) {
 }
 
 void VictronBleConnect::read_value_(const uint16_t handle, const uint8_t *value, const uint16_t value_len,
-                             const bool register_for_notify) {
+                                    const bool register_for_notify) {
   bool handle_found = false;
 
   if (handle == this->handle_state_of_charge_ && value_len == sizeof(u_int16_t)) {

@@ -791,11 +791,10 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
     if (address == 0) {
       this->address_str_ = "";
     } else {
-      this->address_str_ =
-          str_snprintf("%02X:%02X:%02X:%02X:%02X:%02X", 17, (uint8_t) (this->address_ >> 40) & 0xff,
-                       (uint8_t) (this->address_ >> 32) & 0xff, (uint8_t) (this->address_ >> 24) & 0xff,
-                       (uint8_t) (this->address_ >> 16) & 0xff, (uint8_t) (this->address_ >> 8) & 0xff,
-                       (uint8_t) (this->address_ >> 0) & 0xff);
+      this->address_str_ = str_snprintf("%02X:%02X:%02X:%02X:%02X:%02X", 17, (uint8_t)(this->address_ >> 40) & 0xff,
+                                        (uint8_t)(this->address_ >> 32) & 0xff, (uint8_t)(this->address_ >> 24) & 0xff,
+                                        (uint8_t)(this->address_ >> 16) & 0xff, (uint8_t)(this->address_ >> 8) & 0xff,
+                                        (uint8_t)(this->address_ >> 0) & 0xff);
     }
   }
   std::string address_str() const { return this->address_str_; }
@@ -849,7 +848,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
   std::string address_str_{};
   std::array<uint8_t, 16> bindkey_;
   bool submit_sensor_data_asap_ = false;
-  
+
   bool last_package_updated_ = false;
   VictronBleData last_package_{};
   CallbackManager<void(const VictronBleData *)> on_message_callback_{};

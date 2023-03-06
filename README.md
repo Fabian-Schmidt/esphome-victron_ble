@@ -357,5 +357,5 @@ sensor:
       name: "Remaining Time"
 ```
 
-See [victron_ble_all.yaml](/victron_ble_all.yaml) for a full example.
+See [victron_ble_connect_all.yaml](/victron_ble_connect_all.yaml) for a full example.
 Assumption is you are having a `secret.yaml` in the same folder.

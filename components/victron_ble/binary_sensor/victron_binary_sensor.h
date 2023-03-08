@@ -7,6 +7,7 @@ namespace esphome {
 namespace victron_ble {
 
 enum class VICTRON_BINARY_SENSOR_TYPE {
+  UNSET,
   ALARM,
   CHARGER_ERROR,
   DEVICE_STATE_OFF,
@@ -25,6 +26,68 @@ enum class VICTRON_BINARY_SENSOR_TYPE {
   DEVICE_STATE_BATTERY_SAFE,
   DEVICE_STATE_EXTERNAL_CONTROL,
 };
+
+static const char *enum_to_c_str(const VICTRON_BINARY_SENSOR_TYPE val) {
+  switch (val) {
+    case VICTRON_BINARY_SENSOR_TYPE::UNSET:
+      return "UNSET";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::ALARM:
+      return "ALARM";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::CHARGER_ERROR:
+      return "CHARGER_ERROR";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_OFF:
+      return "DEVICE_STATE_OFF";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_LOW_POWER:
+      return "DEVICE_STATE_LOW_POWER";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_FAULT:
+      return "DEVICE_STATE_FAULT";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_BULK:
+      return "DEVICE_STATE_BULK";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_ABSORPTION:
+      return "DEVICE_STATE_ABSORPTION";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_FLOAT:
+      return "DEVICE_STATE_FLOAT";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_STORAGE:
+      return "DEVICE_STATE_STORAGE";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_EQUALIZE_MANUAL:
+      return "DEVICE_STATE_EQUALIZE_MANUAL";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_INVERTING:
+      return "DEVICE_STATE_INVERTING";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_POWER_SUPPLY:
+      return "DEVICE_STATE_POWER_SUPPLY";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_STARTING_UP:
+      return "DEVICE_STATE_STARTING_UP";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_REPEATED_ABSORPTION:
+      return "DEVICE_STATE_REPEATED_ABSORPTION";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_AUTO_EQUALIZE:
+      return "DEVICE_STATE_AUTO_EQUALIZE";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_BATTERY_SAFE:
+      return "DEVICE_STATE_BATTERY_SAFE";
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_EXTERNAL_CONTROL:
+      return "DEVICE_STATE_EXTERNAL_CONTROL";
+      break;
+    default:
+      return "";
+      break;
+  }
+}
 
 class VictronBinarySensor : public Component, public binary_sensor::BinarySensor, public Parented<VictronBle> {
  public:

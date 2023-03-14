@@ -359,3 +359,27 @@ sensor:
 
 See [victron_ble_connect_all.yaml](/victron_ble_connect_all.yaml) for a full example.
 Assumption is you are having a `secret.yaml` in the same folder.
+
+### Your support
+
+I don't have access to all Victron devices. Please provide feedback if the component is working and all values are correct and match the reading within the Victron app. Only after I got feedback for all devices I can try to get this merged into ESP Home. Given the size of this component I don't expect this soon or be a quick process.
+
+Missing feedback for the following devices:
+
+- Inverter
+- DC/DC converter
+- SmartLithium
+  - Missing definition for `bms_flags`, `error` and `balancer_status`.
+- Inverter RS
+- GX-Device
+  - Not suported. Awaiting final documentation.
+- AC Charger
+  - Not suported. Awaiting final documentation.
+- Smart Batery Protect
+  - Missing definition for `output_state`.
+- (Lynx Smart) BMS
+  - Missing definition for `error`, `io_status` and `warnings_alarms`.
+- Multi RS
+- VE.Bus
+  - Missing definition for `ve_bus_error`.
+- DC Energy Meter

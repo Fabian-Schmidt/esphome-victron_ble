@@ -7,9 +7,9 @@ esphome:
 
 external_components:
   - source:
-    type: local
-    path: ../components
-  components: ["victron_ble_connect", "victron_scanner"]
+      type: local
+      path: ../components
+    components: ["victron_ble_connect", "victron_scanner"]
 
 esp32:
   board: esp32dev

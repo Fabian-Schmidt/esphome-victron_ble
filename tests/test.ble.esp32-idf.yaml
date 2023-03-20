@@ -11,9 +11,9 @@ esphome:
 
 external_components:
     - source:
-      type: local
-      path: ../components
-    components: ["victron_ble"]
+        type: local
+        path: ../components
+      components: ["victron_ble"]
 
 
 esp32:

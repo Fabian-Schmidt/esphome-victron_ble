@@ -32,6 +32,6 @@ ble_client:
         - logger.log: "Authenticating with passkey"
         - ble_client.passkey_reply:
             id: victron_smart_shunt_ble_client_id
-            passkey: !secret ble_passkey
+            passkey: 123456
 
 sensor: !include test.ble_connect.common.sensor.yaml

@@ -1,0 +1,21 @@
+  - platform: victron_ble_connect
+    ble_client_id: victron_smart_shunt_ble_client_id
+    # Notify supports max 7 sensors
+    notify: true
+    # If notify is active then on every update_interval sensors are updated.
+    # If notify is disabled then on every update_interval a new connection to victron is made.
+    update_interval: 20s
+    state_of_charge:
+      name: "State of Charge"
+    voltage:
+      name: "Voltage"
+    power:
+      name: "Power Consumption"
+    current:
+      name: "Current"
+    ah:
+      name: "Consumed Ah"
+    starter_battery_voltage:
+      name: "Starter Battery Voltage"
+    remaining_time:
+      name: "Remaining Time"

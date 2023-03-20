@@ -1,0 +1,37 @@
+substitutions:
+  # Set the MAC address of your Victron device here
+  mac_address: 60:A4:23:91:8F:55
+
+esphome:
+  name: "esp32-ard"
+
+external_components:
+  - source:
+    type: local
+    path: ../components
+  components: ["victron_ble_connect", "victron_scanner"]
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+  level: INFO
+
+esp32_ble:
+  io_capability: keyboard_only
+
+esp32_ble_tracker:
+
+ble_client:
+  - mac_address: ${mac_address}
+    id: victron_smart_shunt_ble_client_id
+    on_passkey_request:
+      then:
+        - logger.log: "Authenticating with passkey"
+        - ble_client.passkey_reply:
+            id: victron_smart_shunt_ble_client_id
+            passkey: !secret ble_passkey
+
+sensor: !include test.ble_connect.common.sensor.yaml

@@ -1,0 +1,13 @@
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Battery has Alarm"
+    type: ALARM
+
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "MPPT is in Fault state"
+    type: DEVICE_STATE_FAULT
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "MPPT has Error"
+    type: CHARGER_ERROR

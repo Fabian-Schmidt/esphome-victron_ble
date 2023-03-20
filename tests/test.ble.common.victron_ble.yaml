@@ -1,0 +1,31 @@
+  - id: MySmartShunt
+    mac_address: ${smart_shunt_mac_address}
+    bindkey: ${smart_shunt_encryption_key}
+
+    # Advanced users can use `on_*_message` action. The data is in the `message` variable.
+    on_battery_monitor_message:
+      - logger.log: "Message from Battery Monitor."
+    on_solar_charger_message:
+      - logger.log: "Message from Solar Charger."
+    on_inverter_message:
+      - logger.log: "Message from Inverter."
+    on_dcdc_converter_message:
+      - logger.log: "Message from DC/DC Converter."
+    on_smart_lithium_message:
+      - logger.log: "Message from Smart Lithium."
+    on_inverter_rs_message:
+      - logger.log: "Message from Inverter RS."
+    on_smart_battery_protect_message:
+      - logger.log: "Message from Smart Battery Protect."
+    on_lynx_smart_bms_message:
+      - logger.log: "Message from Lynx Smart BMS."
+    on_multi_rs_message:
+      - logger.log: "Message from Multi RS."
+    on_ve_bus_message:
+      - logger.log: "Message from VE.Bus."
+    on_dc_energy_meter_message:
+      - logger.log: "Message from DC Energy Meter."
+
+  - id: MySmartSolar
+    mac_address: ${smart_solar_mac_address}
+    bindkey: ${smart_solar_encryption_key}

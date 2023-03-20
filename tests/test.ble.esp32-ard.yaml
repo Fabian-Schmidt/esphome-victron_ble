@@ -1,0 +1,29 @@
+substitutions:
+  # Set the MAC addresses and encryption keys of your Victron devices here
+  # The values here are examples and cannot work for your devices
+  smart_shunt_mac_address: 60:A4:23:91:8F:55
+  smart_shunt_encryption_key: 0df4d0395b7d1a876c0c33ecb9e70dcd
+  smart_solar_mac_address: 60:A4:23:91:8F:56
+  smart_solar_encryption_key: 0df4d0395b7d1a876c0c33ecb9e70aea
+
+esphome:
+  name: "esp32-ard"
+
+external_components:
+    - source:
+      type: local
+      path: ../components
+    components: ["victron_ble"]
+
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+esp32_ble_tracker:
+
+victron_ble: !include test.ble.common.victron_ble.yaml
+binary_sensor: !include test.ble.common.binary_sensor.yaml
+sensor: !include test.ble.common.sensor.yaml
+text_sensor: !include test.ble.common.text_sensor.yaml

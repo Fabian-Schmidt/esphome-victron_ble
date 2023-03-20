@@ -1,0 +1,49 @@
+  # MySmartShunt
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Time remaining"
+    type: TIME_TO_GO
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Battery voltage"
+    type: BATTERY_VOLTAGE
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Starter Battery"
+    # BAUX_VOLTAGE or MID_VOLTAGE or TEMPERATURE.
+    # Depending on configuration of SmartShunt
+    type: AUX_VOLTAGE
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Current"
+    type: BATTERY_CURRENT
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Consumed Ah"
+    type: CONSUMED_AH
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "State of charge"
+    type: STATE_OF_CHARGE
+
+  # MySmartSolar
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Battery Voltage"
+    type: BATTERY_VOLTAGE
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Battery Current"
+    type: BATTERY_CURRENT
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Yield Today"
+    type: YIELD_TODAY
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "PV Power"
+    type: PV_POWER
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Load Current"
+    type: LOAD_CURRENT

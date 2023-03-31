@@ -1,5 +1,6 @@
 #pragma once
 
+#include "esphome/core/log.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/victron_ble/victron_ble.h"
 
@@ -62,6 +63,7 @@ enum class VICTRON_SENSOR_TYPE {
   BMV_MONITOR_MODE,
 };
 
+#ifdef ESPHOME_LOG_HAS_CONFIG
 static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
   switch (val) {
     case VICTRON_SENSOR_TYPE::UNSET:
@@ -206,6 +208,7 @@ static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
       break;
   }
 }
+#endif  // ESPHOME_LOG_HAS_CONFIG
 
 class VictronSensor : public Component, public sensor::Sensor, public Parented<VictronBle> {
  public:

@@ -330,7 +330,7 @@ esp32_ble:
   io_capability: keyboard_only
 
 ble_client:
-- mac_address: <MY VICTORN SMART SHUNT MAC ADDRESS>
+- mac_address: <MY VICTRON SMART SHUNT MAC ADDRESS>
   id: victron_smart_shunt_ble_client_id
   on_passkey_request:
     then:

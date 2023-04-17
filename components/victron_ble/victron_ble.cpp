@@ -11,7 +11,7 @@ namespace victron_ble {
 static const char *const TAG = "victron_ble";
 
 void VictronBle::dump_config() {
-  ESP_LOGCONFIG(TAG, "Victorn BLE:");
+  ESP_LOGCONFIG(TAG, "Victron BLE:");
   ESP_LOGCONFIG(TAG, "  Address: %s", this->address_str().c_str());
 }
 

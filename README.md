@@ -360,6 +360,12 @@ sensor:
 See [victron_ble_connect_all.yaml](/victron_ble_connect_all.yaml) for a full example.
 Assumption is you are having a `secret.yaml` in the same folder.
 
+### Bonus Tip for Mac OS users
+
+You can use this built in tool `system_profiler SPBluetoothDataType` to find the mac adresses of the Victron equipment. 
+
+Open your terminal and type in `system_profiler SPBluetoothDataType` it will then scan and show the mac address of all the bluetooth devices in range.
+
 ### Your support
 
 I don't have access to all Victron devices. Please provide feedback if the component is working and all values are correct and match the reading within the Victron app. Only after I got feedback for all devices I can try to get this merged into ESP Home. Given the size of this component I don't expect this soon or be a quick process.

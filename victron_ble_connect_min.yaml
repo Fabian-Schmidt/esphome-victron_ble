@@ -13,7 +13,7 @@ external_components:
   - source: github://Fabian-Schmidt/esphome-victron_ble
 
 esp32:
-  board: mhetesp32devkit
+  board: esp32dev
 
 esp32_ble:
   io_capability: keyboard_only

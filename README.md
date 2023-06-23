@@ -95,7 +95,7 @@ external_components:
   - source: github://Fabian-Schmidt/esphome-victron_ble
 
 esp32:
-  board: mhetesp32devkit
+  board: esp32dev
 
 logger:
   level: DEBUG
@@ -333,7 +333,7 @@ external_components:
   - source: github://Fabian-Schmidt/esphome-victron_ble
 
 esp32:
-  board: mhetesp32devkit
+  board: esp32dev
 
 logger:
   level: INFO

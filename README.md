@@ -44,7 +44,44 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
 
 ### Fetching Mac address and Encryption key
 
-See <https://github.com/keshavdv/victron-ble> for details.
+To connect to your Victron device you must have two information for each device:
+
+- `mac_address` -  Bluetooth mac address of device.
+- `bindkey` - AES encryption key.
+
+See <https://github.com/keshavdv/victron-ble#fetching-keys> for details.
+
+
+#### Windows
+
+Not possible, because VictornConnect App does not support Bluetooth connection on Windows.
+
+#### Linux
+
+1. Download the Victron AppImage app from the Victron website.
+2. Pair with your device at least once to transfer keys
+3. Run the following from a terminal to dump the known keys (install `sqlite3` via your package manager)
+```bash
+❯ sqlite3 ~/.local/share/Victron\ Energy/Victron\ Connect/d25b6546b47ebb21a04ff86a2c4fbb76.sqlite 'select address,advertisementKey from advertisementKeys inner join macAddresses on advertisementKeys.macAddress == macAddresses.macAddress'
+
+A0:F4:78:02:0F:E1|0df4d0395b7d1a876c0c33ecb9e70dcd
+❯
+```
+
+#### MacOS
+
+1. Install the Victron app from the Mac App Store
+2. Pair with your device at least once to transfer keys
+3. Run the following from Terminal to dump the known keys (install `sqlite3` via Homebrew)
+```bash
+❯ sqlite3 ~/Library/Containers/com.victronenergy.victronconnect.mac/Data/Library/Application\ Support/Victron\ Energy/Victron\ Connect/d25b6546b47ebb21a04ff86a2c4fbb76.sqlite 'select macAddress,advertisementKey from advertisementKeys'
+a0f478020fe1|0df4d0395b7d1a876c0c33ecb9e70dcd
+❯
+```
+
+You can use this built in tool `system_profiler SPBluetoothDataType` to find the mac adresses of the Victron equipment. 
+
+Open your terminal and type in `system_profiler SPBluetoothDataType` it will then scan and show the mac address of all the bluetooth devices in range.
 
 ### Example ESPHome configuration for `victron_ble`
 
@@ -359,12 +396,6 @@ sensor:
 
 See [victron_ble_connect_all.yaml](/victron_ble_connect_all.yaml) for a full example.
 Assumption is you are having a `secret.yaml` in the same folder.
-
-### Bonus Tip for Mac OS users
-
-You can use this built in tool `system_profiler SPBluetoothDataType` to find the mac adresses of the Victron equipment. 
-
-Open your terminal and type in `system_profiler SPBluetoothDataType` it will then scan and show the mac address of all the bluetooth devices in range.
 
 ### Your support
 

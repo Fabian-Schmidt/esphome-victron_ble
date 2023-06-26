@@ -561,11 +561,11 @@ struct VICTRON_BLE_RECORD_INVERTER {  // NOLINT(readability-identifier-naming,al
   // 0.01 V, -327.68 .. 327.66 V
   int16_t battery_voltage;
   // 1 VA, 0 .. 65534 VA
-  int16_t ac_apparent_power;
+  u_int16_t ac_apparent_power;
   // 0.01 V, 0 .. 327.66 V
-  int16_t ac_voltage : 15;
+  u_int16_t ac_voltage : 15;
   // 0.1 A, 0 .. 204.6 A
-  int16_t ac_current : 11;
+  u_int16_t ac_current : 11;
 } __attribute__((packed));
 
 // source: VE.Direct-Protocol-3.32.pdf

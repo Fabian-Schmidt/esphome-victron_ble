@@ -15,10 +15,6 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - SmartLithium
       - Missing definition for `bms_flags`, `error` and `balancer_status`.
     - Inverter RS
-    - GX-Device
-      - Not suported. Awaiting final documentation.
-    - AC Charger
-      - Not suported. Awaiting final documentation.
     - Smart Batery Protect
       - Missing definition for `output_state`.
     - (Lynx Smart) BMS
@@ -28,7 +24,9 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
       - Missing definition for `ve_bus_error`.
     - DC Energy Meter
       - Missing definition for `bmv_monitor_mode`.
-
+  -  Not suported. Awaiting final documentation:
+     - GX-Device
+     - AC Charger
 - [Bluetooth connection protocol](https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html) - Component `victron_ble_connect`.
   - This solution is using the [PR#4258 of ESPHome](https://github.com/esphome/esphome/pull/4258).
   - Supported Devices:

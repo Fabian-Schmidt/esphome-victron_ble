@@ -401,15 +401,10 @@ I don't have access to all Victron devices. Please provide feedback if the compo
 
 Missing feedback for the following devices:
 
-- Inverter
 - DC/DC converter
 - SmartLithium
   - Missing definition for `bms_flags`, `error` and `balancer_status`.
 - Inverter RS
-- GX-Device
-  - Not suported. Awaiting final documentation.
-- AC Charger
-  - Not suported. Awaiting final documentation.
 - Smart Batery Protect
   - Missing definition for `output_state`.
 - (Lynx Smart) BMS

@@ -242,8 +242,14 @@ void VictronTextSensor::publish_state_(VE_REG_DEVICE_STATE val) {
     case VE_REG_DEVICE_STATE::EQUALIZE_MANUAL:
       this->publish_state("Equalize (manual)");
       break;
+    case VE_REG_DEVICE_STATE::PASSTHRU:
+      this->publish_state("Pass Thru");
+      break;
     case VE_REG_DEVICE_STATE::INVERTING:
       this->publish_state("Inverting");
+      break;
+    case VE_REG_DEVICE_STATE::ASSISTING:
+      this->publish_state("Assisting");
       break;
     case VE_REG_DEVICE_STATE::POWER_SUPPLY:
       this->publish_state("Power supply");

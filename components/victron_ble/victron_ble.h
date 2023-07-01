@@ -110,6 +110,34 @@ enum class VICTRON_PRODUCT_ID : u_int16_t {
   BlueSolar_MPPT_150_60_REV2 = 0xA070,
   // BlueSolar MPPT 150|70 rev2
   BlueSolar_MPPT_150_70_REV2 = 0xA071,
+  // BlueSolar MPPT 150/45 rev3
+  BlueSolar_MPPT_150_45_REV3 = 0xA072,
+  // SmartSolar MPPT 150/45 rev3
+  SmartSolar_MPPT_150_45_REV3 = 0xA073,
+  // SmartSolar MPPT 75/10 rev2
+  SmartSolar_MPPT_75_10_REV2 = 0xA074,
+  // SmartSolar MPPT 75/15 rev2
+  SmartSolar_MPPT_75_15_REV2 = 0xA075,
+  // BlueSolar MPPT 100/30 rev3
+  BlueSolar_MPPT_100_30_REV3 = 0xA076,
+  // BlueSolar MPPT 100/50 rev3
+  BlueSolar_MPPT_100_50_REV3 = 0xA077,
+  // BlueSolar MPPT 150/35 rev3
+  BlueSolar_MPPT_150_35_REV3 = 0xA078,
+  // BlueSolar MPPT 75/10 rev2
+  BlueSolar_MPPT_75_10_REV2 = 0xA079,
+  // BlueSolar MPPT 75/15 rev2
+  BlueSolar_MPPT_75_15_REV2 = 0xA07A,
+  // BlueSolar MPPT 100/15 rev2
+  BlueSolar_MPPT_100_15_REV2 = 0xA07B,
+  // BlueSolar MPPT 75/10 rev3
+  BlueSolar_MPPT_75_10_REV3 = 0xA07C,
+  // BlueSolar MPPT 75/15 rev3
+  BlueSolar_MPPT_75_15_REV3 = 0xA07D,
+  // SmartSolar MPPT 100/30 12V
+  SmartSolar_MPPT_100_30_12V = 0xA07E,
+  // All-In-1 SmartSolar MPPT 75/15 12V
+  All_in_1_SmartSolar_MPPT_75_15_12V = 0xA07F,
   // SmartSolar MPPT VE.Can 150/70
   SmartSolar_MPPT_VE_CAN_150_70 = 0xA102,
   // SmartSolar MPPT VE.Can 150/45
@@ -148,6 +176,8 @@ enum class VICTRON_PRODUCT_ID : u_int16_t {
   SmartSolar_MPPT_VE_CAN_250_100_REV2 = 0xA115,
   // SmartSolar MPPT VE.Can 250/85 rev2
   SmartSolar_MPPT_VE_CAN_250_85_REV2 = 0xA116,
+  // BlueSolar MPPT VE.Can 150/100 rev2
+  BlueSolar_MPPT_VE_CAN_150_100_REV2 = 0xA117,
   // Phoenix Inverter 12V 250VA 230V
   PHOENIX_INVERTER_12V_250VA_230V = 0xA231,
   // Phoenix Inverter 24V 250VA 230V
@@ -242,8 +272,20 @@ enum class VICTRON_PRODUCT_ID : u_int16_t {
   PHOENIX_INVERTER_SMART_IP43_CHARGER_24_16 = 0xA346,
   // Phoenix Smart IP43 Charger 24|16 (3)
   PHOENIX_INVERTER_SMART_IP43_CHARGER_24_16_3 = 0xA347,
+  // BMV-712 Smart
+  BMV_712_SMART = 0xA381,
+  // BMV-710H Smart
+  BMV_710H_SMART = 0xA382,
+  // BMV-712 Smart Rev2
+  BMV_712_SMART_REV2 = 0xA383,
   // SmartShunt 500A/50mV
   SMARTSHUNT_500A_50MV = 0xA389,
+  // SmartShunt 1000A/50mV 
+  SMARTSHUNT_1000A_50MV = 0xA38A,
+  // SmartShunt 2000A/50mV
+  SMARTSHUNT_2000A_50MV = 0xA38B,
+  // Smart BuckBoost 12V/12V-50A
+  SMART_BUCKBOOST_12V_12V_50A = 0xA3F0,
 };
 
 struct VICTRON_BLE_MANUFACTURER_DATA {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
@@ -252,7 +294,8 @@ struct VICTRON_BLE_MANUFACTURER_DATA {  // NOLINT(readability-identifier-naming,
   VICTRON_PRODUCT_ID product_id;
 } __attribute__((packed));
 
-// source: extra-manufacturer-data-2022-12-14.pdf
+// source: 
+// - extra-manufacturer-data-2022-12-14.pdf
 enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   // VICTRON_BLE_RECORD_TEST
   TEST_RECORD = 0x00,
@@ -301,7 +344,9 @@ struct VICTRON_BLE_RECORD_TEST {  // NOLINT(readability-identifier-naming,altera
 } __attribute__((packed));
 
 // For the following devices: MPPT, Inverter, Charger
-// source: VE.Direct-Protocol-3.32.pdf
+// source: 
+// - https://www.victronenergy.com/upload/documents/VE.Direct-Protocol-3.33.pdf
+// - https://github.com/victronenergy/venus-html5-app/blob/master/src/app/utils/constants.js
 enum class VE_REG_DEVICE_STATE : u_int8_t {
   // Off
   OFF = 0x00,
@@ -319,8 +364,12 @@ enum class VE_REG_DEVICE_STATE : u_int8_t {
   STORAGE = 0x06,
   // Equalize (manual)
   EQUALIZE_MANUAL = 0x07,
+  // Pass Thru
+  PASSTHRU = 0x08,
   // Inverting
   INVERTING = 0x09,
+  // Assisting
+  ASSISTING = 0x0A,
   // Power supply
   POWER_SUPPLY = 0x0B,
   // Starting-up

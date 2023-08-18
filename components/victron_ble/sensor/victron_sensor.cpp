@@ -419,10 +419,18 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
-            this->publish_state(0.01f * msg->data.dcdc_converter.output_voltage);
+            if (msg->data.dcdc_converter.output_voltage == 0x7FFF) {
+              this->publish_state(0.0f);
+            } else {
+              this->publish_state(0.01f * msg->data.dcdc_converter.output_voltage);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
-            this->publish_state(0.01f * msg->data.smart_battery_protect.output_voltage);
+            if (msg->data.smart_battery_protect.output_voltage == 0xFFFF) {
+              this->publish_state(0.0f);
+            } else {
+              this->publish_state(0.01f * msg->data.smart_battery_protect.output_voltage);
+            }
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `output voltage` field.", this->parent_->address_str().c_str());

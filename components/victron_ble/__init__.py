@@ -15,7 +15,6 @@ CODEOWNERS = ["@Fabian-Schmidt"]
 DEPENDENCIES = ["esp32_ble_tracker"]
 
 CONF_VICTRON_BLE_ID = "victron_ble_id"
-# Submit data as soon as they are recieved, instead of waiting for next update interval.
 CONF_SUBMIT_SENSOR_DATA_ASAP = "submit_sensor_data_asap"
 CONF_ON_BATTERY_MONITOR_MESSAGE = "on_battery_monitor_message"
 CONF_ON_SOLAR_CHARGER_MESSAGE = "on_solar_charger_message"
@@ -174,14 +173,26 @@ def bind_key_array(value):
         parts_int.append(int(part, 16))
     return Array(*parts_int)
 
+def bind_mac_address_or_shortened(value):
+    value = cv.string_strict(value)
+    if ":" in value:
+        return cv.mac_address(value)
+    if len(value) != 12:
+        raise cv.Invalid("MAC Address must be format XX:XX:XX:XX:XX:XX or XXXXXXXXXXXX")
+    # Split every second character
+    n = 2
+    parts_int = [value[i:i+n] for i in range(0, len(value), n)]
+    return cv.mac_address(':'.join(parts_int))
 
 CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(VictronBle),
-            cv.Required(CONF_MAC_ADDRESS): cv.mac_address,
+            cv.Required(CONF_MAC_ADDRESS): bind_mac_address_or_shortened,
             cv.Required(CONF_BINDKEY): bind_key_array,
-            cv.Optional(CONF_SUBMIT_SENSOR_DATA_ASAP, default=False): cv.boolean,
+            cv.Optional(CONF_SUBMIT_SENSOR_DATA_ASAP): cv.invalid(
+                "This key is now obsolete, please remove it"
+            ),
             cv.Optional(CONF_ON_MESSAGE): automation.validate_automation(
                 {
                     cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(MessageTrigger),
@@ -271,7 +282,7 @@ CONFIG_SCHEMA = cv.All(
         }
     )
     .extend(esp32_ble_tracker.ESP_BLE_DEVICE_SCHEMA)
-    .extend(cv.polling_component_schema("30s"))
+    .extend(cv.COMPONENT_SCHEMA)
 )
 
 
@@ -279,9 +290,6 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await esp32_ble_tracker.register_ble_device(var, config)
-
-    if CONF_SUBMIT_SENSOR_DATA_ASAP in config:
-        cg.add(var.set_submit_sensor_data_asap(config[CONF_SUBMIT_SENSOR_DATA_ASAP]))
 
     if CONF_MAC_ADDRESS in config:
         cg.add(var.set_address(config[CONF_MAC_ADDRESS].as_hex))

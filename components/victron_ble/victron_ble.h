@@ -7,6 +7,10 @@
 
 #ifdef USE_ESP32
 
+// Max documented message size is 16 byte. Maximum length of a record is 20 bytes = 4 byte header
+// (VICTRON_BLE_RECORD_BASE minus VICTRON_BLE_MANUFACTURER_DATA) + 16 byte payload
+#define VICTRON_ENCRYPTED_DATA_MAX_SIZE 16
+
 namespace esphome {
 namespace victron_ble {
 
@@ -280,7 +284,7 @@ enum class VICTRON_PRODUCT_ID : u_int16_t {
   BMV_712_SMART_REV2 = 0xA383,
   // SmartShunt 500A/50mV
   SMARTSHUNT_500A_50MV = 0xA389,
-  // SmartShunt 1000A/50mV 
+  // SmartShunt 1000A/50mV
   SMARTSHUNT_1000A_50MV = 0xA38A,
   // SmartShunt 2000A/50mV
   SMARTSHUNT_2000A_50MV = 0xA38B,
@@ -294,7 +298,7 @@ struct VICTRON_BLE_MANUFACTURER_DATA {  // NOLINT(readability-identifier-naming,
   VICTRON_PRODUCT_ID product_id;
 } __attribute__((packed));
 
-// source: 
+// source:
 // - extra-manufacturer-data-2022-12-14.pdf
 enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   // VICTRON_BLE_RECORD_TEST
@@ -344,7 +348,7 @@ struct VICTRON_BLE_RECORD_TEST {  // NOLINT(readability-identifier-naming,altera
 } __attribute__((packed));
 
 // For the following devices: MPPT, Inverter, Charger
-// source: 
+// source:
 // - https://www.victronenergy.com/upload/documents/VE.Direct-Protocol-3.33.pdf
 // - https://github.com/victronenergy/venus-html5-app/blob/master/src/app/utils/constants.js
 enum class VE_REG_DEVICE_STATE : u_int8_t {
@@ -825,32 +829,30 @@ struct VictronBleData {
     VICTRON_BLE_RECORD_MULTI_RS multi_rs;
     VICTRON_BLE_RECORD_VE_BUS ve_bus;
     VICTRON_BLE_RECORD_DC_ENERGY_METER dc_energy_meter;
+    u_int8_t raw[VICTRON_ENCRYPTED_DATA_MAX_SIZE];
   } data;
 };
 
-class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public PollingComponent {
+class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Component {
  public:
   void dump_config() override;
-  void update() override;
 
   bool parse_device(const esp32_ble_tracker::ESPBTDevice &device) override;
 
-  void set_address(uint64_t address) {
-    this->address_ = address;
-    if (address == 0) {
-      this->address_str_ = "";
+  void set_address(uint64_t address) { this->address_ = address; }
+
+  inline std::string address_str() const {
+    if (this->address_ == 0) {
+      return "";
     } else {
-      this->address_str_ = str_snprintf("%02X:%02X:%02X:%02X:%02X:%02X", 17, (uint8_t)(this->address_ >> 40) & 0xff,
-                                        (uint8_t)(this->address_ >> 32) & 0xff, (uint8_t)(this->address_ >> 24) & 0xff,
-                                        (uint8_t)(this->address_ >> 16) & 0xff, (uint8_t)(this->address_ >> 8) & 0xff,
-                                        (uint8_t)(this->address_ >> 0) & 0xff);
+      return str_snprintf("%02X:%02X:%02X:%02X:%02X:%02X", 17, (uint8_t) (this->address_ >> 40) & 0xff,
+                          (uint8_t) (this->address_ >> 32) & 0xff, (uint8_t) (this->address_ >> 24) & 0xff,
+                          (uint8_t) (this->address_ >> 16) & 0xff, (uint8_t) (this->address_ >> 8) & 0xff,
+                          (uint8_t) (this->address_ >> 0) & 0xff);
     }
   }
-  std::string address_str() const { return this->address_str_; }
 
   void set_bindkey(std::array<uint8_t, 16> key) { this->bindkey_ = key; }
-
-  void set_submit_sensor_data_asap(bool val) { this->submit_sensor_data_asap_ = val; }
 
   void add_on_battery_monitor_message_callback(
       std::function<void(const VICTRON_BLE_RECORD_BATTERY_MONITOR *)> callback) {
@@ -894,37 +896,48 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Polling
 
  protected:
   uint64_t address_;
-  std::string address_str_{};
   std::array<uint8_t, 16> bindkey_;
-  bool submit_sensor_data_asap_ = false;
+
+  VictronBleData last_package_{};
+
+#define VICTRON_MESSAGE_STORAGE_BL(name) bool name##_updated_ = false;
+#define VICTRON_MESSAGE_STORAGE_CB(name, type) CallbackManager<void(const type *)> on_##name##_message_callback_{};
 
   bool last_package_updated_ = false;
-  VictronBleData last_package_{};
+  VICTRON_MESSAGE_STORAGE_BL(battery_monitor)
+  VICTRON_MESSAGE_STORAGE_BL(solar_charger)
+  VICTRON_MESSAGE_STORAGE_BL(inverter)
+  VICTRON_MESSAGE_STORAGE_BL(dcdc_converter)
+  VICTRON_MESSAGE_STORAGE_BL(smart_lithium)
+  VICTRON_MESSAGE_STORAGE_BL(inverter_rs)
+  VICTRON_MESSAGE_STORAGE_BL(smart_battery_protect)
+  VICTRON_MESSAGE_STORAGE_BL(lynx_smart_bms)
+  VICTRON_MESSAGE_STORAGE_BL(multi_rs)
+  VICTRON_MESSAGE_STORAGE_BL(ve_bus)
+  VICTRON_MESSAGE_STORAGE_BL(dc_energy_meter)
+
   CallbackManager<void(const VictronBleData *)> on_message_callback_{};
+  VICTRON_MESSAGE_STORAGE_CB(battery_monitor, VICTRON_BLE_RECORD_BATTERY_MONITOR)
+  VICTRON_MESSAGE_STORAGE_CB(solar_charger, VICTRON_BLE_RECORD_SOLAR_CHARGER)
+  VICTRON_MESSAGE_STORAGE_CB(inverter, VICTRON_BLE_RECORD_INVERTER)
+  VICTRON_MESSAGE_STORAGE_CB(dcdc_converter, VICTRON_BLE_RECORD_DCDC_CONVERTER)
+  VICTRON_MESSAGE_STORAGE_CB(smart_lithium, VICTRON_BLE_RECORD_SMART_LITHIUM)
+  VICTRON_MESSAGE_STORAGE_CB(inverter_rs, VICTRON_BLE_RECORD_INVERTER_RS)
+  VICTRON_MESSAGE_STORAGE_CB(smart_battery_protect, VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)
+  VICTRON_MESSAGE_STORAGE_CB(lynx_smart_bms, VICTRON_BLE_RECORD_LYNX_SMART_BMS)
+  VICTRON_MESSAGE_STORAGE_CB(multi_rs, VICTRON_BLE_RECORD_MULTI_RS)
+  VICTRON_MESSAGE_STORAGE_CB(ve_bus, VICTRON_BLE_RECORD_VE_BUS)
+  VICTRON_MESSAGE_STORAGE_CB(dc_energy_meter, VICTRON_BLE_RECORD_DC_ENERGY_METER)
 
-#define VICTRON_MESSAGE_STORAGE(name, type) \
-  bool name##_updated_ = false; \
-  CallbackManager<void(const type *)> on_##name##_message_callback_{};
-
-  VICTRON_MESSAGE_STORAGE(battery_monitor, VICTRON_BLE_RECORD_BATTERY_MONITOR)
-  VICTRON_MESSAGE_STORAGE(solar_charger, VICTRON_BLE_RECORD_SOLAR_CHARGER)
-  VICTRON_MESSAGE_STORAGE(inverter, VICTRON_BLE_RECORD_INVERTER)
-  VICTRON_MESSAGE_STORAGE(dcdc_converter, VICTRON_BLE_RECORD_DCDC_CONVERTER)
-  VICTRON_MESSAGE_STORAGE(smart_lithium, VICTRON_BLE_RECORD_SMART_LITHIUM)
-  VICTRON_MESSAGE_STORAGE(inverter_rs, VICTRON_BLE_RECORD_INVERTER_RS)
-  VICTRON_MESSAGE_STORAGE(smart_battery_protect, VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)
-  VICTRON_MESSAGE_STORAGE(lynx_smart_bms, VICTRON_BLE_RECORD_LYNX_SMART_BMS)
-  VICTRON_MESSAGE_STORAGE(multi_rs, VICTRON_BLE_RECORD_MULTI_RS)
-  VICTRON_MESSAGE_STORAGE(ve_bus, VICTRON_BLE_RECORD_VE_BUS)
-  VICTRON_MESSAGE_STORAGE(dc_energy_meter, VICTRON_BLE_RECORD_DC_ENERGY_METER)
-
-#undef VICTRON_MESSAGE_STORAGE
+#undef VICTRON_MESSAGE_STORAGE_BL
+#undef VICTRON_MESSAGE_STORAGE_CB
 
   bool encrypt_message_(const u_int8_t *crypted_data, const u_int8_t crypted_len, u_int8_t encrypted_data[32],
                         const u_int8_t data_counter_lsb, const u_int8_t data_counter_msb);
 
   bool is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_type, const u_int8_t crypted_len);
   void handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const u_int8_t encrypted_data[32]);
+  void update();
 };
 
 }  // namespace victron_ble

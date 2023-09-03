@@ -196,7 +196,6 @@ The following settings exist:
 
 - `mac_address` - The MAC address of your Victron device.
 - `bindkey` - The AES encryption key of your Victron device.
-- `submit_sensor_data_asap` boolean to configure if values are submitted as soon as they are available (true). Or only with the `update_interval` (false - default).
 - [Automation Triggers](https://esphome.io/guides/automations.html):
   - `on_message` - When any message is recieved.
   - `on_battery_monitor_message` - When a battery monitor message is recieved.

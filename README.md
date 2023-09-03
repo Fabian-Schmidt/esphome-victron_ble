@@ -39,7 +39,7 @@ To connect to your Victron device you must have two information for each device:
 - `mac_address` -  Bluetooth mac address of device.
 - `bindkey` - AES encryption key.
 
-Use [VictronConnect v5.93](https://www.victronenergy.com/live/victronconnect:beta) (or later) released on 2023-08-25.
+Use [VictronConnect App v5.93](https://www.victronenergy.com/live/victronconnect:beta) (or later) released on 2023-08-25.
 
 ![VictronConnect App Settings page](img/VictronApp_00_Settings.png)
 ![VictronConnect App Product info page](img/VictronApp_01_ProductInfo.png)
@@ -49,6 +49,8 @@ Use [VictronConnect v5.93](https://www.victronenergy.com/live/victronconnect:bet
 2. Open "Product Info" page.
 3. Ensure `Instant readout via Bluetooth` is enabled.
 4. Bottom of page press `SHOW` for Instant readout details Encryption data.
+
+When connected to the device via VictronConnect App no Instant readout (Bluetooth advertising) data is generated.
 
 ### Example ESPHome configuration for `victron_ble` using SmartShunt and SmartSolar
 

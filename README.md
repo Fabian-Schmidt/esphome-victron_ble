@@ -34,54 +34,23 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
 
 ## `victron_ble` component (Recommended)
 
-### Steps
-
-1. Update your Victron device.
-2. Enable `Instant readout via Bluetooth` via Victron app.
-3. Get Mac address and Encryption key from Victron Software.
-
-### Fetching Mac address and Encryption key
-
 To connect to your Victron device you must have two information for each device:
 
 - `mac_address` -  Bluetooth mac address of device.
 - `bindkey` - AES encryption key.
 
-See <https://github.com/keshavdv/victron-ble#fetching-keys> for details.
+Use [VictronConnect v5.93](https://www.victronenergy.com/live/victronconnect:beta) (or later) released on 2023-08-25.
 
+![VictronConnect App Settings page](img/VictronApp_00_Settings.png)
+![VictronConnect App Product info page](img/VictronApp_01_ProductInfo.png)
+![VictronConnect App Instant readout encryption data](img/VictronApp_03_EncryptionData.png)
 
-#### Windows
+1. Open "Settings" of Device.
+2. Open "Product Info" page.
+3. Ensure `Instant readout via Bluetooth` is enabled.
+4. Bottom of page press `SHOW` for Instant readout details Encryption data.
 
-Not possible, because VictornConnect App does not support Bluetooth connection on Windows.
-
-#### Linux
-
-1. Download the Victron AppImage app from the Victron website.
-2. Pair with your device at least once to transfer keys
-3. Run the following from a terminal to dump the known keys (install `sqlite3` via your package manager)
-```bash
-❯ sqlite3 ~/.local/share/Victron\ Energy/Victron\ Connect/d25b6546b47ebb21a04ff86a2c4fbb76.sqlite 'select address,advertisementKey from advertisementKeys inner join macAddresses on advertisementKeys.macAddress == macAddresses.macAddress'
-
-A0:F4:78:02:0F:E1|0df4d0395b7d1a876c0c33ecb9e70dcd
-❯
-```
-
-#### MacOS
-
-1. Install the Victron app from the Mac App Store
-2. Pair with your device at least once to transfer keys
-3. Run the following from Terminal to dump the known keys (install `sqlite3` via Homebrew)
-```bash
-❯ sqlite3 ~/Library/Containers/com.victronenergy.victronconnect.mac/Data/Library/Application\ Support/Victron\ Energy/Victron\ Connect/d25b6546b47ebb21a04ff86a2c4fbb76.sqlite 'select macAddress,advertisementKey from advertisementKeys'
-a0f478020fe1|0df4d0395b7d1a876c0c33ecb9e70dcd
-❯
-```
-
-You can use this built in tool `system_profiler SPBluetoothDataType` to find the mac adresses of the Victron equipment. 
-
-Open your terminal and type in `system_profiler SPBluetoothDataType` it will then scan and show the mac address of all the bluetooth devices in range.
-
-### Example ESPHome configuration for `victron_ble`
+### Example ESPHome configuration for `victron_ble` using SmartShunt and SmartSolar
 
 See [victron_ble.yaml](/victron_ble.yaml) for a full example.
 
@@ -400,10 +369,8 @@ I don't have access to all Victron devices. Please provide feedback if the compo
 
 Missing feedback for the following devices:
 
-- DC/DC converter
 - SmartLithium
   - Missing definition for `bms_flags`, `error` and `balancer_status`.
-- Inverter RS
 - Smart Batery Protect
   - Missing definition for `output_state`.
 - (Lynx Smart) BMS

@@ -220,11 +220,11 @@ void VictronTextSensor::publish_state_(VE_REG_ALARM_REASON val) {
   if (((u_int16_t) val & (u_int16_t) VE_REG_ALARM_REASON::BMS_LOCKOUT) != 0) {
     this->publish_state("BMS Lockout");
   }
-  if (((u_int16_t) val & (u_int16_t) VE_REG_ALARM_REASON::UNKOWN_A) != 0) {
-    this->publish_state("Unkown error (0x4000)");
+  if (((u_int16_t) val & (u_int16_t) VE_REG_ALARM_REASON::UNKNOWN_A) != 0) {
+    this->publish_state("Unknown error (0x4000)");
   }
-  if (((u_int16_t) val & (u_int16_t) VE_REG_ALARM_REASON::UNKOWN_B) != 0) {
-    this->publish_state("Unkown error (0x8000)");
+  if (((u_int16_t) val & (u_int16_t) VE_REG_ALARM_REASON::UNKNOWN_B) != 0) {
+    this->publish_state("Unknown error (0x8000)");
   }
 }
 
@@ -282,7 +282,7 @@ void VictronTextSensor::publish_state_(VE_REG_DEVICE_STATE val) {
       this->publish_state("External Control");
       break;
     default:
-      ESP_LOGW(TAG, "[%s] Unkown device state (%u).", this->parent_->address_str().c_str(), (u_int8_t) val);
+      ESP_LOGW(TAG, "[%s] Unknown device state (%u).", this->parent_->address_str().c_str(), (u_int8_t) val);
       this->publish_state(to_string((u_int8_t) val));
       break;
   }
@@ -489,7 +489,7 @@ void VictronTextSensor::publish_state_(VE_REG_CHR_ERROR_CODE val) {
       this->publish_state("Err 215 - Internal supply voltage error");
       break;
     default:
-      ESP_LOGW(TAG, "[%s] Unkown device error (%u).", this->parent_->address_str().c_str(), (u_int8_t) val);
+      ESP_LOGW(TAG, "[%s] Unknown device error (%u).", this->parent_->address_str().c_str(), (u_int8_t) val);
       this->publish_state(to_string((u_int8_t) val));
       break;
   }
@@ -540,8 +540,8 @@ void VictronTextSensor::publish_state_(VE_REG_AC_IN_ACTIVE val) {
     case VE_REG_AC_IN_ACTIVE::NOT_CONNECTED:
       this->publish_state("Not connected");
       break;
-    case VE_REG_AC_IN_ACTIVE::UNKOWN:
-      this->publish_state("Unkown");
+    case VE_REG_AC_IN_ACTIVE::UNKNOWN:
+      this->publish_state("Unknown");
       break;
     default:
       break;

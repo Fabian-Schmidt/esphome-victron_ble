@@ -316,7 +316,7 @@ void VictronBleConnect::read_value_(const uint16_t handle, const uint8_t *value,
       }
     }
   } else {
-    ESP_LOGW(TAG, "[%s] Error recieved data with unkown handle for service %s handle 0x%04x", this->get_name().c_str(),
+    ESP_LOGW(TAG, "[%s] Error recieved data with unknown handle for service %s handle 0x%04x", this->get_name().c_str(),
              SERVICE_UUID.to_string().c_str(), handle);
   }
 }

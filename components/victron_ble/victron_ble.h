@@ -654,6 +654,20 @@ struct VICTRON_BLE_RECORD_DCDC_CONVERTER {  // NOLINT(readability-identifier-nam
   VE_REG_DEVICE_OFF_REASON_2 off_reason;
 } __attribute__((packed));
 
+// source: https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/25
+// source: https://www.victronenergy.com/upload/documents/Lithium_Battery_Smart/15958-Manual_Lithium_Smart_Battery-pdf-en.pdf - Page 43
+// 0..15 - 4 bit
+enum struct VE_REG_BALANCER_STATUS : u_int8_t {
+  // unknown (need to charge once to 100%)
+  UNKNOWN = 0x0,
+  // Balanced / ok
+  BALANCED = 0x1,
+  // Balancing
+  BALANCING = 0x2,
+  // Imbalanced
+  IMBALANCE = 0x3,
+};
+
 struct VICTRON_BLE_RECORD_SMART_LITHIUM {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   // TODO
   u_int32_t bms_flags;
@@ -682,8 +696,8 @@ struct VICTRON_BLE_RECORD_SMART_LITHIUM {  // NOLINT(readability-identifier-nami
   u_int16_t cell8 : 7;
   // 0.01 V, 0 .. 40.94 V
   u_int16_t battery_voltage : 12;
-  // TODO - 0 .. 15
-  u_int8_t balancer_status : 4;
+  // 0 .. 15
+  VE_REG_BALANCER_STATUS balancer_status : 4;
   // 1 °C,  -40 .. 86 °C - Temperature = Record value - 40
   u_int8_t battery_temperature : 7;
 } __attribute__((packed));

@@ -11,3 +11,33 @@
     victron_ble_id: MySmartSolar
     name: "MPPT Error reason"
     type: CHARGER_ERROR
+
+
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Dummy/Test"
+    type: ALARM
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Dummy/Test"
+    type: ACTIVE_AC_IN
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Dummy/Test"
+    type: CHARGER_ERROR
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Dummy/Test"
+    type: ERROR_CODE
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Dummy/Test"
+    type: OFF_REASON
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Dummy/Test"
+    type: WARNING_REASON
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Dummy/Test"
+    type: BALANCER_STATUS

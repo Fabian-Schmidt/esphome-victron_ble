@@ -13,7 +13,7 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - Inverter
     - DC/DC converter
     - SmartLithium
-      - Missing definition for `bms_flags`, `error` and `balancer_status`.
+      - Missing definition for `bms_flags` and `error`.
     - Inverter RS
     - Smart Batery Protect
       - Missing definition for `output_state`.
@@ -261,16 +261,17 @@ The following `type` are supported by the `binary_sensor` component:
 
 The following `type` are supported by the `text_sensor` component:
 
-|                  | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
-| ---------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
-| `ACTIVE_AC_IN`   |               |                 |          |                 |              |             |                       |                  | X        | X      |                 |
-| `ALARM_REASON`   |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
-| `CHARGER_ERROR`  | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
-| `DEVICE_STATE`   | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
-| `OFF_REASON`     |               |                 |          | X               |              |             | X                     |                  |          |        |                 |
-| `ERROR_CODE`     |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
-| `WARNING_REASON` |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
-| `ALARM`          |               |                 |          |                 |              |             |                       |                  |          | X      |                 |
+|                   | Solar charger | Battery monitor | Inverter | DC/DC converter | SmartLithium | Inverter RS | Smart Battery Protect | (Lynx Smart) BMS | Multi RS | VE.Bus | DC Energy Meter |
+| ----------------- | ------------- | --------------- | -------- | --------------- | ------------ | ----------- | --------------------- | ---------------- | -------- | ------ | --------------- |
+| `ACTIVE_AC_IN`    |               |                 |          |                 |              |             |                       |                  | X        | X      |                 |
+| `ALARM_REASON`    |               | X               | X        |                 |              |             | X                     |                  |          |        | X               |
+| `CHARGER_ERROR`   | X             |                 |          | X               |              | X           |                       |                  | X        |        |                 |
+| `DEVICE_STATE`    | X             |                 | X        | X               |              | X           | X                     |                  | X        | X      |                 |
+| `OFF_REASON`      |               |                 |          | X               |              |             | X                     |                  |          |        |                 |
+| `ERROR_CODE`      |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
+| `WARNING_REASON`  |               |                 |          |                 |              |             | X                     |                  |          |        |                 |
+| `ALARM`           |               |                 |          |                 |              |             |                       |                  |          | X      |                 |
+| `BALANCER_STATUS` |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
 
 ## `victron_ble_connect` component
 
@@ -372,7 +373,7 @@ I don't have access to all Victron devices. Please provide feedback if the compo
 Missing feedback for the following devices:
 
 - SmartLithium
-  - Missing definition for `bms_flags`, `error` and `balancer_status`.
+  - Missing definition for `bms_flags` and `error`.
 - Smart Batery Protect
   - Missing definition for `output_state`.
 - (Lynx Smart) BMS

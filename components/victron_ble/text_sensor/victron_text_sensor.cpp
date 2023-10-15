@@ -155,6 +155,18 @@ void VictronTextSensor::setup() {
         }
         break;
 
+      case VICTRON_TEXT_SENSOR_TYPE::BALANCER_STATUS:
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::SMART_LITHIUM:
+            this->publish_state_(msg->data.smart_lithium.balancer_status);
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no `balancer status` field.", this->parent_->address_str().c_str());
+            this->publish_state("");
+            break;
+        }
+        break;
+
       default:
         break;
     }
@@ -546,6 +558,25 @@ void VictronTextSensor::publish_state_(VE_REG_ALARM_NOTIFICATION val) {
       break;
     case VE_REG_ALARM_NOTIFICATION::ALARM:
       this->publish_state("Alarm");
+      break;
+    default:
+      break;
+  }
+}
+
+void VictronTextSensor::publish_state_(VE_REG_BALANCER_STATUS val) {
+  switch (val) {
+    case VE_REG_BALANCER_STATUS::UNKNOWN:
+      this->publish_state("Unknown");
+      break;
+    case VE_REG_BALANCER_STATUS::BALANCED:
+      this->publish_state("Balanced");
+      break;
+    case VE_REG_BALANCER_STATUS::BALANCING:
+      this->publish_state("Balancing");
+      break;
+    case VE_REG_BALANCER_STATUS::IMBALANCE:
+      this->publish_state("Imbalance");
       break;
     default:
       break;

@@ -502,24 +502,44 @@ void VictronSensor::setup() {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
             if (msg->data.battery_monitor.aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_BAT_TEMPERATURE) {
-              this->publish_state(0.01f * msg->data.battery_monitor.aux_input.temperature - 273.15f);
+              if (msg->data.battery_monitor.aux_input.temperature == 0xFFFF) {
+                this->publish_state(NAN);
+              } else {
+                this->publish_state(0.01f * msg->data.battery_monitor.aux_input.temperature - 273.15f);
+              }
             } else {
               ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration.", this->parent_->address_str().c_str());
               this->publish_state(NAN);
             }
             break;
           case VICTRON_BLE_RECORD_TYPE::SMART_LITHIUM:
-            this->publish_state(-40.0f + msg->data.smart_lithium.battery_temperature);
+            if (msg->data.smart_lithium.battery_temperature == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(-40.0f + msg->data.smart_lithium.battery_temperature);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::LYNX_SMART_BMS:
-            this->publish_state(-40.0f + msg->data.lynx_smart_bms.temperature);
+            if (msg->data.lynx_smart_bms.temperature == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(-40.0f + msg->data.lynx_smart_bms.temperature);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
-            this->publish_state(-40.0f + msg->data.ve_bus.battery_temperature);
+            if (msg->data.ve_bus.battery_temperature == 0x7F) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(-40.0f + msg->data.ve_bus.battery_temperature);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
             if (msg->data.dc_energy_meter.aux_input_type == VE_REG_BMV_AUX_INPUT::VE_REG_BAT_TEMPERATURE) {
-              this->publish_state(0.01f * msg->data.dc_energy_meter.aux_input.temperature - 273.15f);
+              if (msg->data.dc_energy_meter.aux_input.temperature == 0xFFFF) {
+                this->publish_state(NAN);
+              } else {
+                this->publish_state(0.01f * msg->data.dc_energy_meter.aux_input.temperature - 273.15f);
+              }
             } else {
               ESP_LOGW(TAG, "[%s] Incorrect Aux input configuration.", this->parent_->address_str().c_str());
               this->publish_state(NAN);

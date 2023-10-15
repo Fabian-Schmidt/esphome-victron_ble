@@ -209,7 +209,7 @@ The following `type` are supported by the `sensor` component:
 | `MID_VOLTAGE`        | V    |               | X(1)            |          |                 |              |             |                       |                  |          |        |                 |
 | `PV_POWER`           | W    | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
 | `STATE_OF_CHARGE`    | %    |               | X               |          |                 |              |             |                       | X                |          | X      |                 |
-| `TEMPERATURE`        | °C   |               | X(1)            |          |                 | X            |             |                       | X                |          | X      | X(1)            |
+| `TEMPERATURE`        | °C   |               | X(1)            |          |                 | X            |             |                       | X(2)             |          | X      | X(1)            |
 | `TIME_TO_GO`         | min  |               | X               |          |                 |              |             |                       | X                |          |        |                 |
 | `YIELD_TODAY`        | kWh  | X             |                 |          |                 |              | X           |                       |                  | X        |        |                 |
 | `BALANCER_STATUS`    |      |               |                 |          |                 | X            |             |                       |                  |          |        |                 |
@@ -230,6 +230,7 @@ The following `type` are supported by the `sensor` component:
 | `BMV_MONITOR_MODE`   |      |               |                 |          |                 |              |             |                       |                  |          |        | X               |
 
 (1) - Available if device aux port is configured.
+(2) - Not available on all models. `NAN` reported if not available.
 
 ### Binary Sensor
 

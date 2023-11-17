@@ -6,10 +6,6 @@ esphome:
   name: "victron-ble-min"
 
 external_components:
-  # https://github.com/esphome/esphome/pull/4258
-  - source: github://pr#4258
-    components: [ble_client, esp32_ble, esp32_ble_client, esp32_ble_tracker]
-    # refresh: always
   - source: github://Fabian-Schmidt/esphome-victron_ble
 
 esp32:

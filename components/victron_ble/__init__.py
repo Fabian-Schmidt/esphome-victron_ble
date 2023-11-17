@@ -185,6 +185,7 @@ def bind_mac_address_or_shortened(value):
     return cv.mac_address(':'.join(parts_int))
 
 CONFIG_SCHEMA = cv.All(
+    cv.only_on_esp32,
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(VictronBle),

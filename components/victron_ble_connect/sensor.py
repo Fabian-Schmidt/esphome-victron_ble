@@ -67,6 +67,8 @@ def final_validate_maximum_number_of_sensors_if_notify(
 
 
 CONFIG_SCHEMA = cv.All(
+    cv.only_on_esp32,
+    cv.require_esphome_version(2023,8,0),
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(VictronBleConnect),

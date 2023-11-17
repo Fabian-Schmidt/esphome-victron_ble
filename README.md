@@ -28,7 +28,6 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
      - GX-Device
      - AC Charger
 - [Bluetooth connection protocol](https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html) - Component `victron_ble_connect`.
-  - This solution is using the [PR#4258 of ESPHome](https://github.com/esphome/esphome/pull/4258).
   - Supported Devices:
     - Smart Shunt
 
@@ -296,10 +295,6 @@ esphome:
   name: "victron-scanner"
 
 external_components:
-  # https://github.com/esphome/esphome/pull/4258
-  - source: github://pr#4258
-    components: [ble_client, esp32_ble, esp32_ble_client, esp32_ble_tracker]
-    #refresh: always
   - source: github://Fabian-Schmidt/esphome-victron_ble
 
 esp32:
@@ -326,10 +321,6 @@ esphome:
   name: "victron-ble"
 
 external_components:
-  # https://github.com/esphome/esphome/pull/4258
-  - source: github://pr#4258
-    components: [ble_client, esp32_ble, esp32_ble_client, esp32_ble_tracker]
-    refresh: always
   - source: github://Fabian-Schmidt/esphome-victron_ble
 
 

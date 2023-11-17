@@ -11,11 +11,15 @@ VictronListener = victron_scanner_ns.class_(
     "VictronListener", esp32_ble_tracker.ESPBTDeviceListener
 )
 
-CONFIG_SCHEMA = cv.Schema(
-    {
-        cv.GenerateID(): cv.declare_id(VictronListener),
-    }
-).extend(esp32_ble_tracker.ESP_BLE_DEVICE_SCHEMA)
+CONFIG_SCHEMA = cv.All(
+    cv.only_on_esp32,
+    cv.require_esphome_version(2023, 8, 0),
+    cv.Schema(
+        {
+            cv.GenerateID(): cv.declare_id(VictronListener),
+        }
+    ).extend(esp32_ble_tracker.ESP_BLE_DEVICE_SCHEMA),
+)
 
 
 async def to_code(config):

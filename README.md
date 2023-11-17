@@ -282,7 +282,7 @@ The following `type` are supported by the `text_sensor` component:
 2. Use VictronConnect v5.42 or newer.
 3. Update the SmartShunt to version v2.31 or later.
 4. Connect to the SmartShunt using VictronConnect, and enable this protocol (screenshot below)
-5. Power cycle the SmartShunt
+5. Disconnect VictronConnect from the SmartShunt.
 6. Use `victron_scanner` to find mac address of your SmartShunt.
 
 ![The setting to enable this "third party implementation"-protocol](/img/VictronAppEnableGATT.png)

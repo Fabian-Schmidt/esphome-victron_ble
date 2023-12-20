@@ -267,8 +267,44 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
       return false;
       break;
   }
-  ESP_LOGW(TAG, "[%s] Record type %02X message is too short (%u).", this->address_str().c_str(), (u_int8_t) record_type,
-           crypted_len);
+  u_int8_t expected_len = 0;
+  switch (record_type) {
+    case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
+      expected_len = sizeof(VICTRON_BLE_RECORD_SOLAR_CHARGER);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
+      expected_len = sizeof(VICTRON_BLE_RECORD_BATTERY_MONITOR);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::INVERTER:
+      expected_len = sizeof(VICTRON_BLE_RECORD_INVERTER);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
+      expected_len = sizeof(VICTRON_BLE_RECORD_DCDC_CONVERTER);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::SMART_LITHIUM:
+      expected_len = sizeof(VICTRON_BLE_RECORD_SMART_LITHIUM);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
+      expected_len = sizeof(VICTRON_BLE_RECORD_INVERTER_RS);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
+      expected_len = sizeof(VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::LYNX_SMART_BMS:
+      expected_len = sizeof(VICTRON_BLE_RECORD_LYNX_SMART_BMS);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
+      expected_len = sizeof(VICTRON_BLE_RECORD_MULTI_RS);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::VE_BUS:
+      expected_len = sizeof(VICTRON_BLE_RECORD_VE_BUS);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
+      expected_len = sizeof(VICTRON_BLE_RECORD_DC_ENERGY_METER);
+      break;
+  }
+  ESP_LOGW(TAG, "[%s] Record type %02X message is too short %u, expected %u bytes.", this->address_str().c_str(), (u_int8_t) record_type,
+           crypted_len, expected_len);
   return false;
 }
 

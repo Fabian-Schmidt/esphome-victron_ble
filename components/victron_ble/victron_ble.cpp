@@ -302,9 +302,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
     case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
       expected_len = sizeof(VICTRON_BLE_RECORD_DC_ENERGY_METER);
       break;
+    default:
+      break;
   }
-  ESP_LOGW(TAG, "[%s] Record type %02X message is too short %u, expected %u bytes.", this->address_str().c_str(), (u_int8_t) record_type,
-           crypted_len, expected_len);
+  ESP_LOGW(TAG, "[%s] Record type %02X message is too short %u, expected %u bytes.", this->address_str().c_str(),
+           (u_int8_t) record_type, crypted_len, expected_len);
   return false;
 }
 

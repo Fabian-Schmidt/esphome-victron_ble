@@ -792,7 +792,7 @@ enum class VE_REG_ALARM_NOTIFICATION : u_int8_t {
 struct VICTRON_BLE_RECORD_VE_BUS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
   // TODO
-  u_int16_t ve_bus_error;
+  u_int8_t ve_bus_error;
   // 0.1 A, -3276.8 .. 3276.6 A
   int16_t battery_current;
   // 0.01 V, 0 .. 163.83 V

@@ -79,13 +79,13 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
-            this->publish_state((u_int16_t) msg->data.inverter_rs.ac_out_power);
+            this->publish_state(msg->data.inverter_rs.ac_out_power);
             break;
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
-            this->publish_state((u_int16_t) msg->data.multi_rs.active_ac_out_power);
+            this->publish_state(msg->data.multi_rs.active_ac_out_power);
             break;
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
-            this->publish_state((u_int16_t) msg->data.ve_bus.active_ac_out_power);
+            this->publish_state(msg->data.ve_bus.active_ac_out_power);
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `ac out power` field.", this->parent_->address_str().c_str());
@@ -355,7 +355,7 @@ void VictronSensor::setup() {
             this->publish_state((u_int8_t) msg->data.lynx_smart_bms.error);
             break;
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
-            this->publish_state((u_int16_t) msg->data.ve_bus.ve_bus_error);
+            this->publish_state((u_int8_t) msg->data.ve_bus.ve_bus_error);
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `error` field.", this->parent_->address_str().c_str());
@@ -487,7 +487,7 @@ void VictronSensor::setup() {
             this->publish_state(0.1f * msg->data.lynx_smart_bms.soc);
             break;
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
-            this->publish_state(0.1f * msg->data.ve_bus.soc);
+            this->publish_state(msg->data.ve_bus.soc);
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `state of charge` field.", this->parent_->address_str().c_str());

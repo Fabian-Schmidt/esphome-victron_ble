@@ -281,6 +281,9 @@ void VictronTextSensor::publish_state_(VE_REG_DEVICE_STATE val) {
     case VE_REG_DEVICE_STATE::EXTERNAL_CONTROL:
       this->publish_state("External Control");
       break;
+    case VE_REG_DEVICE_STATE::NOT_AVAILABLE:
+      this->publish_state("Not available");
+      break;
     default:
       ESP_LOGW(TAG, "[%s] Unknown device state (%u).", this->parent_->address_str().c_str(), (u_int8_t) val);
       this->publish_state(to_string((u_int8_t) val));
@@ -487,6 +490,9 @@ void VictronTextSensor::publish_state_(VE_REG_CHR_ERROR_CODE val) {
       break;
     case VE_REG_CHR_ERROR_CODE::INTERNAL_SUPPLY_D:
       this->publish_state("Err 215 - Internal supply voltage error");
+      break;
+    case VE_REG_CHR_ERROR_CODE::NOT_AVAILABLE:
+      this->publish_state("Not available");
       break;
     default:
       ESP_LOGW(TAG, "[%s] Unknown device error (%u).", this->parent_->address_str().c_str(), (u_int8_t) val);

@@ -386,6 +386,8 @@ enum class VE_REG_DEVICE_STATE : u_int8_t {
   BATTERY_SAFE = 0xF8,
   // External Control
   EXTERNAL_CONTROL = 0xFC,
+
+  NOT_AVAILABLE = 0xFF,
 };
 
 // Source: VE.Direct-Protocol-3.32.pdf & https://www.victronenergy.com/live/mppt-error-codes
@@ -524,6 +526,8 @@ enum class VE_REG_CHR_ERROR_CODE : u_int8_t {
   INTERNAL_SUPPLY_C = 212,
   // Err 215 - Internal supply voltage error
   INTERNAL_SUPPLY_D = 215,
+  
+  NOT_AVAILABLE = 0xFF,
 };
 
 struct VICTRON_BLE_RECORD_SOLAR_CHARGER {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
@@ -801,7 +805,7 @@ struct VICTRON_BLE_RECORD_VE_BUS {  // NOLINT(readability-identifier-naming,alte
   // 1 W, -262,144 .. 262,142 W
   int32_t active_ac_in_power : 19;
   // 1 W, -262,144 .. 262,142 W
-  int32_t active_ac_out_power : 19;
+  int32_t ac_out_power : 19;
   VE_REG_ALARM_NOTIFICATION alarm : 2;
   // 1 °C, -40 .. 86 °C - Temperature = Record value - 40
   u_int8_t battery_temperature : 7;

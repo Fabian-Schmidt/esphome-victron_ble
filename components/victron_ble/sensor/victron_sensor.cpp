@@ -34,10 +34,18 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
-            this->publish_state(msg->data.multi_rs.active_ac_in_power);
+            if (msg->data.multi_rs.active_ac_in_power == 0x7FFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(msg->data.multi_rs.active_ac_in_power);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
-            this->publish_state(msg->data.ve_bus.active_ac_in_power);
+            if (msg->data.ve_bus.active_ac_in_power == 0x3FFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(msg->data.ve_bus.active_ac_in_power);
+            }
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `ac in power` field.", this->parent_->address_str().c_str());
@@ -51,7 +59,11 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::INVERTER:
-            this->publish_state(msg->data.inverter.ac_apparent_power);
+            if (msg->data.inverter.ac_apparent_power == 0xFFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(msg->data.inverter.ac_apparent_power);
+            }
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `ac apparent power` field.", this->parent_->address_str().c_str());
@@ -79,13 +91,25 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
-            this->publish_state(msg->data.inverter_rs.ac_out_power);
+            if (msg->data.inverter_rs.ac_out_power == 0x7FFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(msg->data.inverter_rs.ac_out_power);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
-            this->publish_state(msg->data.multi_rs.active_ac_out_power);
+            if (msg->data.multi_rs.active_ac_out_power == 0x7FFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(msg->data.multi_rs.active_ac_out_power);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
-            this->publish_state(msg->data.ve_bus.active_ac_out_power);
+            if (msg->data.ve_bus.ac_out_power == 0x3FFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(msg->data.ve_bus.ac_out_power);
+            }
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `ac out power` field.", this->parent_->address_str().c_str());

@@ -17,6 +17,7 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - Inverter RS
     - Smart Batery Protect
       - Missing definition for `output_state`.
+    - Smart Battery Sense
     - (Lynx Smart) BMS
       - Missing definition for `error`, `io_status` and `warnings_alarms`.
     - Multi RS

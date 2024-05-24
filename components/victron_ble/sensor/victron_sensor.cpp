@@ -410,7 +410,11 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
-            this->publish_state(-0.1f * msg->data.solar_charger.load_current);
+            if (msg->data.solar_charger.load_current == 0x1FF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(-0.1f * msg->data.solar_charger.load_current);
+            }
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `load current` field.", this->parent_->address_str().c_str());
@@ -485,13 +489,25 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
-            this->publish_state(msg->data.solar_charger.pv_power);
+            if (msg->data.solar_charger.pv_power == 0xFFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(msg->data.solar_charger.pv_power);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
-            this->publish_state(msg->data.inverter_rs.pv_power);
+            if (msg->data.inverter_rs.pv_power == 0xFFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(msg->data.inverter_rs.pv_power);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
-            this->publish_state(msg->data.multi_rs.pv_power);
+            if (msg->data.multi_rs.pv_power == 0xFFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(msg->data.multi_rs.pv_power);
+            }
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `PV power` field.", this->parent_->address_str().c_str());
@@ -598,13 +614,25 @@ void VictronSensor::setup() {
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
-            this->publish_state(0.01f * msg->data.solar_charger.yield_today);
+            if (msg->data.solar_charger.yield_today == 0xFFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * msg->data.solar_charger.yield_today);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
-            this->publish_state(0.01f * msg->data.inverter_rs.yield_today);
+            if (msg->data.inverter_rs.yield_today == 0xFFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * msg->data.inverter_rs.yield_today);
+            }
             break;
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
-            this->publish_state(0.01f * msg->data.multi_rs.yield_today);
+            if (msg->data.multi_rs.yield_today == 0xFFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.01f * msg->data.multi_rs.yield_today);
+            }
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `yield today` field.", this->parent_->address_str().c_str());

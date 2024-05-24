@@ -262,6 +262,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
         return true;
       }
       break;
+    case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_ORION_XS)) {
+        return true;
+      }
+      break;
     default:
       ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), (u_int8_t) record_type);
       return false;
@@ -301,6 +306,9 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
       break;
     case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
       expected_len = sizeof(VICTRON_BLE_RECORD_DC_ENERGY_METER);
+      break;
+    case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+      expected_len = sizeof(VICTRON_BLE_RECORD_ORION_XS);
       break;
     default:
       break;
@@ -358,6 +366,10 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type,
     case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
       this->dc_energy_meter_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved DC_ENERGY_METER message.", this->address_str().c_str());
+      break;
+    case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+      this->orion_xs_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved ORION_XS message.", this->address_str().c_str());
       break;
     default:
       break;

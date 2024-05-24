@@ -200,7 +200,7 @@ bool VictronBle::encrypt_message_(const u_int8_t *crypted_data, const u_int8_t c
   }
 
   esp_aes_free(&ctx);
-  ESP_LOGV(TAG, "[%s] Enrypted message: %s", this->address_str().c_str(),
+  ESP_LOGV(TAG, "[%s] Encrypted message: %s", this->address_str().c_str(),
            format_hex_pretty(encrypted_data, crypted_len).c_str());
   return true;
 }

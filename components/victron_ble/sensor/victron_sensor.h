@@ -61,6 +61,10 @@ enum class VICTRON_SENSOR_TYPE {
 
   // DC_ENERGY_METER
   BMV_MONITOR_MODE,
+
+  // ORION_XS
+  OUTPUT_CURRENT,
+  INPUT_CURRENT,
 };
 
 #ifdef ESPHOME_LOG_HAS_CONFIG
@@ -160,6 +164,12 @@ static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
       // DC_ENERGY_METER
     case VICTRON_SENSOR_TYPE::BMV_MONITOR_MODE:
       return "BMV_MONITOR_MODE";
+
+    // ORION_XS
+    case VICTRON_SENSOR_TYPE::OUTPUT_CURRENT:
+      return "OUTPUT_CURRENT";
+    case VICTRON_SENSOR_TYPE::INPUT_CURRENT:
+      return "INPUT_CURRENT";
 
     default:
       return "";

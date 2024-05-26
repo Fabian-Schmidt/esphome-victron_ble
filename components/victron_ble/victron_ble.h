@@ -833,7 +833,19 @@ struct VICTRON_BLE_RECORD_DC_ENERGY_METER {  // NOLINT(readability-identifier-na
   int32_t battery_current : 22;
 } __attribute__((packed));
 
+// Undocumented. See <https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/50>
 struct VICTRON_BLE_RECORD_ORION_XS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  VE_REG_DEVICE_STATE device_state;
+  VE_REG_CHR_ERROR_CODE charger_error;
+  // 0.01 V, 0 .. 655.34 V
+  u_int16_t output_voltage;
+  // 0.1 A, 0 .. 6553.4 A
+  u_int16_t output_current;
+  // 0.01 V, 0 .. 655.34 V
+  u_int16_t input_voltage;
+  // 0.1 A, 0 .. 6553.4 A
+  u_int16_t input_current;
+  VE_REG_DEVICE_OFF_REASON_2 off_reason;
 } __attribute__((packed));
 
 struct VictronBleData {

@@ -52,6 +52,9 @@ void VictronBinarySensor::setup() {
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
             this->publish_state(msg->data.multi_rs.charger_error != VE_REG_CHR_ERROR_CODE::NO_ERROR);
             break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            this->publish_state(msg->data.orion_xs.charger_error != VE_REG_CHR_ERROR_CODE::NO_ERROR);
+            break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `charger error` field.", this->parent_->address_str().c_str());
             this->publish_state("");
@@ -95,6 +98,9 @@ void VictronBinarySensor::setup() {
             break;
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
             this->publish_state_(msg->data.ve_bus.device_state);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            this->publish_state_(msg->data.orion_xs.device_state);
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `device state` field.", this->parent_->address_str().c_str());

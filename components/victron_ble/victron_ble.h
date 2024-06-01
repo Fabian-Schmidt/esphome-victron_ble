@@ -329,6 +329,8 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   VE_BUS = 0x0C,
   // VICTRON_BLE_RECORD_DC_ENERGY_METER
   DC_ENERGY_METER = 0x0D,
+  // VICTRON_BLE_RECORD_ORION_XS
+  ORION_XS = 0x0F,
 };
 
 struct VICTRON_BLE_RECORD_BASE {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
@@ -831,6 +833,21 @@ struct VICTRON_BLE_RECORD_DC_ENERGY_METER {  // NOLINT(readability-identifier-na
   int32_t battery_current : 22;
 } __attribute__((packed));
 
+// Undocumented. See <https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/50>
+struct VICTRON_BLE_RECORD_ORION_XS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  VE_REG_DEVICE_STATE device_state;
+  VE_REG_CHR_ERROR_CODE charger_error;
+  // 0.01 V, 0 .. 655.34 V
+  u_int16_t output_voltage;
+  // 0.1 A, 0 .. 6553.4 A
+  u_int16_t output_current;
+  // 0.01 V, 0 .. 655.34 V
+  u_int16_t input_voltage;
+  // 0.1 A, 0 .. 6553.4 A
+  u_int16_t input_current;
+  VE_REG_DEVICE_OFF_REASON_2 off_reason;
+} __attribute__((packed));
+
 struct VictronBleData {
   u_int16_t data_counter = 0;
   VICTRON_BLE_RECORD_TYPE record_type = VICTRON_BLE_RECORD_TYPE::TEST_RECORD;
@@ -847,6 +864,7 @@ struct VictronBleData {
     VICTRON_BLE_RECORD_MULTI_RS multi_rs;
     VICTRON_BLE_RECORD_VE_BUS ve_bus;
     VICTRON_BLE_RECORD_DC_ENERGY_METER dc_energy_meter;
+    VICTRON_BLE_RECORD_ORION_XS orion_xs;
     u_int8_t raw[VICTRON_ENCRYPTED_DATA_MAX_SIZE];
   } data;
 };
@@ -908,6 +926,10 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
       std::function<void(const VICTRON_BLE_RECORD_DC_ENERGY_METER *)> callback) {
     this->on_dc_energy_meter_message_callback_.add(std::move(callback));
   }
+  void add_on_orion_xs_message_callback(
+      std::function<void(const VICTRON_BLE_RECORD_ORION_XS *)> callback) {
+    this->on_orion_xs_message_callback_.add(std::move(callback));
+  }
   void add_on_message_callback(std::function<void(const VictronBleData *)> callback) {
     this->on_message_callback_.add(std::move(callback));
   }
@@ -933,6 +955,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
   VICTRON_MESSAGE_STORAGE_BL(multi_rs)
   VICTRON_MESSAGE_STORAGE_BL(ve_bus)
   VICTRON_MESSAGE_STORAGE_BL(dc_energy_meter)
+  VICTRON_MESSAGE_STORAGE_BL(orion_xs)
 
   CallbackManager<void(const VictronBleData *)> on_message_callback_{};
   VICTRON_MESSAGE_STORAGE_CB(battery_monitor, VICTRON_BLE_RECORD_BATTERY_MONITOR)
@@ -946,6 +969,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
   VICTRON_MESSAGE_STORAGE_CB(multi_rs, VICTRON_BLE_RECORD_MULTI_RS)
   VICTRON_MESSAGE_STORAGE_CB(ve_bus, VICTRON_BLE_RECORD_VE_BUS)
   VICTRON_MESSAGE_STORAGE_CB(dc_energy_meter, VICTRON_BLE_RECORD_DC_ENERGY_METER)
+  VICTRON_MESSAGE_STORAGE_CB(orion_xs, VICTRON_BLE_RECORD_ORION_XS)
 
 #undef VICTRON_MESSAGE_STORAGE_BL
 #undef VICTRON_MESSAGE_STORAGE_CB

@@ -27,6 +27,7 @@ CONF_ON_LYNX_SMART_BMS_MESSAGE = "on_lynx_smart_bms_message"
 CONF_ON_MULTI_RS_MESSAGE = "on_multi_rs_message"
 CONF_ON_VE_BUS_MESSAGE = "on_ve_bus_message"
 CONF_ON_DC_ENERGY_METER_MESSAGE = "on_dc_energy_meter_message"
+CONF_ON_ORION_XS_MESSAGE = "on_orion_xs_message"
 
 MULTI_CONF = True
 
@@ -144,6 +145,16 @@ DcEnergyMeterMessageConstPtr = (
 DcEnergyMeterMessageTrigger = victron_ble_ns.class_(
     "DcEnergyMeterMessageTrigger",
     automation.Trigger.template(DcEnergyMeterMessageConstPtr),
+)
+
+OrionXsMessageConstPtr = (
+    victron_ble_ns.struct("VICTRON_BLE_RECORD_ORION_XS")
+    .operator("ptr")
+    .operator("const")
+)
+OrionXsMessageTrigger = victron_ble_ns.class_(
+    "OrionXsMessageTrigger",
+    automation.Trigger.template(OrionXsMessageConstPtr),
 )
 
 
@@ -280,6 +291,15 @@ CONFIG_SCHEMA = cv.All(
                     ),
                 }
             ),
+            cv.Optional(
+                CONF_ON_ORION_XS_MESSAGE
+            ): automation.validate_automation(
+                {
+                    cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
+                        OrionXsMessageTrigger
+                    ),
+                }
+            ),
         }
     )
     .extend(esp32_ble_tracker.ESP_BLE_DEVICE_SCHEMA)
@@ -367,4 +387,10 @@ async def to_code(config):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
         await automation.build_automation(
             trigger, [(DcEnergyMeterMessageConstPtr, "message")], conf
+        )
+
+    for conf in config.get(CONF_ON_ORION_XS_MESSAGE, []):
+        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
+        await automation.build_automation(
+            trigger, [(OrionXsMessageConstPtr, "message")], conf
         )

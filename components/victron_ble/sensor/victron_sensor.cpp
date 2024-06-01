@@ -309,6 +309,9 @@ void VictronSensor::setup() {
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
             this->publish_state((u_int8_t) msg->data.multi_rs.charger_error);
             break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            this->publish_state((u_int8_t) msg->data.orion_xs.charger_error);
+            break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `charger error` field.", this->parent_->address_str().c_str());
             this->publish_state(NAN);
@@ -358,6 +361,9 @@ void VictronSensor::setup() {
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
             this->publish_state((u_int8_t) msg->data.ve_bus.device_state);
             break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            this->publish_state((u_int8_t) msg->data.orion_xs.device_state);
+            break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `device state` field.", this->parent_->address_str().c_str());
             this->publish_state(NAN);
@@ -397,6 +403,13 @@ void VictronSensor::setup() {
             break;
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
             this->publish_state(0.01f * msg->data.smart_battery_protect.input_voltage);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            if (msg->data.orion_xs.input_voltage == 0xFFFF) {
+              this->publish_state(0.0f);
+            } else {
+              this->publish_state(0.01f * msg->data.orion_xs.input_voltage);
+            }
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `input voltage` field.", this->parent_->address_str().c_str());
@@ -460,6 +473,13 @@ void VictronSensor::setup() {
               this->publish_state(0.01f * msg->data.smart_battery_protect.output_voltage);
             }
             break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            if (msg->data.orion_xs.output_voltage == 0xFFFF) {
+              this->publish_state(0.0f);
+            } else {
+              this->publish_state(0.01f * msg->data.orion_xs.output_voltage);
+            }
+            break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `output voltage` field.", this->parent_->address_str().c_str());
             this->publish_state(NAN);
@@ -476,6 +496,9 @@ void VictronSensor::setup() {
             break;
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
             this->publish_state((u_int32_t) msg->data.smart_battery_protect.off_reason);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            this->publish_state((u_int32_t) msg->data.orion_xs.off_reason);
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `off reason` field.", this->parent_->address_str().c_str());
@@ -783,6 +806,43 @@ void VictronSensor::setup() {
         }
       });
       break;
+
+      // ORION_XS
+    case VICTRON_SENSOR_TYPE::OUTPUT_CURRENT:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            if (msg->data.orion_xs.output_current == 0xFFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.1f * msg->data.orion_xs.output_current);
+            }
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no `output current` field.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+    case VICTRON_SENSOR_TYPE::INPUT_CURRENT:
+      this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            if (msg->data.orion_xs.input_current == 0xFFFF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.1f * msg->data.orion_xs.input_current);
+            }
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no `input current` field.", this->parent_->address_str().c_str());
+            this->publish_state(NAN);
+            break;
+        }
+      });
+      break;
+
     default:
       break;
   }

@@ -79,6 +79,9 @@ void VictronTextSensor::setup() {
           case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
             this->publish_state_(msg->data.multi_rs.charger_error);
             break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            this->publish_state_(msg->data.orion_xs.charger_error);
+            break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `charger error` field.", this->parent_->address_str().c_str());
             this->publish_state("");
@@ -109,6 +112,9 @@ void VictronTextSensor::setup() {
           case VICTRON_BLE_RECORD_TYPE::VE_BUS:
             this->publish_state_(msg->data.ve_bus.device_state);
             break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            this->publish_state_(msg->data.orion_xs.device_state);
+            break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `device state` field.", this->parent_->address_str().c_str());
             this->publish_state("");
@@ -135,6 +141,9 @@ void VictronTextSensor::setup() {
             break;
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
             this->publish_state_(msg->data.smart_battery_protect.off_reason);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::ORION_XS:
+            this->publish_state_(msg->data.orion_xs.off_reason);
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `off reason` field.", this->parent_->address_str().c_str());

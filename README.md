@@ -181,6 +181,7 @@ The following settings exist:
   - `on_multi_rs_message` - When a Multi RS message is recieved.
   - `on_ve_bus_message` - When a VE.Bus message is recieved.
   - `on_dc_energy_meter_message` - When a DC Energy meter message is recieved.
+  - `on_orion_xs_message` - When a Orion XS message is recieved.
 
 ### Sensor
 

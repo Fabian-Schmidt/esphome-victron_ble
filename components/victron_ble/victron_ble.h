@@ -378,6 +378,8 @@ enum class VE_REG_DEVICE_STATE : u_int8_t {
   ASSISTING = 0x0A,
   // Power supply
   POWER_SUPPLY = 0x0B,
+  // Sustain
+  SUSTAIN = 0xF4,
   // Starting-up
   STARTING_UP = 0xF5,
   // Repeated absorption

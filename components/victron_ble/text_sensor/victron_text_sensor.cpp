@@ -275,6 +275,9 @@ void VictronTextSensor::publish_state_(VE_REG_DEVICE_STATE val) {
     case VE_REG_DEVICE_STATE::POWER_SUPPLY:
       this->publish_state("Power supply");
       break;
+    case VE_REG_DEVICE_STATE::SUSTAIN:
+      this->publish_state("Sustain");
+      break;
     case VE_REG_DEVICE_STATE::STARTING_UP:
       this->publish_state("Starting-up");
       break;

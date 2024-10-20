@@ -317,7 +317,7 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   INVERTER_RS = 0x06,
   // Not defined
   GX_DEVICE = 0x07,
-  // VICTRON_BLE_RECORD_AC_CHARER
+  // VICTRON_BLE_RECORD_AC_CHARGER
   AC_CHARGER = 0x08,
   // VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT
   SMART_BATTERY_PROTECT = 0x09,
@@ -726,7 +726,7 @@ struct VICTRON_BLE_RECORD_INVERTER_RS {  // NOLINT(readability-identifier-naming
 } __attribute__((packed));
 
 // Undocumented. See <https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/62>
-struct VICTRON_BLE_RECORD_AC_CHARER  {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+struct VICTRON_BLE_RECORD_AC_CHARGER  {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
   
 } __attribute__((packed));
@@ -867,7 +867,7 @@ struct VictronBleData {
     VICTRON_BLE_RECORD_DCDC_CONVERTER dcdc_converter;
     VICTRON_BLE_RECORD_SMART_LITHIUM smart_lithium;
     VICTRON_BLE_RECORD_INVERTER_RS inverter_rs;
-    VICTRON_BLE_RECORD_AC_CHARER ac_charger;
+    VICTRON_BLE_RECORD_AC_CHARGER ac_charger;
     VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT smart_battery_protect;
     VICTRON_BLE_RECORD_LYNX_SMART_BMS lynx_smart_bms;
     VICTRON_BLE_RECORD_MULTI_RS multi_rs;
@@ -918,7 +918,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
   void add_on_inverter_rs_message_callback(std::function<void(const VICTRON_BLE_RECORD_INVERTER_RS *)> callback) {
     this->on_inverter_rs_message_callback_.add(std::move(callback));
   }
-  void add_on_ac_charger_message_callback(std::function<void(const VICTRON_BLE_RECORD_AC_CHARER *)> callback) {
+  void add_on_ac_charger_message_callback(std::function<void(const VICTRON_BLE_RECORD_AC_CHARGER *)> callback) {
     this->on_ac_charger_message_callback_.add(std::move(callback));
   }
   void add_on_smart_battery_protect_message_callback(
@@ -977,7 +977,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
   VICTRON_MESSAGE_STORAGE_CB(dcdc_converter, VICTRON_BLE_RECORD_DCDC_CONVERTER)
   VICTRON_MESSAGE_STORAGE_CB(smart_lithium, VICTRON_BLE_RECORD_SMART_LITHIUM)
   VICTRON_MESSAGE_STORAGE_CB(inverter_rs, VICTRON_BLE_RECORD_INVERTER_RS)
-  VICTRON_MESSAGE_STORAGE_CB(ac_charger, VICTRON_BLE_RECORD_AC_CHARER)
+  VICTRON_MESSAGE_STORAGE_CB(ac_charger, VICTRON_BLE_RECORD_AC_CHARGER)
   VICTRON_MESSAGE_STORAGE_CB(smart_battery_protect, VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)
   VICTRON_MESSAGE_STORAGE_CB(lynx_smart_bms, VICTRON_BLE_RECORD_LYNX_SMART_BMS)
   VICTRON_MESSAGE_STORAGE_CB(multi_rs, VICTRON_BLE_RECORD_MULTI_RS)

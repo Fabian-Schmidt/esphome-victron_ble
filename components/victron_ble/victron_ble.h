@@ -962,7 +962,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
   VICTRON_MESSAGE_STORAGE_BL(dcdc_converter)
   VICTRON_MESSAGE_STORAGE_BL(smart_lithium)
   VICTRON_MESSAGE_STORAGE_BL(inverter_rs)
-  VICTRON_MESSAGE_STORAGE_CB(ac_charger)
+  VICTRON_MESSAGE_STORAGE_BL(ac_charger)
   VICTRON_MESSAGE_STORAGE_BL(smart_battery_protect)
   VICTRON_MESSAGE_STORAGE_BL(lynx_smart_bms)
   VICTRON_MESSAGE_STORAGE_BL(multi_rs)

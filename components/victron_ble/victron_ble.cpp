@@ -237,6 +237,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
         return true;
       }
       break;
+    case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_AC_CHARER)) {
+        return true;
+      }
+      break;
     case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
       if (crypted_len >= sizeof(VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)) {
         return true;
@@ -292,6 +297,9 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
     case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
       expected_len = sizeof(VICTRON_BLE_RECORD_INVERTER_RS);
       break;
+    case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+      expected_len = sizeof(VICTRON_BLE_RECORD_AC_CHARER);
+      break;
     case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
       expected_len = sizeof(VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT);
       break;
@@ -346,6 +354,10 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type,
     case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
       this->inverter_rs_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved INVERTER_RS message.", this->address_str().c_str());
+      break;
+    case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+      this->ac_charger_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved AC_CHARGER message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
       this->smart_battery_protect_updated_ = true;

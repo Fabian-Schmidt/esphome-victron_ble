@@ -317,7 +317,7 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   INVERTER_RS = 0x06,
   // Not defined
   GX_DEVICE = 0x07,
-  // Not defined
+  // VICTRON_BLE_RECORD_AC_CHARER
   AC_CHARGER = 0x08,
   // VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT
   SMART_BATTERY_PROTECT = 0x09,
@@ -723,6 +723,12 @@ struct VICTRON_BLE_RECORD_INVERTER_RS {  // NOLINT(readability-identifier-naming
   u_int16_t yield_today;
   // 1 W, -32,768 .. 32,766 W
   int16_t ac_out_power;
+} __attribute__((packed));
+
+// Undocumented. See <https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/62>
+struct VICTRON_BLE_RECORD_AC_CHARER  {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  VE_REG_DEVICE_STATE device_state;
+  
 } __attribute__((packed));
 
 struct VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)

@@ -238,7 +238,7 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
       }
       break;
     case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_AC_CHARER)) {
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_AC_CHARGER)) {
         return true;
       }
       break;
@@ -298,7 +298,7 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
       expected_len = sizeof(VICTRON_BLE_RECORD_INVERTER_RS);
       break;
     case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
-      expected_len = sizeof(VICTRON_BLE_RECORD_AC_CHARER);
+      expected_len = sizeof(VICTRON_BLE_RECORD_AC_CHARGER);
       break;
     case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
       expected_len = sizeof(VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT);

@@ -725,10 +725,26 @@ struct VICTRON_BLE_RECORD_INVERTER_RS {  // NOLINT(readability-identifier-naming
   int16_t ac_out_power;
 } __attribute__((packed));
 
-// Undocumented. See <https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/62>
+// See also <https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/62>
 struct VICTRON_BLE_RECORD_AC_CHARGER  {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
-  
+  VE_REG_CHR_ERROR_CODE charger_error;
+  // 0.01 V, 0 .. 81.90 V
+  u_int16_t battery_voltage_1 : 13;
+  // 0.1 A, 0 .. 204.6 A
+  u_int16_t battery_current_1 : 11;
+  // 0.01 V, 0 .. 81.90 V
+  u_int16_t battery_voltage_2 : 13;
+  // 0.1 A, 0 .. 204.6 A
+  u_int16_t battery_current_2 : 11;
+  // 0.01 V, 0 .. 81.90 V
+  u_int16_t battery_voltage_3 : 13;
+  // 0.1 A, 0 .. 204.6 A
+  u_int16_t battery_current_3 : 11;
+  // 1 °C, -40 .. 86 °C - Temperature = Record value - 40
+  u_int8_t temperature : 7;
+  // 0.1 A, 0 .. 51.0 A
+  u_int16_t ac_current : 9;
 } __attribute__((packed));
 
 struct VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)

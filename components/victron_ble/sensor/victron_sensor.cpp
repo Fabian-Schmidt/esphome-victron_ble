@@ -80,7 +80,11 @@ void VictronSensor::setup() {
             this->publish_state(0.1f * msg->data.inverter.ac_current);
             break;
           case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
-            this->publish_state(0.1f * msg->data.ac_charger.ac_current);
+            if (msg->data.ac_charger.ac_current == 0x1FF) {
+              this->publish_state(NAN);
+            } else {
+              this->publish_state(0.1f * msg->data.ac_charger.ac_current);
+            }
             break;
           default:
             ESP_LOGW(TAG, "[%s] Device has no `ac current` field.", this->parent_->address_str().c_str());
@@ -595,7 +599,7 @@ void VictronSensor::setup() {
             }
             break;
           case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
-            if (msg->data.ac_charger.battery_temperature == 0x7F) {
+            if (msg->data.ac_charger.temperature == 0x7F) {
               this->publish_state(NAN);
             } else {
               this->publish_state(-40.0f + msg->data.ac_charger.temperature);

@@ -73,6 +73,9 @@ void VictronTextSensor::setup() {
           case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
             this->publish_state_(msg->data.inverter_rs.charger_error);
             break;
+          case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+            this->publish_state_(msg->data.ac_charger.charger_error);
+            break;
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
             this->publish_state_(msg->data.smart_battery_protect.error_code);
             break;
@@ -102,6 +105,9 @@ void VictronTextSensor::setup() {
             break;
           case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
             this->publish_state_(msg->data.inverter_rs.device_state);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+            this->publish_state_(msg->data.ac_charger.device_state);
             break;
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
             this->publish_state_(msg->data.smart_battery_protect.device_state);

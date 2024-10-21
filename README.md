@@ -26,12 +26,11 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - DC Energy Meter
       - Missing definition for `bmv_monitor_mode`.
     - Orion XS
+    - Blue Smart Chargers
+      - Requires Firmware v3.61 or higher. Available in VictronConnect App v6.10beta14 (2024-09-28).
   -  Not suported. Awaiting final documentation:
      - GX-Device
      - AC Charger
-   - Unsupported. Due to [lack of support for advertising protocol](https://www.victronenergy.com/media/pg/VictronConnect_Manual/en/stored-trends---instant-readout.html#UUID-5eec18d4-9e11-0845-47e5-9a8f0cec49f4):
-     - Blue Smart Chargers  
-       See <https://github.com/pvtex/Victron_BlueSmart_IP22> for reding data without Bluetooth. 
 - [Bluetooth connection protocol](https://community.victronenergy.com/questions/93919/victron-bluetooth-ble-protocol-publication.html) - Component `victron_ble_connect`.
   - Supported Devices:
     - Smart Shunt

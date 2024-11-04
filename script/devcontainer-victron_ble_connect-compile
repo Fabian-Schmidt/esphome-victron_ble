@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+esphome compile tests/test.ble_connect.esp32-ard.yaml
+esphome compile tests/test.ble_connect.esp32-idf.yaml

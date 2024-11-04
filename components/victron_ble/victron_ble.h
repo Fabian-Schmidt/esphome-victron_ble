@@ -4,6 +4,7 @@
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 #include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
+#include "victron_custom_type.h"
 
 #ifdef USE_ESP32
 
@@ -538,7 +539,7 @@ struct VICTRON_BLE_RECORD_SOLAR_CHARGER {  // NOLINT(readability-identifier-nami
   VE_REG_DEVICE_STATE device_state;
   VE_REG_CHR_ERROR_CODE charger_error;
   // 0.01 V, -327.68 .. 327.66 V
-  int16_t battery_voltage;
+  battery_voltage_16bit_0_01V battery_voltage;
   // 0.1 A, -3276.8 .. 3276.6 A
   int16_t battery_current;
   // 0.01 kWh, 0 .. 655.34 kWh
@@ -729,22 +730,14 @@ struct VICTRON_BLE_RECORD_INVERTER_RS {  // NOLINT(readability-identifier-naming
 struct VICTRON_BLE_RECORD_AC_CHARGER  {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
   VE_REG_CHR_ERROR_CODE charger_error;
-  // 0.01 V, 0 .. 81.90 V
-  u_int16_t battery_voltage_1 : 13;
-  // 0.1 A, 0 .. 204.6 A
-  u_int16_t battery_current_1 : 11;
-  // 0.01 V, 0 .. 81.90 V
-  u_int16_t battery_voltage_2 : 13;
-  // 0.1 A, 0 .. 204.6 A
-  u_int16_t battery_current_2 : 11;
-  // 0.01 V, 0 .. 81.90 V
-  u_int16_t battery_voltage_3 : 13;
-  // 0.1 A, 0 .. 204.6 A
-  u_int16_t battery_current_3 : 11;
-  // 1 °C, -40 .. 86 °C - Temperature = Record value - 40
-  u_int8_t temperature : 7;
-  // 0.1 A, 0 .. 51.0 A
-  u_int16_t ac_current : 9;
+  battery_voltage_13bit_0_01V_positiv battery_voltage_1 : 13;
+  battery_current_11bit_0_1A_positiv battery_current_1 : 11;
+  battery_voltage_13bit_0_01V_positiv battery_voltage_2 : 13;
+  battery_current_11bit_0_1A_positiv battery_current_2 : 11;
+  battery_voltage_13bit_0_01V_positiv battery_voltage_3 : 13;
+  battery_current_11bit_0_1A_positiv battery_current_3 : 11;
+  temperature_7bit temperature : 7;
+  ac_current_9bit_0_1A_positiv ac_current : 9;
 } __attribute__((packed));
 
 struct VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)

@@ -194,6 +194,55 @@ class VictronSensor : public Component, public sensor::Sensor, public Parented<V
 
  protected:
   VICTRON_SENSOR_TYPE type_;
+
+  inline void publish_state_(battery_voltage_16bit_0_01V val) {
+    if (val == 0x7FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.01f * (int16_t)val);
+    }
+  };
+
+  inline void publish_state_(battery_voltage_13bit_0_01V_positiv val) {
+    if (val == 0x1FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.01f * (u_int16_t)val);
+    }
+  };
+
+  inline void publish_state_(battery_current_11bit_0_1A_positiv val) {
+    if (val == 0x7FF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.1f * (u_int16_t)val);
+    }
+  };
+
+  inline void publish_state_(battery_current_11bit_0_1A_positiv val_C, battery_voltage_13bit_0_01V_positiv val_V) {
+    if (val_C == 0x7FF || val_V == 0x1FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state((0.1f * (u_int16_t)val_C) * (0.01f * (u_int16_t)val_V));
+    }
+  };
+
+  inline void publish_state_(temperature_7bit val) {
+    if (val == 0x7F) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(-40.0f + (u_int8_t)val));
+    }
+  };
+
+  inline void publish_state_(ac_current_9bit_0_1A_positiv val) {
+    if (val == 0x1FF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.1f * val);
+    }
+  };
+  
 };
 }  // namespace victron_ble
 }  // namespace esphome

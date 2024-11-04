@@ -7,6 +7,7 @@ echo 'Setup venv'
 python3 -m venv /workspaces/.venv
 source /workspaces/.venv/bin/activate
 pip install -U pip
+pip install setuptools
 
 echo 'Install esphome'
 pip install esphome
@@ -25,8 +26,8 @@ else
     echo "  pio init --ide vscode"
 fi
 
-echo 'Run first build for victron_ble_connect - devcontainer-victron_ble_connect-compile'
-script/devcontainer-victron_ble_connect-compile
+# echo 'Run first build for victron_ble_connect - devcontainer-victron_ble_connect-compile'
+# script/devcontainer-victron_ble_connect-compile
 
-echo 'Run first build for victron_ble - devcontainer-victron_ble-compile'
-script/devcontainer-victron_ble-compile
+# echo 'Run first build for victron_ble - devcontainer-victron_ble-compile'
+# script/devcontainer-victron_ble-compile

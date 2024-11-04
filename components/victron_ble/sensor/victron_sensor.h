@@ -153,6 +153,20 @@ static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
     case VICTRON_SENSOR_TYPE::CELL8:
       return "CELL8";
 
+      //AC_CHARGER
+    case VICTRON_SENSOR_TYPE::BATTERY_CURRENT_2:
+      return "BATTERY_CURRENT_2";
+    case VICTRON_SENSOR_TYPE::BATTERY_VOLTAGE_2:
+      return "BATTERY_VOLTAGE_2";
+    case VICTRON_SENSOR_TYPE::BATTERY_POWER_2:
+      return "BATTERY_POWER_2";
+    case VICTRON_SENSOR_TYPE::BATTERY_CURRENT_3:
+      return "BATTERY_CURRENT_3";
+    case VICTRON_SENSOR_TYPE::BATTERY_VOLTAGE_3:
+      return "BATTERY_VOLTAGE_3";
+    case VICTRON_SENSOR_TYPE::BATTERY_POWER_3:
+      return "BATTERY_POWER_3";
+    
       // SMART_BATTERY_PROTECT
     case VICTRON_SENSOR_TYPE::OUTPUT_STATE:
       return "OUTPUT_STATE";
@@ -196,7 +210,7 @@ class VictronSensor : public Component, public sensor::Sensor, public Parented<V
   VICTRON_SENSOR_TYPE type_;
 
   inline void publish_state_(battery_voltage_16bit_0_01V val) {
-    if (val == 0x7FFF) {
+    if ((int16_t)val == 0x7FFF) {
       this->publish_state(NAN);
     } else {
       this->publish_state(0.01f * (int16_t)val);
@@ -204,7 +218,7 @@ class VictronSensor : public Component, public sensor::Sensor, public Parented<V
   };
 
   inline void publish_state_(battery_voltage_13bit_0_01V_positiv val) {
-    if (val == 0x1FFF) {
+    if ((u_int16_t)val == 0x1FFF) {
       this->publish_state(NAN);
     } else {
       this->publish_state(0.01f * (u_int16_t)val);
@@ -212,7 +226,7 @@ class VictronSensor : public Component, public sensor::Sensor, public Parented<V
   };
 
   inline void publish_state_(battery_current_11bit_0_1A_positiv val) {
-    if (val == 0x7FF) {
+    if ((u_int16_t)val == 0x7FF) {
       this->publish_state(NAN);
     } else {
       this->publish_state(0.1f * (u_int16_t)val);
@@ -220,7 +234,7 @@ class VictronSensor : public Component, public sensor::Sensor, public Parented<V
   };
 
   inline void publish_state_(battery_current_11bit_0_1A_positiv val_C, battery_voltage_13bit_0_01V_positiv val_V) {
-    if (val_C == 0x7FF || val_V == 0x1FFF) {
+    if ((u_int16_t)val_C == 0x7FF || (u_int16_t)val_V == 0x1FFF) {
       this->publish_state(NAN);
     } else {
       this->publish_state((0.1f * (u_int16_t)val_C) * (0.01f * (u_int16_t)val_V));
@@ -228,18 +242,18 @@ class VictronSensor : public Component, public sensor::Sensor, public Parented<V
   };
 
   inline void publish_state_(temperature_7bit val) {
-    if (val == 0x7F) {
+    if ((u_int8_t)val == 0x7F) {
       this->publish_state(NAN);
     } else {
-      this->publish_state(-40.0f + (u_int8_t)val));
+      this->publish_state(-40.0f + (u_int8_t)val);
     }
   };
 
   inline void publish_state_(ac_current_9bit_0_1A_positiv val) {
-    if (val == 0x1FF) {
+    if ((u_int16_t)val == 0x1FF) {
       this->publish_state(NAN);
     } else {
-      this->publish_state(0.1f * val);
+      this->publish_state(0.1f * (u_int16_t)val);
     }
   };
   

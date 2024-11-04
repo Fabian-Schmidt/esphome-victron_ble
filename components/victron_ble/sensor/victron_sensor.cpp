@@ -767,6 +767,41 @@ void VictronSensor::setup() {
       });
       break;
 
+      // AC_CHARGER
+    case VICTRON_SENSOR_TYPE::BATTERY_CURRENT_2:
+    case VICTRON_SENSOR_TYPE::BATTERY_VOLTAGE_2:
+    case VICTRON_SENSOR_TYPE::BATTERY_POWER_2:
+    case VICTRON_SENSOR_TYPE::BATTERY_CURRENT_3:
+    case VICTRON_SENSOR_TYPE::BATTERY_VOLTAGE_3:
+    case VICTRON_SENSOR_TYPE::BATTERY_POWER_3:
+      this->parent_->add_on_ac_charger_message_callback(
+          [this](const VICTRON_BLE_RECORD_AC_CHARGER *val) {
+            switch (this->type_) {
+              case VICTRON_SENSOR_TYPE::BATTERY_CURRENT_2:
+                this->publish_state_(val->battery_current_2);
+                break;
+              case VICTRON_SENSOR_TYPE::BATTERY_VOLTAGE_2:
+                this->publish_state_(val->battery_voltage_2);
+                break;
+              case VICTRON_SENSOR_TYPE::BATTERY_POWER_2:
+                this->publish_state_(val->battery_current_2, val->battery_voltage_2);
+                break;
+              case VICTRON_SENSOR_TYPE::BATTERY_CURRENT_3:
+                this->publish_state_(val->battery_current_3);
+                break;
+              case VICTRON_SENSOR_TYPE::BATTERY_VOLTAGE_3:
+                this->publish_state_(val->battery_voltage_3);
+                break;
+              case VICTRON_SENSOR_TYPE::BATTERY_POWER_3:
+                this->publish_state_(val->battery_current_3, val->battery_voltage_3);
+                break;
+              default:
+                break;
+            }
+          });
+      break;
+
+
       // SMART_BATTERY_PROTECT
     case VICTRON_SENSOR_TYPE::OUTPUT_STATE:
     case VICTRON_SENSOR_TYPE::WARNING_REASON:

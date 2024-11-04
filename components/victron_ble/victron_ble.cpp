@@ -67,6 +67,14 @@ void VictronBle::update() {
                   [this]() { this->on_inverter_rs_message_callback_.call(&this->last_package_.data.inverter_rs); });
     }
   }
+  if (this->ac_charger_updated_) {
+    this->ac_charger_updated_ = false;
+    if (this->on_ac_charger_message_callback_.size() > 0) {
+      this->defer("VictronBle8", [this]() {
+        this->on_ac_charger_message_callback_.call(&this->last_package_.data.ac_charger);
+      });
+    }
+  }
   if (this->smart_battery_protect_updated_) {
     this->smart_battery_protect_updated_ = false;
     if (this->on_smart_battery_protect_message_callback_.size() > 0) {

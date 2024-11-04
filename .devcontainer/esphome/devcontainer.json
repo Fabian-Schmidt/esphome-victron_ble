@@ -42,7 +42,11 @@
       ],
       "settings": {
         "python.languageServer": "Pylance",
-        "python.pythonPath": "/usr/bin/python3",
+        // "python.pythonPath": "/usr/bin/python3",
+        // "python.pythonPath": "/workspaces/.venv/bin/python",
+        "python.venvFolders": [
+          "/workspace/.venv"
+        ],
         "flake8.args": [
           "--config=${workspaceFolder}/.flake8"
         ],
@@ -77,7 +81,10 @@
         "files.associations": {
           "**/.vscode/*.json": "jsonc"
         },
-        "C_Cpp.clang_format_path": "/usr/bin/clang-format-13"
+        "C_Cpp.clang_format_path": "/usr/bin/clang-format-13",
+        "C_Cpp.default.defines": [
+          "USE_ESP32"
+        ]
       }
     }
   }

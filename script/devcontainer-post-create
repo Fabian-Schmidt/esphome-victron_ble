@@ -11,6 +11,20 @@ pip install -U pip
 echo 'Install esphome'
 pip install esphome
 
+# echo 'Clone esphome for cpp reference'
+# git clone --depth=1 https://github.com/esphome/esphome.git /workspaces/esphome
+
+cpp_json=.vscode/c_cpp_properties.json
+if [ ! -f $cpp_json ]; then
+    echo "Initializing PlatformIO..."
+    pio init --ide vscode --silent
+    sed -i "/\\/workspaces\/esphome-victron_ble\/include/d" $cpp_json
+    sed -i "s/\"\/workspaces\/esphome-victron_ble\"/\"\/workspaces\/.venv\/lib\/python3.11\/site-packages\/\"/" $cpp_json
+else
+    echo "Cpp environment already configured. To reconfigure it you can run one the following commands:"
+    echo "  pio init --ide vscode"
+fi
+
 echo 'Run first build for victron_ble_connect - devcontainer-victron_ble_connect-compile'
 script/devcontainer-victron_ble_connect-compile
 

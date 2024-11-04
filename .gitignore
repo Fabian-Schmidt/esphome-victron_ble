@@ -10,3 +10,6 @@
 /secrets.yaml
 /local_*
 /.idea/**
+
+.venv
+.pio

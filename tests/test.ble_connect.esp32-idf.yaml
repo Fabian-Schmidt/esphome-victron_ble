@@ -3,7 +3,7 @@ substitutions:
   mac_address: 60:A4:23:91:8F:55
 
 esphome:
-  name: "esp32-idf"
+  name: "ble-connect-esp32-idf"
 
 external_components:
   - source:

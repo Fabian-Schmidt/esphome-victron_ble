@@ -7,7 +7,7 @@ substitutions:
   smart_solar_encryption_key: 0df4d0395b7d1a876c0c33ecb9e70aea
 
 esphome:
-  name: "esp32-ard"
+  name: "ble-esp32-idf"
 
 external_components:
     - source:

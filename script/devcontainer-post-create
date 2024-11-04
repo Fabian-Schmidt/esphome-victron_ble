@@ -3,22 +3,16 @@
 set -e
 # set -x
 
-# apt update
-# apt-get install avahi-utils -y
-# mkdir -p config
-# script/setup
-
-python -m venv .venv
-source .venv/bin/activate
+echo 'Setup venv'
+python3 -m venv /workspaces/.venv
+source /workspaces/.venv/bin/activate
 pip install -U pip
+
+echo 'Install esphome'
 pip install esphome
 
-cpp_json=.vscode/c_cpp_properties.json
-if [ ! -f $cpp_json ]; then
-    echo "Initializing PlatformIO..."
-    pio init --ide vscode --silent
-    sed -i "/\\/workspaces\/esphome\/include/d" $cpp_json
-else
-    echo "Cpp environment already configured. To reconfigure it you can run one the following commands:"
-    echo "  pio init --ide vscode"
-fi
+echo 'Run first build for victron_ble_connect - devcontainer-victron_ble_connect-compile'
+script/devcontainer-victron_ble_connect-compile
+
+echo 'Run first build for victron_ble - devcontainer-victron_ble-compile'
+script/devcontainer-victron_ble-compile

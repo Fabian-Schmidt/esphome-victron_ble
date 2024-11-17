@@ -67,6 +67,14 @@ void VictronBle::update() {
                   [this]() { this->on_inverter_rs_message_callback_.call(&this->last_package_.data.inverter_rs); });
     }
   }
+  if (this->ac_charger_updated_) {
+    this->ac_charger_updated_ = false;
+    if (this->on_ac_charger_message_callback_.size() > 0) {
+      this->defer("VictronBle8", [this]() {
+        this->on_ac_charger_message_callback_.call(&this->last_package_.data.ac_charger);
+      });
+    }
+  }
   if (this->smart_battery_protect_updated_) {
     this->smart_battery_protect_updated_ = false;
     if (this->on_smart_battery_protect_message_callback_.size() > 0) {
@@ -237,6 +245,11 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
         return true;
       }
       break;
+    case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_AC_CHARGER)) {
+        return true;
+      }
+      break;
     case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
       if (crypted_len >= sizeof(VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)) {
         return true;
@@ -292,6 +305,9 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
     case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
       expected_len = sizeof(VICTRON_BLE_RECORD_INVERTER_RS);
       break;
+    case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+      expected_len = sizeof(VICTRON_BLE_RECORD_AC_CHARGER);
+      break;
     case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
       expected_len = sizeof(VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT);
       break;
@@ -346,6 +362,10 @@ void VictronBle::handle_record_(const VICTRON_BLE_RECORD_TYPE record_type,
     case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
       this->inverter_rs_updated_ = true;
       ESP_LOGD(TAG, "[%s] Recieved INVERTER_RS message.", this->address_str().c_str());
+      break;
+    case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+      this->ac_charger_updated_ = true;
+      ESP_LOGD(TAG, "[%s] Recieved AC_CHARGER message.", this->address_str().c_str());
       break;
     case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
       this->smart_battery_protect_updated_ = true;

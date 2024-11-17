@@ -4,6 +4,7 @@
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 #include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
+#include "victron_custom_type.h"
 
 #ifdef USE_ESP32
 
@@ -317,7 +318,7 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   INVERTER_RS = 0x06,
   // Not defined
   GX_DEVICE = 0x07,
-  // Not defined
+  // VICTRON_BLE_RECORD_AC_CHARGER
   AC_CHARGER = 0x08,
   // VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT
   SMART_BATTERY_PROTECT = 0x09,
@@ -538,7 +539,7 @@ struct VICTRON_BLE_RECORD_SOLAR_CHARGER {  // NOLINT(readability-identifier-nami
   VE_REG_DEVICE_STATE device_state;
   VE_REG_CHR_ERROR_CODE charger_error;
   // 0.01 V, -327.68 .. 327.66 V
-  int16_t battery_voltage;
+  battery_voltage_16bit_0_01V battery_voltage;
   // 0.1 A, -3276.8 .. 3276.6 A
   int16_t battery_current;
   // 0.01 kWh, 0 .. 655.34 kWh
@@ -725,6 +726,20 @@ struct VICTRON_BLE_RECORD_INVERTER_RS {  // NOLINT(readability-identifier-naming
   int16_t ac_out_power;
 } __attribute__((packed));
 
+// See also <https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/62>
+struct VICTRON_BLE_RECORD_AC_CHARGER  {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  VE_REG_DEVICE_STATE device_state;
+  VE_REG_CHR_ERROR_CODE charger_error;
+  battery_voltage_13bit_0_01V_positiv battery_voltage_1 : 13;
+  battery_current_11bit_0_1A_positiv battery_current_1 : 11;
+  battery_voltage_13bit_0_01V_positiv battery_voltage_2 : 13;
+  battery_current_11bit_0_1A_positiv battery_current_2 : 11;
+  battery_voltage_13bit_0_01V_positiv battery_voltage_3 : 13;
+  battery_current_11bit_0_1A_positiv battery_current_3 : 11;
+  temperature_7bit temperature : 7;
+  ac_current_9bit_0_1A_positiv ac_current : 9;
+} __attribute__((packed));
+
 struct VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
   // TODO
@@ -861,6 +876,7 @@ struct VictronBleData {
     VICTRON_BLE_RECORD_DCDC_CONVERTER dcdc_converter;
     VICTRON_BLE_RECORD_SMART_LITHIUM smart_lithium;
     VICTRON_BLE_RECORD_INVERTER_RS inverter_rs;
+    VICTRON_BLE_RECORD_AC_CHARGER ac_charger;
     VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT smart_battery_protect;
     VICTRON_BLE_RECORD_LYNX_SMART_BMS lynx_smart_bms;
     VICTRON_BLE_RECORD_MULTI_RS multi_rs;
@@ -911,6 +927,9 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
   void add_on_inverter_rs_message_callback(std::function<void(const VICTRON_BLE_RECORD_INVERTER_RS *)> callback) {
     this->on_inverter_rs_message_callback_.add(std::move(callback));
   }
+  void add_on_ac_charger_message_callback(std::function<void(const VICTRON_BLE_RECORD_AC_CHARGER *)> callback) {
+    this->on_ac_charger_message_callback_.add(std::move(callback));
+  }
   void add_on_smart_battery_protect_message_callback(
       std::function<void(const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *)> callback) {
     this->on_smart_battery_protect_message_callback_.add(std::move(callback));
@@ -952,6 +971,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
   VICTRON_MESSAGE_STORAGE_BL(dcdc_converter)
   VICTRON_MESSAGE_STORAGE_BL(smart_lithium)
   VICTRON_MESSAGE_STORAGE_BL(inverter_rs)
+  VICTRON_MESSAGE_STORAGE_BL(ac_charger)
   VICTRON_MESSAGE_STORAGE_BL(smart_battery_protect)
   VICTRON_MESSAGE_STORAGE_BL(lynx_smart_bms)
   VICTRON_MESSAGE_STORAGE_BL(multi_rs)
@@ -966,6 +986,7 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
   VICTRON_MESSAGE_STORAGE_CB(dcdc_converter, VICTRON_BLE_RECORD_DCDC_CONVERTER)
   VICTRON_MESSAGE_STORAGE_CB(smart_lithium, VICTRON_BLE_RECORD_SMART_LITHIUM)
   VICTRON_MESSAGE_STORAGE_CB(inverter_rs, VICTRON_BLE_RECORD_INVERTER_RS)
+  VICTRON_MESSAGE_STORAGE_CB(ac_charger, VICTRON_BLE_RECORD_AC_CHARGER)
   VICTRON_MESSAGE_STORAGE_CB(smart_battery_protect, VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)
   VICTRON_MESSAGE_STORAGE_CB(lynx_smart_bms, VICTRON_BLE_RECORD_LYNX_SMART_BMS)
   VICTRON_MESSAGE_STORAGE_CB(multi_rs, VICTRON_BLE_RECORD_MULTI_RS)

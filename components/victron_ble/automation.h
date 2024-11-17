@@ -61,6 +61,14 @@ class InverterRsMessageTrigger : public Trigger<const VICTRON_BLE_RECORD_INVERTE
   }
 };
 
+class AcChargerMessageTrigger : public Trigger<const VICTRON_BLE_RECORD_AC_CHARGER *> {
+ public:
+  explicit AcChargerMessageTrigger(VictronBle *parent) {
+    parent->add_on_ac_charger_message_callback(
+        [this](const VICTRON_BLE_RECORD_AC_CHARGER *message) { this->trigger(message); });
+  }
+};
+
 class SmartBatteryProtectMessageTrigger : public Trigger<const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *> {
  public:
   explicit SmartBatteryProtectMessageTrigger(VictronBle *parent) {

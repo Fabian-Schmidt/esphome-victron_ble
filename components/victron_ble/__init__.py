@@ -22,6 +22,7 @@ CONF_ON_INVERTER_MESSAGE = "on_inverter_message"
 CONF_ON_DCDC_CONVERTER_MESSAGE = "on_dcdc_converter_message"
 CONF_ON_SMART_LITHIUM_MESSAGE = "on_smart_lithium_message"
 CONF_ON_INVERTER_RS_MESSAGE = "on_inverter_rs_message"
+CONF_ON_AC_CHARGER_MESSAGE = "on_ac_charger_message"
 CONF_ON_SMART_BATTERY_PROTECT_MESSAGE = "on_smart_battery_protect_message"
 CONF_ON_LYNX_SMART_BMS_MESSAGE = "on_lynx_smart_bms_message"
 CONF_ON_MULTI_RS_MESSAGE = "on_multi_rs_message"
@@ -99,6 +100,15 @@ InverterRsMessageConstPtr = (
 )
 InverterRsMessageTrigger = victron_ble_ns.class_(
     "InverterRsMessageTrigger", automation.Trigger.template(InverterRsMessageConstPtr)
+)
+
+AcChargerMessageConstPtr = (
+    victron_ble_ns.struct("VICTRON_BLE_RECORD_AC_CHARGER")
+    .operator("ptr")
+    .operator("const")
+)
+AcChargerMessageTrigger = victron_ble_ns.class_(
+    "AcChargerMessageTrigger", automation.Trigger.template(AcChargerMessageConstPtr)
 )
 
 SmartBatteryProtectMessageConstPtr = (
@@ -254,6 +264,13 @@ CONFIG_SCHEMA = cv.All(
                     ),
                 }
             ),
+            cv.Optional(CONF_ON_AC_CHARGER_MESSAGE): automation.validate_automation(
+                {
+                    cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
+                        AcChargerMessageTrigger
+                    ),
+                }
+            ),
             cv.Optional(
                 CONF_ON_SMART_BATTERY_PROTECT_MESSAGE
             ): automation.validate_automation(
@@ -357,6 +374,12 @@ async def to_code(config):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
         await automation.build_automation(
             trigger, [(InverterRsMessageConstPtr, "message")], conf
+        )
+
+    for conf in config.get(CONF_ON_AC_CHARGER_MESSAGE, []):
+        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
+        await automation.build_automation(
+            trigger, [(AcChargerMessageConstPtr, "message")], conf
         )
 
     for conf in config.get(CONF_ON_SMART_BATTERY_PROTECT_MESSAGE, []):

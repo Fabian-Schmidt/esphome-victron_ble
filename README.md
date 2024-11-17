@@ -87,11 +87,11 @@ sensor:
     type: TIME_TO_GO
   - platform: victron_ble
     victron_ble_id: MySmartShunt
-    name: "Battery voltage"
+    name: "Battery Voltage"
     type: BATTERY_VOLTAGE
   - platform: victron_ble
     victron_ble_id: MySmartShunt
-    name: "Starter Battery voltage"
+    name: "Starter Battery Voltage"
     # AUX_VOLTAGE or MID_VOLTAGE or TEMPERATURE.
     # Depending on configuration of SmartShunt.
     type: AUX_VOLTAGE

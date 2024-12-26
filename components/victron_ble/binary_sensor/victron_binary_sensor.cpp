@@ -113,6 +113,25 @@ void VictronBinarySensor::setup() {
         }
         break;
 
+      case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_OVER_VOLTAGE:
+      case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_UNDER_VOLTAGE:
+      case VICTRON_BINARY_SENSOR_TYPE::BMS_WARN_UNDER_VOLTAGE:
+      case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_OVER_TEMPERATURE:
+      case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_UNDER_TEMPERATURE:
+      case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_HARDWARE_FAILURE:
+      case VICTRON_BINARY_SENSOR_TYPE::BMS_ALLOWED_TO_CHARGE:
+      case VICTRON_BINARY_SENSOR_TYPE::BMS_ALLOWED_TO_DISCHARGE:
+        switch (msg->record_type) {
+          case VICTRON_BLE_RECORD_TYPE::SMART_LITHIUM:
+            this->publish_state_(msg->data.smart_lithium.bms_flags);
+            break;
+          default:
+            ESP_LOGW(TAG, "[%s] Device has no `bms_flags` field.", this->parent_->address_str().c_str());
+            this->publish_state("");
+            break;
+        }
+        break;
+
       default:
         break;
     }
@@ -177,6 +196,37 @@ void VictronBinarySensor::publish_state_(VE_REG_DEVICE_STATE device_state) {
       break;
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_EXTERNAL_CONTROL:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::EXTERNAL_CONTROL);
+      break;
+    default:
+      break;
+  }
+}
+
+void VictronBinarySensor::publish_state_(VE_REG_BMS_FLAGs flags) {
+  switch (this->type_) {
+    case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_OVER_VOLTAGE:
+      this->publish_state((flags & VE_REG_BMS_FLAGs::ALARM_OVER_VOLTAGE) != VE_REG_BMS_FLAGs::NONE);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_UNDER_VOLTAGE:
+      this->publish_state((flags & VE_REG_BMS_FLAGs::ALARM_UNDER_VOLTAGE) != VE_REG_BMS_FLAGs::NONE);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::BMS_WARN_UNDER_VOLTAGE:
+      this->publish_state((flags & VE_REG_BMS_FLAGs::WARN_UNDER_VOLTAGE) != VE_REG_BMS_FLAGs::NONE);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_OVER_TEMPERATURE:
+      this->publish_state((flags & VE_REG_BMS_FLAGs::ALARM_OVER_TEMPERATURE) != VE_REG_BMS_FLAGs::NONE);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_UNDER_TEMPERATURE:
+      this->publish_state((flags & VE_REG_BMS_FLAGs::ALARM_UNDER_TEMPERATURE) != VE_REG_BMS_FLAGs::NONE);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_HARDWARE_FAILURE:
+      this->publish_state((flags & VE_REG_BMS_FLAGs::ALARM_HARDWARE_FAILURE) != VE_REG_BMS_FLAGs::NONE);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::BMS_ALLOWED_TO_CHARGE:
+      this->publish_state((flags & VE_REG_BMS_FLAGs::ALLOWED_TO_CHARGE) != VE_REG_BMS_FLAGs::NONE);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::BMS_ALLOWED_TO_DISCHARGE:
+      this->publish_state((flags & VE_REG_BMS_FLAGs::ALLOWED_TO_DISCHARGE) != VE_REG_BMS_FLAGs::NONE);
       break;
     default:
       break;

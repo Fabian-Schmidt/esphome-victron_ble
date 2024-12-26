@@ -651,6 +651,25 @@ struct VICTRON_BLE_RECORD_DCDC_CONVERTER {  // NOLINT(readability-identifier-nam
 } __attribute__((packed));
 
 // source:
+// - https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/64
+enum struct VE_REG_BMS_FLAGs : u_int32_t {
+  NONE = 0x0,
+
+  ALARM_OVER_VOLTAGE = (1ul << 9),
+  ALARM_UNDER_VOLTAGE = (1ul << 11),
+  WARN_UNDER_VOLTAGE = (1ul << 12),
+
+  ALARM_OVER_TEMPERATURE = (1ul << 15),
+  ALARM_UNDER_TEMPERATURE = (1ul << 22),
+
+  ALARM_HARDWARE_FAILURE = (1ul << 24),
+
+  ALLOWED_TO_CHARGE = (1ul << 25),
+  ALLOWED_TO_DISCHARGE = (1ul << 26),
+};
+template<class T> inline T operator& (T a, T b) { return (T)((int)a & (int)b); }
+
+// source:
 // - https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/25
 // - https://www.victronenergy.com/upload/documents/Lithium_Battery_Smart/15958-Manual_Lithium_Smart_Battery-pdf-en.pdf
 //   - Page 43
@@ -667,8 +686,7 @@ enum struct VE_REG_BALANCER_STATUS : u_int8_t {
 };
 
 struct VICTRON_BLE_RECORD_SMART_LITHIUM {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
-  // TODO
-  u_int32_t bms_flags;
+  VE_REG_BMS_FLAGs bms_flags;
   // TODO
   u_int16_t SmartLithium_error;
   vic_cell_7bit_0_01 cell1 : 7;

@@ -272,6 +272,14 @@ The following `type` are supported by the `binary_sensor` component:
 | `DEVICE_STATE_BLOCKED`             |               |                 |          |                 |              | ?           | ?          | ?                     |                  | ?        | ?      |                 |          |
 | `DEVICE_STATE_TEST`                |               |                 |          |                 |              | ?           | ?          | ?                     |                  | ?        | ?      |                 |          |
 | `DEVICE_STATE_EXTERNAL_CONTROL`    | X             |                 |          |                 |              | ?           | ?          |                       |                  | ?        | ?      |                 |          |
+| `BMS_ALARM_OVER_VOLTAGE`           |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALARM_UNDER_VOLTAGE`          |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_WARN_UNDER_VOLTAGE`           |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALARM_OVER_TEMPERATURE`       |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALARM_UNDER_TEMPERATURE`      |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALARM_HARDWARE_FAILURE`       |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALLOWED_TO_CHARGE`            |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALLOWED_TO_DISCHARGE`         |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
 
 ? - Device submits a device state. Not sure if it can enter this stage.
 

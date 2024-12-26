@@ -667,7 +667,7 @@ enum struct VE_REG_BMS_FLAGs : u_int32_t {
   ALLOWED_TO_CHARGE = (1ul << 25),
   ALLOWED_TO_DISCHARGE = (1ul << 26),
 };
-template<class T> inline T operator& (T a, T b) { return (T)((int)a & (int)b); }
+template<class T> inline T operator&(T a, T b) { return (T) ((int) a & (int) b); }
 
 // source:
 // - https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/25
@@ -867,51 +867,29 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
 
   void set_bindkey(std::array<uint8_t, 16> key) { this->bindkey_ = key; }
 
-  void add_on_battery_monitor_message_callback(
-      std::function<void(const VICTRON_BLE_RECORD_BATTERY_MONITOR *)> callback) {
-    this->on_battery_monitor_message_callback_.add(std::move(callback));
-  }
-  void add_on_solar_charger_message_callback(std::function<void(const VICTRON_BLE_RECORD_SOLAR_CHARGER *)> callback) {
-    this->on_solar_charger_message_callback_.add(std::move(callback));
-  }
-  void add_on_inverter_message_callback(std::function<void(const VICTRON_BLE_RECORD_INVERTER *)> callback) {
-    this->on_inverter_message_callback_.add(std::move(callback));
-  }
-  void add_on_dcdc_converter_message_callback(std::function<void(const VICTRON_BLE_RECORD_DCDC_CONVERTER *)> callback) {
-    this->on_dcdc_converter_message_callback_.add(std::move(callback));
-  }
-  void add_on_smart_lithium_message_callback(std::function<void(const VICTRON_BLE_RECORD_SMART_LITHIUM *)> callback) {
-    this->on_smart_lithium_message_callback_.add(std::move(callback));
-  }
-  void add_on_inverter_rs_message_callback(std::function<void(const VICTRON_BLE_RECORD_INVERTER_RS *)> callback) {
-    this->on_inverter_rs_message_callback_.add(std::move(callback));
-  }
-  void add_on_ac_charger_message_callback(std::function<void(const VICTRON_BLE_RECORD_AC_CHARGER *)> callback) {
-    this->on_ac_charger_message_callback_.add(std::move(callback));
-  }
-  void add_on_smart_battery_protect_message_callback(
-      std::function<void(const VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT *)> callback) {
-    this->on_smart_battery_protect_message_callback_.add(std::move(callback));
-  }
-  void add_on_lynx_smart_bms_message_callback(std::function<void(const VICTRON_BLE_RECORD_LYNX_SMART_BMS *)> callback) {
-    this->on_lynx_smart_bms_message_callback_.add(std::move(callback));
-  }
-  void add_on_multi_rs_message_callback(std::function<void(const VICTRON_BLE_RECORD_MULTI_RS *)> callback) {
-    this->on_multi_rs_message_callback_.add(std::move(callback));
-  }
-  void add_on_ve_bus_message_callback(std::function<void(const VICTRON_BLE_RECORD_VE_BUS *)> callback) {
-    this->on_ve_bus_message_callback_.add(std::move(callback));
-  }
-  void add_on_dc_energy_meter_message_callback(
-      std::function<void(const VICTRON_BLE_RECORD_DC_ENERGY_METER *)> callback) {
-    this->on_dc_energy_meter_message_callback_.add(std::move(callback));
-  }
-  void add_on_orion_xs_message_callback(std::function<void(const VICTRON_BLE_RECORD_ORION_XS *)> callback) {
-    this->on_orion_xs_message_callback_.add(std::move(callback));
-  }
   void add_on_message_callback(std::function<void(const VictronBleData *)> callback) {
     this->on_message_callback_.add(std::move(callback));
   }
+#define VICTRON_MESSAGE_ADD_CB(name, type) \
+  void add_on_##name##_message_callback(std::function<void(const type *)> callback) { \
+    this->on_##name##_message_callback_.add(std::move(callback)); \
+  }
+
+  VICTRON_MESSAGE_ADD_CB(battery_monitor, VICTRON_BLE_RECORD_BATTERY_MONITOR)
+  VICTRON_MESSAGE_ADD_CB(solar_charger, VICTRON_BLE_RECORD_SOLAR_CHARGER)
+  VICTRON_MESSAGE_ADD_CB(inverter, VICTRON_BLE_RECORD_INVERTER)
+  VICTRON_MESSAGE_ADD_CB(dcdc_converter, VICTRON_BLE_RECORD_DCDC_CONVERTER)
+  VICTRON_MESSAGE_ADD_CB(smart_lithium, VICTRON_BLE_RECORD_SMART_LITHIUM)
+  VICTRON_MESSAGE_ADD_CB(inverter_rs, VICTRON_BLE_RECORD_INVERTER_RS)
+  VICTRON_MESSAGE_ADD_CB(ac_charger, VICTRON_BLE_RECORD_AC_CHARGER)
+  VICTRON_MESSAGE_ADD_CB(smart_battery_protect, VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)
+  VICTRON_MESSAGE_ADD_CB(lynx_smart_bms, VICTRON_BLE_RECORD_LYNX_SMART_BMS)
+  VICTRON_MESSAGE_ADD_CB(multi_rs, VICTRON_BLE_RECORD_MULTI_RS)
+  VICTRON_MESSAGE_ADD_CB(ve_bus, VICTRON_BLE_RECORD_VE_BUS)
+  VICTRON_MESSAGE_ADD_CB(dc_energy_meter, VICTRON_BLE_RECORD_DC_ENERGY_METER)
+  VICTRON_MESSAGE_ADD_CB(orion_xs, VICTRON_BLE_RECORD_ORION_XS)
+
+#undef VICTRON_MESSAGE_ADD_CB
 
  protected:
   uint64_t address_;
@@ -919,23 +897,9 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
 
   VictronBleData last_package_{};
 
-#define VICTRON_MESSAGE_STORAGE_BL(name) bool name##_updated_ = false;
 #define VICTRON_MESSAGE_STORAGE_CB(name, type) CallbackManager<void(const type *)> on_##name##_message_callback_{};
 
   bool last_package_updated_ = false;
-  VICTRON_MESSAGE_STORAGE_BL(battery_monitor)
-  VICTRON_MESSAGE_STORAGE_BL(solar_charger)
-  VICTRON_MESSAGE_STORAGE_BL(inverter)
-  VICTRON_MESSAGE_STORAGE_BL(dcdc_converter)
-  VICTRON_MESSAGE_STORAGE_BL(smart_lithium)
-  VICTRON_MESSAGE_STORAGE_BL(inverter_rs)
-  VICTRON_MESSAGE_STORAGE_BL(ac_charger)
-  VICTRON_MESSAGE_STORAGE_BL(smart_battery_protect)
-  VICTRON_MESSAGE_STORAGE_BL(lynx_smart_bms)
-  VICTRON_MESSAGE_STORAGE_BL(multi_rs)
-  VICTRON_MESSAGE_STORAGE_BL(ve_bus)
-  VICTRON_MESSAGE_STORAGE_BL(dc_energy_meter)
-  VICTRON_MESSAGE_STORAGE_BL(orion_xs)
 
   CallbackManager<void(const VictronBleData *)> on_message_callback_{};
   VICTRON_MESSAGE_STORAGE_CB(battery_monitor, VICTRON_BLE_RECORD_BATTERY_MONITOR)
@@ -952,7 +916,6 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
   VICTRON_MESSAGE_STORAGE_CB(dc_energy_meter, VICTRON_BLE_RECORD_DC_ENERGY_METER)
   VICTRON_MESSAGE_STORAGE_CB(orion_xs, VICTRON_BLE_RECORD_ORION_XS)
 
-#undef VICTRON_MESSAGE_STORAGE_BL
 #undef VICTRON_MESSAGE_STORAGE_CB
 
   bool encrypt_message_(const u_int8_t *crypted_data, const u_int8_t crypted_len, u_int8_t encrypted_data[32],

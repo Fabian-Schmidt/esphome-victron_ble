@@ -77,6 +77,9 @@ void VictronBinarySensor::setup() {
       case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_REPEATED_ABSORPTION:
       case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_AUTO_EQUALIZE:
       case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_BATTERY_SAFE:
+      case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_LOAD_DETECT:
+      case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_BLOCKED:
+      case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_TEST:
       case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_EXTERNAL_CONTROL:
         switch (msg->record_type) {
           case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
@@ -162,6 +165,15 @@ void VictronBinarySensor::publish_state_(VE_REG_DEVICE_STATE device_state) {
       break;
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_BATTERY_SAFE:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::BATTERY_SAFE);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_LOAD_DETECT:
+      this->publish_state(device_state == VE_REG_DEVICE_STATE::LOAD_DETECT);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_BLOCKED:
+      this->publish_state(device_state == VE_REG_DEVICE_STATE::BLOCKED);
+      break;
+    case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_TEST:
+      this->publish_state(device_state == VE_REG_DEVICE_STATE::TEST);
       break;
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_EXTERNAL_CONTROL:
       this->publish_state(device_state == VE_REG_DEVICE_STATE::EXTERNAL_CONTROL);

@@ -353,6 +353,7 @@ struct VICTRON_BLE_RECORD_TEST {  // NOLINT(readability-identifier-naming,altera
 // source:
 // - https://www.victronenergy.com/upload/documents/VE.Direct-Protocol-3.33.pdf
 // - https://github.com/victronenergy/venus-html5-app/blob/master/src/app/utils/constants.js
+// - https://github.com/victronenergy/gui-v2/blob/8397825725623a4d15086bef77f67c98aa94a780/src/enums.h#L332C6-L332C7
 enum class VE_REG_DEVICE_STATE : u_int8_t {
   // Off
   OFF = 0x00,
@@ -388,6 +389,12 @@ enum class VE_REG_DEVICE_STATE : u_int8_t {
   AUTO_EQUALIZE = 0xF7,
   // BatterySafe
   BATTERY_SAFE = 0xF8,
+  // Load detect
+  LOAD_DETECT = 0xF9,
+  // Blocked
+  BLOCKED = 0xFA,
+  // Test
+  TEST = 0xFB,
   // External Control
   EXTERNAL_CONTROL = 0xFC,
 

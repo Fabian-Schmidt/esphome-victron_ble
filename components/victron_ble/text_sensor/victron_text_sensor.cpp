@@ -296,6 +296,15 @@ void VictronTextSensor::publish_state_(VE_REG_DEVICE_STATE val) {
     case VE_REG_DEVICE_STATE::BATTERY_SAFE:
       this->publish_state("BatterySafe");
       break;
+    case VE_REG_DEVICE_STATE::LOAD_DETECT:
+      this->publish_state("Load detect");
+      break;
+    case VE_REG_DEVICE_STATE::BLOCKED:
+      this->publish_state("Blocked");
+      break;
+    case VE_REG_DEVICE_STATE::TEST:
+      this->publish_state("Test");
+      break;
     case VE_REG_DEVICE_STATE::EXTERNAL_CONTROL:
       this->publish_state("External Control");
       break;

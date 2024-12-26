@@ -268,6 +268,9 @@ The following `type` are supported by the `binary_sensor` component:
 | `DEVICE_STATE_REPEATED_ABSORPTION` |               |                 |          |                 |              | ?           | ?          |                       |                  | ?        | ?      |                 |          |
 | `DEVICE_STATE_AUTO_EQUALIZE`       | X             |                 |          |                 |              | ?           | ?          |                       |                  | ?        | ?      |                 |          |
 | `DEVICE_STATE_BATTERY_SAFE`        |               |                 |          |                 |              | ?           | ?          |                       |                  | ?        | ?      |                 |          |
+| `DEVICE_STATE_LOAD_DETECT`         |               |                 |          |                 |              | ?           | ?          | ?                     |                  | ?        | ?      |                 |          |
+| `DEVICE_STATE_BLOCKED`             |               |                 |          |                 |              | ?           | ?          | ?                     |                  | ?        | ?      |                 |          |
+| `DEVICE_STATE_TEST`                |               |                 |          |                 |              | ?           | ?          | ?                     |                  | ?        | ?      |                 |          |
 | `DEVICE_STATE_EXTERNAL_CONTROL`    | X             |                 |          |                 |              | ?           | ?          |                       |                  | ?        | ?      |                 |          |
 
 ? - Device submits a device state. Not sure if it can enter this stage.

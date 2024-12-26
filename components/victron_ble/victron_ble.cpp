@@ -70,9 +70,8 @@ void VictronBle::update() {
   if (this->ac_charger_updated_) {
     this->ac_charger_updated_ = false;
     if (this->on_ac_charger_message_callback_.size() > 0) {
-      this->defer("VictronBle8", [this]() {
-        this->on_ac_charger_message_callback_.call(&this->last_package_.data.ac_charger);
-      });
+      this->defer("VictronBle8",
+                  [this]() { this->on_ac_charger_message_callback_.call(&this->last_package_.data.ac_charger); });
     }
   }
   if (this->smart_battery_protect_updated_) {
@@ -111,6 +110,13 @@ void VictronBle::update() {
       this->defer("VictronBleD", [this]() {
         this->on_dc_energy_meter_message_callback_.call(&this->last_package_.data.dc_energy_meter);
       });
+    }
+  }
+  if (this->orion_xs_updated_) {
+    this->orion_xs_updated_ = false;
+    if (this->on_orion_xs_message_callback_.size() > 0) {
+      this->defer("VictronBleF",
+                  [this]() { this->on_orion_xs_message_callback_.call(&this->last_package_.data.orion_xs); });
     }
   }
 }

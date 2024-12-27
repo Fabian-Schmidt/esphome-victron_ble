@@ -6,12 +6,12 @@ namespace victron_ble {
 
 static const char *const TAG = "victron_ble.sensor";
 
-void VictronSensor::dump_config() {
-  LOG_SENSOR("", "Victron Sensor", this);
-  ESP_LOGCONFIG(TAG, "  Type '%s'", enum_to_c_str(this->type_));
-}
+// void VictronSensor::dump_config() {
+//   LOG_SENSOR("", "Victron Sensor", this);
+//   ESP_LOGCONFIG(TAG, "  Type '%s'", enum_to_c_str(this->type_));
+// }
 
-void VictronSensor::setup() {
+void VictronSensor::register_callback() {
   switch (this->type_) {
     case VICTRON_SENSOR_TYPE::ACTIVE_AC_IN:
       this->parent_->add_on_message_callback([this](const VictronBleData *msg) {

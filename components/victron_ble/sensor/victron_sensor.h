@@ -208,15 +208,19 @@ static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
 }
 #endif  // ESPHOME_LOG_HAS_CONFIG
 
-class VictronSensor : public Component, public sensor::Sensor, public Parented<VictronBle> {
+class VictronSensor : public sensor::Sensor, public Parented<VictronBle> {
  public:
-  void dump_config() override;
-  void setup() override;
-
+  VictronSensor(VictronBle *parent, VICTRON_SENSOR_TYPE val) {
+    this->parent_ = parent;
+    this->type_ = val;
+    this->register_callback();
+  }
   void set_type(VICTRON_SENSOR_TYPE val) { this->type_ = val; }
 
  protected:
   VICTRON_SENSOR_TYPE type_;
+
+  void register_callback();
 
   inline void publish_state_(vic_22bit_0_001 val) {
     if (val == 0x3FFFFF) {
@@ -442,5 +446,6 @@ class VictronSensor : public Component, public sensor::Sensor, public Parented<V
     }
   };
 };
+
 }  // namespace victron_ble
 }  // namespace esphome

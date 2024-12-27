@@ -88,7 +88,7 @@ static const char *enum_to_c_str(const VICTRON_BINARY_SENSOR_TYPE val) {
       return "DEVICE_STATE_TEST";
     case VICTRON_BINARY_SENSOR_TYPE::DEVICE_STATE_EXTERNAL_CONTROL:
       return "DEVICE_STATE_EXTERNAL_CONTROL";
-    //BMS
+    // BMS
     case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_OVER_VOLTAGE:
       return "BMS_ALARM_OVER_VOLTAGE";
     case VICTRON_BINARY_SENSOR_TYPE::BMS_ALARM_UNDER_VOLTAGE:
@@ -112,15 +112,20 @@ static const char *enum_to_c_str(const VICTRON_BINARY_SENSOR_TYPE val) {
 }
 #endif  // ESPHOME_LOG_HAS_CONFIG
 
-class VictronBinarySensor : public Component, public binary_sensor::BinarySensor, public Parented<VictronBle> {
+class VictronBinarySensor : public binary_sensor::BinarySensor, public Parented<VictronBle> {
  public:
-  void dump_config() override;
-  void setup() override;
+  VictronBinarySensor(VictronBle *parent, VICTRON_BINARY_SENSOR_TYPE val) {
+    this->parent_ = parent;
+    this->type_ = val;
+    this->register_callback();
+  }
 
   void set_type(VICTRON_BINARY_SENSOR_TYPE val) { this->type_ = val; }
 
  protected:
   VICTRON_BINARY_SENSOR_TYPE type_;
+
+  void register_callback();
 
   void publish_state_(VE_REG_DEVICE_STATE device_state);
   void publish_state_(VE_REG_BMS_FLAGs flags);

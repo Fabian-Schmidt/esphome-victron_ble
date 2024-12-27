@@ -6,12 +6,12 @@ namespace victron_ble {
 
 static const char *const TAG = "victron_ble.binary_sensor";
 
-void VictronBinarySensor::dump_config() {
-  LOG_BINARY_SENSOR("", "Victron Binary Sensor", this);
-  ESP_LOGCONFIG(TAG, "  Type '%s'", enum_to_c_str(this->type_));
-}
+// void VictronBinarySensor::dump_config() {
+//   LOG_BINARY_SENSOR("", "Victron Binary Sensor", this);
+//   ESP_LOGCONFIG(TAG, "  Type '%s'", enum_to_c_str(this->type_));
+// }
 
-void VictronBinarySensor::setup() {
+void VictronBinarySensor::register_callback() {
   this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
     switch (this->type_) {
       case VICTRON_BINARY_SENSOR_TYPE::ALARM:

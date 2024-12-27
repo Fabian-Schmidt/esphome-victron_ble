@@ -1,0 +1,474 @@
+substitutions:
+  # Set the MAC addresses and encryption keys of your Victron devices here
+  # The values here are examples and cannot work for your devices
+  smart_shunt_mac_address: 60A423918F55
+  smart_shunt_encryption_key: 0df4d0395b7d1a876c0c33ecb9e70dcd
+  smart_solar_mac_address: 60A423918F56
+  smart_solar_encryption_key: 0df4d0395b7d1a876c0c33ecb9e70aea
+
+# Example for WT32-SC01 device.
+
+esphome:
+  name: "victron-ble-display-wt32-sc01"
+  platformio_options:
+    upload_speed: 2000000
+    board_build.f_flash: 80000000L
+    board_build.arduino.memory_type: qio_qspi
+
+external_components:
+  # - source: github://Fabian-Schmidt/esphome-victron_ble
+  - source:
+      type: local
+      path: components
+    components: ["victron_ble"]
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+  flash_size: 4MB
+
+psram:
+
+logger:
+  baud_rate: 2000000
+
+esp32_ble_tracker:
+  scan_parameters:
+    interval: 10ms
+    window: 10ms
+    active: false
+
+victron_ble:
+  - id: MySmartShunt
+    mac_address: ${smart_shunt_mac_address}
+    bindkey: ${smart_shunt_encryption_key}
+  - id: MySmartSolar
+    mac_address: ${smart_solar_mac_address}
+    bindkey: ${smart_solar_encryption_key}
+
+sensor:
+  # MySmartShunt
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Time remaining"
+    id: shunt_TIME_TO_GO
+    type: TIME_TO_GO
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Battery voltage"
+    id: shunt_BATTERY_VOLTAGE
+    type: BATTERY_VOLTAGE
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Starter Battery"
+    # BAUX_VOLTAGE or MID_VOLTAGE or TEMPERATURE.
+    # Depending on configuration of SmartShunt
+    id: shunt_AUX_VOLTAGE
+    type: AUX_VOLTAGE
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Current"
+    id: shunt_BATTERY_CURRENT
+    type: BATTERY_CURRENT
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "Consumed Ah"
+    id: shunt_CONSUMED_AH
+    type: CONSUMED_AH
+  - platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "State of charge"
+    id: shunt_STATE_OF_CHARGE
+    type: STATE_OF_CHARGE
+
+  # MySmartSolar
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Battery Voltage"
+    id: solar_BATTERY_VOLTAGE
+    type: BATTERY_VOLTAGE
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Battery Current"
+    id: solar_BATTERY_CURRENT
+    type: BATTERY_CURRENT
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Yield Today"
+    id: solar_YIELD_TODAY
+    type: YIELD_TODAY
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "PV Power"
+    id: solar_PV_POWER
+    type: PV_POWER
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "Load Current"
+    id: solar_LOAD_CURRENT
+    type: LOAD_CURRENT
+
+text_sensor:
+  - platform: victron_ble
+    victron_ble_id: MySmartSolar
+    name: "MPPT state"
+    id: solar_DEVICE_STATE
+    type: DEVICE_STATE
+
+  - platform: template
+    internal: true
+    id: shunt_TIME_TO_GO_text
+    update_interval: never
+    lambda: |-
+      const auto time_to_go = (int)id(shunt_TIME_TO_GO).state;
+      if (time_to_go == 0) {
+        return {""};
+      } else if (time_to_go > (10 * 24 * 60) /* 10 days */) {
+        return {""};
+        // return {"> 10 d"};
+      } else if (time_to_go > (24 * 60) /* 1 day */) {
+        // Days and Hours
+        const u_int8_t days = time_to_go / 60 / 24;
+        const u_int8_t hours = ((int)time_to_go / 60) % 24;
+        return str_sprintf("%u d %u h", days, hours);
+      } else {
+        // Hours and Minutes
+        const u_int8_t hours = time_to_go / 60;
+        const u_int8_t minutes = time_to_go % 60;
+        return str_sprintf("%u:%u h", hours, minutes);
+      }
+  - platform: template
+    internal: true
+    id: shunt_STATE_OF_CHARGE_symbol
+    update_interval: never
+    lambda: |-
+      const auto state_of_charge = id(shunt_STATE_OF_CHARGE).state;
+      if(std::isnan(state_of_charge)) {
+          return {"\U000F10CD"}; // mdi-battery-alert-variant-outline
+      }
+      if(id(shunt_BATTERY_CURRENT).state > 0.0f){
+        // Charging
+        if (state_of_charge < 10) {
+          return {"\U000F089C"}; // mdi-battery-charging-10
+        } else if (state_of_charge < 20) {
+          return {"\U000F0086"}; // mdi-battery-charging-20
+        } else if (state_of_charge < 30) {
+          return {"\U000F0087"}; // mdi-battery-charging-30
+        } else if (state_of_charge < 40) {
+          return {"\U000F0088"}; // mdi-battery-charging-40
+        } else if (state_of_charge < 50) {
+          return {"\U000F089D"}; // mdi-battery-charging-50
+        } else if (state_of_charge < 60) {
+          return {"\U000F0089"}; // mdi-battery-charging-60
+        } else if (state_of_charge < 70) {
+          return {"\U000F089E"}; // mdi-battery-charging-70
+        } else if (state_of_charge < 80) {
+          return {"\U000F008A"}; // mdi-battery-charging-80
+        } else if (state_of_charge < 90) {
+          return {"\U000F008B"}; // mdi-battery-charging-90
+        } else {
+          return {"\U000F0085"}; // mdi-battery-charging-100
+        }
+      } else {
+        // Discharging
+        if (state_of_charge < 10) {
+          return {"\U000F007A"}; // mdi-battery-10
+        } else if (state_of_charge < 20) {
+          return {"\U000F007B"}; // mdi-battery-20
+        } else if (state_of_charge < 30) {
+          return {"\U000F007C"}; // mdi-battery-30
+        } else if (state_of_charge < 40) {
+          return {"\U000F007D"}; // mdi-battery-40
+        } else if (state_of_charge < 50) {
+          return {"\U000F007E"}; // mdi-battery-50
+        } else if (state_of_charge < 60) {
+          return {"\U000F007F"}; // mdi-battery-60
+        } else if (state_of_charge < 70) {
+          return {"\U000F0080"}; // mdi-battery-70
+        } else if (state_of_charge < 80) {
+          return {"\U000F0081"}; // mdi-battery-80
+        } else if (state_of_charge < 90) {
+          return {"\U000F0082"}; // mdi-battery-90
+        } else {
+          return {"\U000F0079"}; // mdi-battery
+        }
+      }
+
+
+# Device touchscreen
+i2c:
+  id: i2c_bus_a
+  sda: 18
+  scl: 19
+  scan: false
+
+touchscreen:
+  - platform: ft63x6
+    interrupt_pin: GPIO39
+    on_touch:
+      - logger.log:
+          format: Touch at (%d, %d)
+          args: [touch.x, touch.y]
+
+# Device backlight
+output:
+  platform: ledc
+  pin: 23
+  id: backlight_pwm
+
+light:
+  - platform: monochromatic
+    output: backlight_pwm
+    name: "Display Backlight"
+    id: back_light
+    restore_mode: ALWAYS_ON
+
+# Device display
+spi:
+  clk_pin: 14
+  mosi_pin: 13
+  miso_pin: 12
+
+font:
+  # - file: Google_Sans_Bold.ttf
+  #   id: font_name
+  #   size: 38
+  - file: https://github.com/hprobotic/Google-Sans-Font/raw/refs/heads/master/GoogleSans-Medium.ttf
+    id: font_value
+    size: 40
+    glyphs:
+      ['&', '@', '!', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', ' ', '/', '>', '<', '=',
+       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 
+       'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+  - file: https://github.com/Templarian/MaterialDesign-Webfont/raw/refs/tags/v7.4.47/fonts/materialdesignicons-webfont.ttf
+  # https://pictogrammers.github.io/@mdi/font/7.4.47/
+    id: font_icons_small
+    size: 28
+    glyphs:
+      - "\U000F051F" # mdi-timer-sand - time-remaining
+      - "\U000F140B" # mdi-lightning-bolt - Energy
+      - "\U000F140C" # mdi-lightning-bolt-outline
+      - "\U000F0D9B" # mdi-solar-panel
+      - "\U000F0A72" # mdi-solar-power
+      - "\U000F010C" # mdi-car-battery - Starter battery
+      - "\U000F10CD" # mdi-battery-alert-variant-outline
+      - "\U000F007A" # mdi-battery-10
+      - "\U000F007B" # mdi-battery-20
+      - "\U000F007C" # mdi-battery-30
+      - "\U000F007D" # mdi-battery-40
+      - "\U000F007E" # mdi-battery-50
+      - "\U000F007F" # mdi-battery-60
+      - "\U000F0080" # mdi-battery-70
+      - "\U000F0081" # mdi-battery-80
+      - "\U000F0082" # mdi-battery-90
+      - "\U000F0079" # mdi-battery
+      - "\U000F089C" # mdi-battery-charging-10
+      - "\U000F0086" # mdi-battery-charging-20
+      - "\U000F0087" # mdi-battery-charging-30
+      - "\U000F0088" # mdi-battery-charging-40
+      - "\U000F089D" # mdi-battery-charging-50
+      - "\U000F0089" # mdi-battery-charging-60
+      - "\U000F089E" # mdi-battery-charging-70
+      - "\U000F008A" # mdi-battery-charging-80
+      - "\U000F008B" # mdi-battery-charging-90
+      - "\U000F0085" # mdi-battery-charging-100
+      - "\U000F07C3" # mdi-dots-horizontal-circle
+      - "\U000F1425" # mdi-power-plug-outline
+
+color:
+  - id: black
+    red: 0%
+    green: 0%
+    blue: 0%
+  - id: color_font
+    hex: FFFFFF
+  - id: color_neg
+    red: 100%
+  - id: color_pos
+    green: 100%
+
+script:
+  - id: update_all_components
+    then:
+      - component.update: shunt_TIME_TO_GO_text
+      - component.update: shunt_STATE_OF_CHARGE_symbol
+
+display:
+  - platform: ili9xxx
+    model: ST7796
+    cs_pin: 15
+    dc_pin: 21
+    reset_pin: 22
+    update_interval: 0.5s
+    invert_colors: false
+    data_rate: 80MHz
+    rotation: 0
+    lambda: |-
+      #define xres 480
+      #define yres 320
+      #define x_pad 25  // border padding
+      #define y_pad 5   // border padding
+      #define first_pad 38
+      #define cat_pad 45       // padding before category
+      #define icon_pad 22      // padding after icons
+      #define neg_icon_pad 17  // small padding after icons for negative numbers
+      #define x1i x_pad        // x position of first column of values
+
+      id(update_all_components).execute();
+
+      u_int16_t y = first_pad;
+
+      // shunt_AUX_VOLTAGE
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, "\U000F010C");  // mdi-car-battery
+      if (!std::isnan(id(shunt_AUX_VOLTAGE).state)) {
+        it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "%.2f V", id(shunt_AUX_VOLTAGE).state);
+      }
+
+      // shunt_BATTERY_VOLTAGE
+      y += cat_pad;
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, id(shunt_STATE_OF_CHARGE_symbol).state.c_str());
+      if (!std::isnan(id(shunt_BATTERY_VOLTAGE).state)) {
+        it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "%.2f V", id(shunt_BATTERY_VOLTAGE).state);
+      }
+
+      // shunt_STATE_OF_CHARGE
+      y += cat_pad;
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, id(shunt_STATE_OF_CHARGE_symbol).state.c_str());
+      if (!std::isnan(id(shunt_STATE_OF_CHARGE).state)) {
+        if (id(shunt_STATE_OF_CHARGE).state == 100.0f) {
+          it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "100 %%");
+        } else {
+          it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "%.1f %%", id(shunt_STATE_OF_CHARGE).state);
+        }
+      }
+
+      // Battery time remaining
+      y += cat_pad;
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, "\U000F051F");  // mdi-timer-sand
+      if (!std::isnan(id(shunt_TIME_TO_GO).state)) {
+        it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, id(shunt_TIME_TO_GO_text).state.c_str());
+      }
+
+      // Consumed Ah
+      y += cat_pad;
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, "\U000F140B");  // mdi-lightning-bolt
+      const auto CONSUMED_AH = id(shunt_CONSUMED_AH).state;
+      if (!std::isnan(CONSUMED_AH)) {
+        if (std::abs(CONSUMED_AH) >= 10.0f) {
+          it.printf(x1i + neg_icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "%.0f Ah", CONSUMED_AH);
+        } else {
+          it.printf(x1i + neg_icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "%.1f Ah", CONSUMED_AH);
+        }
+      }
+
+      // Battery Current
+      y += cat_pad;
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, "\U000F140C");  // mdi-lightning-bolt-outline
+      const auto shunt_CURRENT = id(shunt_BATTERY_CURRENT).state;
+      if (!std::isnan(shunt_CURRENT)) {
+        const auto this_icon_pad = shunt_CURRENT < 0.0f ? neg_icon_pad : icon_pad;
+        const auto font_color = std::abs(shunt_CURRENT) < 1.0f ? color_font
+                                : shunt_CURRENT < 0.0f         ? id(color_neg)
+                                                              : id(color_pos);
+        const auto format = std::abs(shunt_CURRENT) < 10.0f ? "%.2f A" : "%.1f A";
+        it.printf(x1i + this_icon_pad, y, id(font_value), font_color, TextAlign::BASELINE_LEFT, format, shunt_CURRENT);
+      }
+
+      // solar - Yield Today
+      y += cat_pad;
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, "\U000F0D9B");  // mdi-solar-panel
+      {
+        float SUM_YIELD_TODAY = 0.0f;
+        bool show_value = false;
+        // if(!std::isnan(id(solar15_YIELD_TODAY).state)) {
+        //   SUM_YIELD_TODAY += id(solar15_YIELD_TODAY).state;
+        //   show_value = true;
+        // }
+        // if(!std::isnan(id(solar20_YIELD_TODAY).state)) {
+        //   SUM_YIELD_TODAY += id(solar20_YIELD_TODAY).state;
+        //   show_value = true;
+        // }
+        if (!std::isnan(id(solar_YIELD_TODAY).state)) {
+          SUM_YIELD_TODAY += id(solar_YIELD_TODAY).state;
+          show_value = true;
+        }
+
+        if (show_value) {
+          if (SUM_YIELD_TODAY < 1.0f) {
+            it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "%.0f Wh", SUM_YIELD_TODAY * 1000);
+          } else {
+            it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "%.1f kWh", SUM_YIELD_TODAY);
+          }
+        }
+      }
+
+      // PV Power
+      y += cat_pad;
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, "\U000F0A72");  // mdi-solar-power
+      {
+        float SUM_PV_POWER = 0.0f;
+        bool show_value = false;
+        // if(!std::isnan(id(solar15_PV_POWER).state)) {
+        //   SUM_PV_POWER += id(solar15_PV_POWER).state;
+        //   show_value = true;
+        // }
+        // if(!std::isnan(id(solar20_PV_POWER).state)) {
+        //   SUM_PV_POWER += id(solar20_PV_POWER).state;
+        //   show_value = true;
+        // }
+        if (!std::isnan(id(solar_PV_POWER).state)) {
+          SUM_PV_POWER += id(solar_PV_POWER).state;
+          show_value = true;
+        }
+
+        if (show_value) {
+          it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "%.0f W", SUM_PV_POWER);
+        }
+      }
+
+      // DEVICE_STATE
+      y += cat_pad;
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, "\U000F07C3");  // mdi-dots-horizontal-circle
+      {
+        // const auto solar20_state = id(solar20_DEVICE_STATE).state;
+        const auto solar_state = id(solar_DEVICE_STATE).state;
+        // if (solar20_state == solar_state) {
+        //   it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, solar20_state.c_str());
+        // } else {
+        //   if(solar20_state == "" || solar20_state == "Off") {
+        //     it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, solar_state.c_str());
+        //   } else if(solar_state == "" || solar_state == "Off") {
+        //     it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, solar20_state.c_str());
+        //   } else {
+        //     it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, "%s %s", solar20_state.c_str(),
+        //     solar_state.c_str());
+        //   }
+        // }
+        it.printf(x1i + icon_pad, y, id(font_value), TextAlign::BASELINE_LEFT, solar_state.c_str());
+      }
+
+      // load on solar output
+      y += cat_pad;
+      it.printf(x1i, y, id(font_icons_small), TextAlign::BASELINE_CENTER, "\U000F1425");  // mdi-power-plug-outline
+      {
+        float SUM_LOAD_CURRENT = 0.0f;
+        bool show_value = false;
+        // if (!std::isnan(id(solar15_LOAD_CURRENT).state)) {
+        //   SUM_LOAD_CURRENT += id(solar15_LOAD_CURRENT).state;
+        //   show_value = true;
+        // }
+        // if (!std::isnan(id(solar20_LOAD_CURRENT).state)) {
+        //   SUM_LOAD_CURRENT += id(solar20_LOAD_CURRENT).state;
+        //   show_value = true;
+        // }
+        if (!std::isnan(id(solar_LOAD_CURRENT).state)) {
+          SUM_LOAD_CURRENT += id(solar_LOAD_CURRENT).state;
+          show_value = true;
+        }
+        if (show_value) {
+          const auto font_color = std::abs(SUM_LOAD_CURRENT) > 1.0f ? id(color_neg) : id(color_font);
+          it.printf(x1i + icon_pad, y, id(font_value), font_color, TextAlign::BASELINE_LEFT, "%.1f A", SUM_LOAD_CURRENT);
+        }
+      }

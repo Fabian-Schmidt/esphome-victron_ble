@@ -206,6 +206,7 @@ The following `type` are supported by the `sensor` component:
 | `ERROR`              |      |               |                 |          |                 | X            |             |            | X                     | X                |          | X      |                 |          |
 | `INPUT_VOLTAGE`      | V    |               |                 |          | X               |              |             |            | X                     |                  |          |        |                 | X        |
 | `LOAD_CURRENT`       | A    | X             |                 |          |                 |              |             |            |                       |                  |          |        |                 |          |
+| `LOAD_POWER`         | W    | X             |                 |          |                 |              |             |            |                       |                  |          |        |                 |          |
 | `OFF_REASON`         |      |               |                 |          | X               |              |             |            | X                     |                  |          |        |                 | X        |
 | `OUTPUT_VOLTAGE`     | V    |               |                 |          | X               |              |             |            | X                     |                  |          |        |                 | X        |
 | `MID_VOLTAGE`        | V    |               | X(1)            |          |                 |              |             |            |                       |                  |          |        |                 |          |
@@ -230,8 +231,10 @@ The following `type` are supported by the `sensor` component:
 | `WARNINGS_ALARMS`    |      |               |                 |          |                 |              |             |            |                       | X                |          |        |                 |          |
 | `ALARM`              |      |               |                 |          |                 |              |             |            |                       |                  |          | X      |                 |          |
 | `BMV_MONITOR_MODE`   |      |               |                 |          |                 |              |             |            |                       |                  |          |        | X               |          |
-| `OUTPUT_CURRENT`     |      |               |                 |          |                 |              |             |            |                       |                  |          |        |                 | X        |
-| `INPUT_CURRENT`      |      |               |                 |          |                 |              |             |            |                       |                  |          |        |                 | X        |
+| `OUTPUT_CURRENT`     | A    |               |                 |          |                 |              |             |            |                       |                  |          |        |                 | X        |
+| `INPUT_CURRENT`      | A    |               |                 |          |                 |              |             |            |                       |                  |          |        |                 | X        |
+| `OUTPUT_POWER`       | W    |               |                 |          |                 |              |             |            |                       |                  |          |        |                 | X        |
+| `INPUT_POWER`        | W    |               |                 |          |                 |              |             |            |                       |                  |          |        |                 | X        |
 | `BATTERY_CURRENT_2`  | A    |               |                 |          |                 |              |             | X          |                       |                  |          |        |                 |          |
 | `BATTERY_VOLTAGE_2`  | V    |               |                 |          |                 |              |             | X          |                       |                  |          |        |                 |          |
 | `BATTERY_POWER_2`    | W    |               |                 |          |                 |              |             | X          |                       |                  |          |        |                 |          |
@@ -265,7 +268,18 @@ The following `type` are supported by the `binary_sensor` component:
 | `DEVICE_STATE_REPEATED_ABSORPTION` |               |                 |          |                 |              | ?           | ?          |                       |                  | ?        | ?      |                 |          |
 | `DEVICE_STATE_AUTO_EQUALIZE`       | X             |                 |          |                 |              | ?           | ?          |                       |                  | ?        | ?      |                 |          |
 | `DEVICE_STATE_BATTERY_SAFE`        |               |                 |          |                 |              | ?           | ?          |                       |                  | ?        | ?      |                 |          |
+| `DEVICE_STATE_LOAD_DETECT`         |               |                 |          |                 |              | ?           | ?          | ?                     |                  | ?        | ?      |                 |          |
+| `DEVICE_STATE_BLOCKED`             |               |                 |          |                 |              | ?           | ?          | ?                     |                  | ?        | ?      |                 |          |
+| `DEVICE_STATE_TEST`                |               |                 |          |                 |              | ?           | ?          | ?                     |                  | ?        | ?      |                 |          |
 | `DEVICE_STATE_EXTERNAL_CONTROL`    | X             |                 |          |                 |              | ?           | ?          |                       |                  | ?        | ?      |                 |          |
+| `BMS_ALARM_OVER_VOLTAGE`           |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALARM_UNDER_VOLTAGE`          |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_WARN_UNDER_VOLTAGE`           |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALARM_OVER_TEMPERATURE`       |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALARM_UNDER_TEMPERATURE`      |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALARM_HARDWARE_FAILURE`       |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALLOWED_TO_CHARGE`            |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `BMS_ALLOWED_TO_DISCHARGE`         |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
 
 ? - Device submits a device state. Not sure if it can enter this stage.
 
@@ -285,7 +299,31 @@ The following `type` are supported by the `text_sensor` component:
 | `ALARM`           |               |                 |          |                 |              |             |            |                       |                  |          | X      |                 |          |
 | `BALANCER_STATUS` |               |                 |          |                 | X            |             |            |                       |                  |          |        |                 |          |
 
-### Your support
+
+## Display
+
+Example using this library standalone without HomeAssistant to display SmartShunt and (multiple) SmartSolar values.
+
+As this uses Bluetooth advertisement packages you can have multiple device (displays) receive the same information without issues.
+
+The [config WT32-SC01](victron_ble_display_wt32-sc01.yaml) displays the following information:
+
+1. SmartShunt AUX Voltage
+2. SmartShunt Battery Voltage
+3. SmartShunt State of Charge in %
+4. SmartShunt Battery time remaining
+5. SmartShunt Consumed Ah
+6. SmartShunt Battery Current
+7. SmartSolar Yield Today
+8. SmartSolar PV Power
+9. SmartSolar Device State (Off, Bulk, Absorption, Float ...)
+10. SmartSolar Load output
+
+![Display WT32-SC01](victron_ble_display_wt32-sc01.jpg)
+
+Any [Display supported by ESPHome](https://esphome.io/#display-hardware-platforms) can be used / adopted.
+
+## Your support
 
 I don't have access to all Victron devices. Please provide feedback if the component is working and all values are correct and match the reading within the Victron app. Only after I got feedback for all devices I can try to get this merged into ESP Home. Given the size of this component I don't expect this soon or be a quick process.
 

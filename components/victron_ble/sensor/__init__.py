@@ -33,7 +33,7 @@ from esphome.const import (
     UNIT_WATT,
 )
 
-from .. import CONF_VICTRON_BLE_ID, VictronBle, victron_ble_ns
+from .. import CONF_VICTRON_BLE_ID, VictronBle, victron_ble_ns, get_parented
 
 DEPENDENCIES = ["victron_ble"]
 CODEOWNERS = ["@Fabian-Schmidt"]
@@ -143,6 +143,13 @@ CONF_SUPPORTED_TYPE = {
         CONF_ICON: ICON_POWER,
         CONF_ACCURACY_DECIMALS: 1,
         CONF_DEVICE_CLASS: DEVICE_CLASS_CURRENT,
+    },
+    "LOAD_POWER": {
+        CONF_TYPE: VICTRON_SENSOR_TYPE.LOAD_POWER,
+        CONF_UNIT_OF_MEASUREMENT: UNIT_WATT,
+        CONF_ICON: ICON_POWER,
+        CONF_ACCURACY_DECIMALS: 2,
+        CONF_DEVICE_CLASS: DEVICE_CLASS_POWER,
     },
     "MID_VOLTAGE": {
         CONF_TYPE: VICTRON_SENSOR_TYPE.MID_VOLTAGE,
@@ -340,6 +347,20 @@ CONF_SUPPORTED_TYPE = {
         CONF_ACCURACY_DECIMALS: 1,
         CONF_DEVICE_CLASS: DEVICE_CLASS_CURRENT,
     },
+    "OUTPUT_POWER": {
+        CONF_TYPE: VICTRON_SENSOR_TYPE.OUTPUT_POWER,
+        CONF_UNIT_OF_MEASUREMENT: UNIT_WATT,
+        CONF_ICON: ICON_BATTERY,
+        CONF_ACCURACY_DECIMALS: 2,
+        CONF_DEVICE_CLASS: DEVICE_CLASS_POWER,
+    },
+    "INPUT_POWER": {
+        CONF_TYPE: VICTRON_SENSOR_TYPE.INPUT_POWER,
+        CONF_UNIT_OF_MEASUREMENT: UNIT_WATT,
+        CONF_ICON: ICON_BATTERY,
+        CONF_ACCURACY_DECIMALS: 2,
+        CONF_DEVICE_CLASS: DEVICE_CLASS_POWER,
+    },
 }
 
 
@@ -387,24 +408,21 @@ def set_default_based_on_type():
     return set_defaults_
 
 
-CONFIG_SCHEMA = (
-    sensor.sensor_schema()
-    .extend(
-        {
-            cv.GenerateID(): cv.declare_id(VictronSensor),
-            cv.GenerateID(CONF_VICTRON_BLE_ID): cv.use_id(VictronBle),
-            cv.Required(CONF_TYPE): cv.enum(CONF_SUPPORTED_TYPE, upper=True),
-        }
-    )
-    .extend(cv.COMPONENT_SCHEMA)
+CONFIG_SCHEMA = sensor.sensor_schema().extend(
+    {
+        cv.GenerateID(): cv.declare_id(VictronSensor),
+        cv.GenerateID(CONF_VICTRON_BLE_ID): cv.use_id(VictronBle),
+        cv.Required(CONF_TYPE): cv.enum(CONF_SUPPORTED_TYPE, upper=True),
+    }
 )
 FINAL_VALIDATE_SCHEMA = set_default_based_on_type()
 
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
-    await sensor.register_sensor(var, config)
-    await cg.register_parented(var, config[CONF_VICTRON_BLE_ID])
+    paren = await get_parented(config[CONF_VICTRON_BLE_ID])
 
-    cg.add(var.set_type(CONF_SUPPORTED_TYPE[config[CONF_TYPE]][CONF_TYPE]))
+    var = await sensor.new_sensor(
+        config, paren, CONF_SUPPORTED_TYPE[config[CONF_TYPE]][CONF_TYPE]
+    )
+    # cg.add(var.set_type(CONF_SUPPORTED_TYPE[config[CONF_TYPE]][CONF_TYPE]))
+    # await cg.register_parented(var, config[CONF_VICTRON_BLE_ID])

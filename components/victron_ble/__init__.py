@@ -10,6 +10,7 @@ from esphome.const import (
     CONF_TRIGGER_ID,
 )
 from esphome.yaml_util import ESPHomeDumper
+from esphome.core import ID
 
 CODEOWNERS = ["@Fabian-Schmidt"]
 DEPENDENCIES = ["esp32_ble_tracker"]
@@ -194,6 +195,7 @@ def bind_key_array(value):
         parts_int.append(int(part, 16))
     return Array(*parts_int)
 
+
 def bind_mac_address_or_shortened(value):
     value = cv.string_strict(value)
     if ":" in value:
@@ -202,8 +204,9 @@ def bind_mac_address_or_shortened(value):
         raise cv.Invalid("MAC Address must be format XX:XX:XX:XX:XX:XX or XXXXXXXXXXXX")
     # Split every second character
     n = 2
-    parts_int = [value[i:i+n] for i in range(0, len(value), n)]
-    return cv.mac_address(':'.join(parts_int))
+    parts_int = [value[i : i + n] for i in range(0, len(value), n)]
+    return cv.mac_address(":".join(parts_int))
+
 
 CONFIG_SCHEMA = cv.All(
     cv.only_on_esp32,
@@ -308,9 +311,7 @@ CONFIG_SCHEMA = cv.All(
                     ),
                 }
             ),
-            cv.Optional(
-                CONF_ON_ORION_XS_MESSAGE
-            ): automation.validate_automation(
+            cv.Optional(CONF_ON_ORION_XS_MESSAGE): automation.validate_automation(
                 {
                     cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
                         OrionXsMessageTrigger
@@ -320,8 +321,16 @@ CONFIG_SCHEMA = cv.All(
         }
     )
     .extend(esp32_ble_tracker.ESP_BLE_DEVICE_SCHEMA)
-    .extend(cv.COMPONENT_SCHEMA)
+    .extend(cv.COMPONENT_SCHEMA),
 )
+
+
+async def get_parented(value):
+    if isinstance(value, ID):
+        paren = await cg.get_variable(value)
+    else:
+        paren = value
+    return paren
 
 
 async def to_code(config):

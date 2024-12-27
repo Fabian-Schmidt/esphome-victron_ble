@@ -3,7 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import binary_sensor
 from esphome.const import CONF_TYPE
 
-from .. import CONF_VICTRON_BLE_ID, VictronBle, victron_ble_ns
+from .. import CONF_VICTRON_BLE_ID, VictronBle, victron_ble_ns, get_parented
 
 DEPENDENCIES = ["victron_ble"]
 CODEOWNERS = ["@Fabian-Schmidt"]
@@ -66,27 +66,59 @@ CONF_SUPPORTED_TYPE = {
     "DEVICE_STATE_BATTERY_SAFE": {
         CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.DEVICE_STATE_BATTERY_SAFE,
     },
+    "DEVICE_STATE_LOAD_DETECT": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.DEVICE_STATE_LOAD_DETECT,
+    },
+    "DEVICE_STATE_BLOCKED": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.DEVICE_STATE_BLOCKED,
+    },
+    "DEVICE_STATE_TEST": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.DEVICE_STATE_TEST,
+    },
     "DEVICE_STATE_EXTERNAL_CONTROL": {
         CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.DEVICE_STATE_EXTERNAL_CONTROL,
+    },
+    # BMS
+    "BMS_ALARM_OVER_VOLTAGE": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.BMS_ALARM_OVER_VOLTAGE,
+    },
+    "BMS_ALARM_UNDER_VOLTAGE": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.BMS_ALARM_UNDER_VOLTAGE,
+    },
+    "BMS_WARN_UNDER_VOLTAGE": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.BMS_WARN_UNDER_VOLTAGE,
+    },
+    "BMS_ALARM_OVER_TEMPERATURE": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.BMS_ALARM_OVER_TEMPERATURE,
+    },
+    "BMS_ALARM_UNDER_TEMPERATURE": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.BMS_ALARM_UNDER_TEMPERATURE,
+    },
+    "BMS_ALARM_HARDWARE_FAILURE": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.BMS_ALARM_HARDWARE_FAILURE,
+    },
+    "BMS_ALLOWED_TO_CHARGE": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.BMS_ALLOWED_TO_CHARGE,
+    },
+    "BMS_ALLOWED_TO_DISCHARGE": {
+        CONF_TYPE: VICTRON_BINARY_SENSOR_TYPE.BMS_ALLOWED_TO_DISCHARGE,
     },
 }
 
 
-CONFIG_SCHEMA = (
-    binary_sensor.binary_sensor_schema(VictronBinarySensor)
-    .extend(
-        {
-            cv.GenerateID(CONF_VICTRON_BLE_ID): cv.use_id(VictronBle),
-            cv.Required(CONF_TYPE): cv.enum(CONF_SUPPORTED_TYPE, upper=True),
-        }
-    )
-    .extend(cv.COMPONENT_SCHEMA)
+CONFIG_SCHEMA = binary_sensor.binary_sensor_schema(VictronBinarySensor).extend(
+    {
+        cv.GenerateID(CONF_VICTRON_BLE_ID): cv.use_id(VictronBle),
+        cv.Required(CONF_TYPE): cv.enum(CONF_SUPPORTED_TYPE, upper=True),
+    }
 )
 
 
 async def to_code(config):
-    var = await binary_sensor.new_binary_sensor(config)
-    await cg.register_component(var, config)
-    await cg.register_parented(var, config[CONF_VICTRON_BLE_ID])
+    paren = await get_parented(config[CONF_VICTRON_BLE_ID])
 
-    cg.add(var.set_type(CONF_SUPPORTED_TYPE[config[CONF_TYPE]][CONF_TYPE]))
+    var = await binary_sensor.new_binary_sensor(
+        config, paren, CONF_SUPPORTED_TYPE[config[CONF_TYPE]][CONF_TYPE]
+    )
+    # await cg.register_parented(var, config[CONF_VICTRON_BLE_ID])
+    # cg.add(var.set_type(CONF_SUPPORTED_TYPE[config[CONF_TYPE]][CONF_TYPE]))

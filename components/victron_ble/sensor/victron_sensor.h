@@ -27,6 +27,7 @@ enum class VICTRON_SENSOR_TYPE {
   ERROR,
   INPUT_VOLTAGE,
   LOAD_CURRENT,
+  LOAD_POWER,
   MID_VOLTAGE,
   OFF_REASON,
   OUTPUT_VOLTAGE,
@@ -73,6 +74,8 @@ enum class VICTRON_SENSOR_TYPE {
   // ORION_XS
   OUTPUT_CURRENT,
   INPUT_CURRENT,
+  OUTPUT_POWER,
+  INPUT_POWER,
 };
 
 #ifdef ESPHOME_LOG_HAS_CONFIG
@@ -114,6 +117,8 @@ static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
       return "INPUT_VOLTAGE";
     case VICTRON_SENSOR_TYPE::LOAD_CURRENT:
       return "LOAD_CURRENT";
+    case VICTRON_SENSOR_TYPE::LOAD_POWER:
+      return "LOAD_POWER";
     case VICTRON_SENSOR_TYPE::MID_VOLTAGE:
       return "MID_VOLTAGE";
     case VICTRON_SENSOR_TYPE::OFF_REASON:
@@ -153,7 +158,7 @@ static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
     case VICTRON_SENSOR_TYPE::CELL8:
       return "CELL8";
 
-      //AC_CHARGER
+      // AC_CHARGER
     case VICTRON_SENSOR_TYPE::BATTERY_CURRENT_2:
       return "BATTERY_CURRENT_2";
     case VICTRON_SENSOR_TYPE::BATTERY_VOLTAGE_2:
@@ -166,7 +171,7 @@ static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
       return "BATTERY_VOLTAGE_3";
     case VICTRON_SENSOR_TYPE::BATTERY_POWER_3:
       return "BATTERY_POWER_3";
-    
+
       // SMART_BATTERY_PROTECT
     case VICTRON_SENSOR_TYPE::OUTPUT_STATE:
       return "OUTPUT_STATE";
@@ -192,6 +197,10 @@ static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
       return "OUTPUT_CURRENT";
     case VICTRON_SENSOR_TYPE::INPUT_CURRENT:
       return "INPUT_CURRENT";
+    case VICTRON_SENSOR_TYPE::OUTPUT_POWER:
+      return "OUTPUT_POWER";
+    case VICTRON_SENSOR_TYPE::INPUT_POWER:
+      return "INPUT_POWER";
 
     default:
       return "";
@@ -199,64 +208,244 @@ static const char *enum_to_c_str(const VICTRON_SENSOR_TYPE val) {
 }
 #endif  // ESPHOME_LOG_HAS_CONFIG
 
-class VictronSensor : public Component, public sensor::Sensor, public Parented<VictronBle> {
+class VictronSensor : public sensor::Sensor, public Parented<VictronBle> {
  public:
-  void dump_config() override;
-  void setup() override;
-
+  VictronSensor(VictronBle *parent, VICTRON_SENSOR_TYPE val) {
+    this->parent_ = parent;
+    this->type_ = val;
+    this->register_callback();
+  }
   void set_type(VICTRON_SENSOR_TYPE val) { this->type_ = val; }
 
  protected:
   VICTRON_SENSOR_TYPE type_;
 
-  inline void publish_state_(battery_voltage_16bit_0_01V val) {
-    if ((int16_t)val == 0x7FFF) {
+  void register_callback();
+
+  inline void publish_state_(vic_22bit_0_001 val) {
+    if (val == 0x3FFFFF) {
       this->publish_state(NAN);
     } else {
-      this->publish_state(0.01f * (int16_t)val);
+      this->publish_state(0.001f * static_cast<int32_t>(val));
     }
   };
 
-  inline void publish_state_(battery_voltage_13bit_0_01V_positiv val) {
-    if ((u_int16_t)val == 0x1FFF) {
+  inline void publish_state_(vic_20bit_0_1_negative val) {
+    if (val == 0xFFFFF) {
       this->publish_state(NAN);
     } else {
-      this->publish_state(0.01f * (u_int16_t)val);
+      this->publish_state(-0.1f * static_cast<u_int32_t>(val));
     }
   };
 
-  inline void publish_state_(battery_current_11bit_0_1A_positiv val) {
-    if ((u_int16_t)val == 0x7FF) {
+  inline void publish_state_(vic_19bit_1 val) {
+    if (val == 0x3FFFF) {
       this->publish_state(NAN);
     } else {
-      this->publish_state(0.1f * (u_int16_t)val);
+      this->publish_state(static_cast<int32_t>(val));
     }
   };
 
-  inline void publish_state_(battery_current_11bit_0_1A_positiv val_C, battery_voltage_13bit_0_01V_positiv val_V) {
-    if ((u_int16_t)val_C == 0x7FF || (u_int16_t)val_V == 0x1FFF) {
+  inline void publish_state_(vic_16bit_0_01 val) {
+    if (val == 0x7FFF) {
       this->publish_state(NAN);
     } else {
-      this->publish_state((0.1f * (u_int16_t)val_C) * (0.01f * (u_int16_t)val_V));
+      this->publish_state(0.01f * static_cast<int16_t>(val));
     }
   };
 
-  inline void publish_state_(temperature_7bit val) {
-    if ((u_int8_t)val == 0x7F) {
-      this->publish_state(NAN);
+  inline void publish_state_(vic_16bit_0_01_noNAN val) {
+    if (val == 0x7FFF) {
+      this->publish_state(0.0f);
     } else {
-      this->publish_state(-40.0f + (u_int8_t)val);
+      this->publish_state(0.01f * static_cast<int16_t>(val));
     }
   };
 
-  inline void publish_state_(ac_current_9bit_0_1A_positiv val) {
-    if ((u_int16_t)val == 0x1FF) {
+  inline void publish_state_(vic_16bit_0_01_positive val) {
+    if (val == 0xFFFF) {
       this->publish_state(NAN);
     } else {
-      this->publish_state(0.1f * (u_int16_t)val);
+      this->publish_state(0.01f * static_cast<u_int16_t>(val));
     }
   };
-  
+
+  inline void publish_state_(vic_16bit_0_1 val) {
+    if (val == 0x7FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.1f * static_cast<int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_16bit_0_1_positive val) {
+    if (val == 0xFFFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.1f * static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_16bit_1 val) {
+    if (val == 0x7FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(static_cast<int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_16bit_1_positive val) {
+    if (val == 0xFFFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_temperature_16bit val) {
+    if (val == 0xFFFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.01f * static_cast<u_int16_t>(val) - 273.15f);
+    }
+  };
+
+  inline void publish_state_(vic_15bit_0_01_positive val) {
+    if (val == 0x7FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.01f * static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_14bit_0_01_positive val) {
+    if (val == 0x3FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.01f * static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_13bit_0_01_positive val) {
+    if (val == 0x1FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.01f * static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_12bit_0_01_positive val) {
+    if (val == 0xFFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.01f * static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_11bit_0_1_positive val) {
+    if (val == 0x7FF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.1f * static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_10bit_0_1_positive val) {
+    if (val == 0x3FF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.1f * static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_9bit_0_1_negative val) {
+    if (val == 0x1FF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(-0.1f * static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_9bit_0_1_positive val) {
+    if (val == 0x1FF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.1f * static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_cell_7bit_0_01 val) {
+    if (val == 0x7F) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(0.01f * static_cast<u_int16_t>(val) + 2.60f);
+    }
+  };
+
+  inline void publish_state_(vic_7bit_1 val) {
+    if (val == 0x7F) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_temperature_7bit val) {
+    if (val == 0x7F) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state(-40.0f + static_cast<u_int16_t>(val));
+    }
+  };
+
+  inline void publish_state_(vic_22bit_0_001 val_C, vic_16bit_0_01 val_V) {
+    if (val_C == 0x3FFFFF || val_V == 0x1FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state((0.001f * static_cast<int32_t>(val_C)) * (0.01f * static_cast<int16_t>(val_V)));
+    }
+  };
+
+  inline void publish_state_(vic_16bit_0_1 val_C, vic_16bit_0_01 val_V) {
+    if (val_C == 0x7FFF || val_V == 0x7FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state((0.1f * static_cast<int16_t>(val_C)) * (0.01f * static_cast<int16_t>(val_V)));
+    }
+  };
+
+  inline void publish_state_(vic_16bit_0_1_positive val_C, vic_16bit_0_01_positive val_V) {
+    if (val_C == 0xFFFF || val_V == 0xFFFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state((0.1f * static_cast<u_int16_t>(val_C)) * (0.01f * static_cast<u_int16_t>(val_V)));
+    }
+  };
+
+  inline void publish_state_(vic_16bit_0_1 val_C, vic_14bit_0_01_positive val_V) {
+    if (val_C == 0x7FFF || val_V == 0x3FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state((0.1f * static_cast<int16_t>(val_C)) * (0.01f * static_cast<u_int16_t>(val_V)));
+    }
+  };
+
+  inline void publish_state_(vic_11bit_0_1_positive val_C, vic_13bit_0_01_positive val_V) {
+    if (val_C == 0x7FF || val_V == 0x1FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state((0.1f * static_cast<u_int16_t>(val_C)) * (0.01f * static_cast<u_int16_t>(val_V)));
+    }
+  };
+
+  inline void publish_state_(vic_9bit_0_1_negative val_C, vic_16bit_0_01 val_V) {
+    if (val_C == 0x1FF || val_V == 0x7FFF) {
+      this->publish_state(NAN);
+    } else {
+      this->publish_state((-0.1f * static_cast<u_int16_t>(val_C)) * (0.01f * static_cast<u_int16_t>(val_V)));
+    }
+  };
 };
+
 }  // namespace victron_ble
 }  // namespace esphome

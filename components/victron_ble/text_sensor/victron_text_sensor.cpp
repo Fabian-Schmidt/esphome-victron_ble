@@ -6,12 +6,12 @@ namespace victron_ble {
 
 static const char *const TAG = "victron_ble.text_sensor";
 
-void VictronTextSensor::dump_config() {
-  LOG_TEXT_SENSOR("", "Victron Text Sensor", this);
-  ESP_LOGCONFIG(TAG, "  Type '%s'", enum_to_c_str(this->type_));
-}
+// void VictronTextSensor::dump_config() {
+//   LOG_TEXT_SENSOR("", "Victron Text Sensor", this);
+//   ESP_LOGCONFIG(TAG, "  Type '%s'", enum_to_c_str(this->type_));
+// }
 
-void VictronTextSensor::setup() {
+void VictronTextSensor::register_callback() {
   this->parent_->add_on_message_callback([this](const VictronBleData *msg) {
     switch (this->type_) {
       case VICTRON_TEXT_SENSOR_TYPE::ALARM:
@@ -295,6 +295,15 @@ void VictronTextSensor::publish_state_(VE_REG_DEVICE_STATE val) {
       break;
     case VE_REG_DEVICE_STATE::BATTERY_SAFE:
       this->publish_state("BatterySafe");
+      break;
+    case VE_REG_DEVICE_STATE::LOAD_DETECT:
+      this->publish_state("Load detect");
+      break;
+    case VE_REG_DEVICE_STATE::BLOCKED:
+      this->publish_state("Blocked");
+      break;
+    case VE_REG_DEVICE_STATE::TEST:
+      this->publish_state("Test");
       break;
     case VE_REG_DEVICE_STATE::EXTERNAL_CONTROL:
       this->publish_state("External Control");

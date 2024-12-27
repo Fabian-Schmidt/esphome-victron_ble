@@ -299,7 +299,31 @@ The following `type` are supported by the `text_sensor` component:
 | `ALARM`           |               |                 |          |                 |              |             |            |                       |                  |          | X      |                 |          |
 | `BALANCER_STATUS` |               |                 |          |                 | X            |             |            |                       |                  |          |        |                 |          |
 
-### Your support
+
+## Display
+
+Example using this library standalone without HomeAssistant to display SmartShunt and (multiple) SmartSolar values.
+
+As this uses Bluetooth advertisement packages you can have multiple device (displays) receive the same information without issues.
+
+The [config WT32-SC01](victron_ble_display_wt32-sc01.yaml) displays the following information:
+
+1. SmartShunt AUX Voltage
+2. SmartShunt Battery Voltage
+3. SmartShunt State of Charge in %
+4. SmartShunt Battery time remaining
+5. SmartShunt Consumed Ah
+6. SmartShunt Battery Current
+7. SmartSolar Yield Today
+8. SmartSolar PV Power
+9. SmartSolar Device State (Off, Bulk, Absorption, Float ...)
+10. SmartSolar Load output
+
+![Display WT32-SC01](victron_ble_display_wt32-sc01.jpg)
+
+Any [Display supported by ESPHome](https://esphome.io/#display-hardware-platforms) can be used / adopted.
+
+## Your support
 
 I don't have access to all Victron devices. Please provide feedback if the component is working and all values are correct and match the reading within the Victron app. Only after I got feedback for all devices I can try to get this merged into ESP Home. Given the size of this component I don't expect this soon or be a quick process.
 

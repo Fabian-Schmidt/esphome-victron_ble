@@ -355,7 +355,7 @@ struct VICTRON_BLE_RECORD_TEST {  // NOLINT(readability-identifier-naming,altera
 // - https://github.com/victronenergy/venus-html5-app/blob/master/src/app/utils/constants.js
 // - https://github.com/victronenergy/gui-v2/blob/8397825725623a4d15086bef77f67c98aa94a780/src/enums.h#L332C6-L332C7
 enum class VE_REG_DEVICE_STATE : u_int8_t {
-  // Off
+  // Off / Not charging
   OFF = 0x00,
   // Low power
   LOW_POWER = 0x01,
@@ -381,7 +381,7 @@ enum class VE_REG_DEVICE_STATE : u_int8_t {
   POWER_SUPPLY = 0x0B,
   // Sustain
   SUSTAIN = 0xF4,
-  // Starting-up
+  // Starting-up / Wake-up
   STARTING_UP = 0xF5,
   // Repeated absorption
   REPEATED_ABSORPTION = 0xF6,
@@ -429,6 +429,8 @@ enum class VE_REG_CHR_ERROR_CODE : u_int8_t {
   TEMPERATURE_CHARGER = 17,
   // Err 18 - Charger over current
   OVER_CURRENT = 18,
+  // Err 19 - Charger current polarity reversed
+  POLARITY = 19,
   // Err 20 - Bulk time limit exceeded
   BULK_TIME = 20,
   // Err 21 - Current sensor issue (sensor bias/sensor broken)
@@ -619,27 +621,31 @@ struct VICTRON_BLE_RECORD_INVERTER {  // NOLINT(readability-identifier-naming,al
   vic_11bit_0_1_positive ac_current : 11;
 } __attribute__((packed));
 
-// source: VE.Direct-Protocol-3.32.pdf
+// source:
+// - VE.Direct-Protocol-3.32.pdf
+// - BlueSolar-HEX-protocol.pdf
 enum struct VE_REG_DEVICE_OFF_REASON_2 : u_int32_t {
   NOTHING = 0,
-  // No input power
-  NO_INPUT_POWER = 0x00000001,
+  // No input power (solar panels)
+  NO_INPUT_POWER = (1ul << 0),
   // Switched off (power switch)
-  SWITCHED_OFF_SWITCH = 0x00000002,
+  SWITCHED_OFF_SWITCH = (1ul << 1),
   // Switched off (device mode register)
-  SWITCHED_OFF_REGISTER = 0x00000004,
+  SWITCHED_OFF_REGISTER = (1ul << 2),
   // Remote input
-  REMOTE_INPUT = 0x00000008,
+  REMOTE_INPUT = (1ul << 3),
   // Protection active
-  PROTECTION = 0x00000010,
-  // Paygo
-  PAYGO = 0x00000020,
-  // BMS
-  BMS = 0x00000040,
+  PROTECTION = (1ul << 4),
+  // Pay-as-you-go out of credit
+  PAYGO = (1ul << 5),
+  // BMS shutdown
+  BMS = (1ul << 6),
   // Engine shutdown detection
-  ENGINE = 0x00000080,
+  ENGINE = (1ul << 7),
   // Analysing input voltage
-  INPUT_VOLTATE = 0x00000100,
+  INPUT_VOLTATE = (1ul << 8),
+  // Battery temperature too low (charging not allowed)
+  TEMPERATURE = (1ul << 9),
 };
 
 struct VICTRON_BLE_RECORD_DCDC_CONVERTER {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
@@ -652,14 +658,52 @@ struct VICTRON_BLE_RECORD_DCDC_CONVERTER {  // NOLINT(readability-identifier-nam
 
 // source:
 // - https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/64
+// - VE.Can-registers-public.pdf
 enum struct VE_REG_BMS_FLAGs : u_int32_t {
   NONE = 0x0,
-
+  // Battery charged
+  BATTERY_CHARGED = (1ul << 0),
+  // Battery almost charged
+  BATTERY_ALMOST_CHARGED = (1ul << 1),
+  // Battery discharged
+  BATTERY_DISCHARGED = (1ul << 2),
+  // Battery almost discharged
+  BATTERY_ALMOST_DISCHARGED = (1ul << 3),
+  // Battery is charging
+  BATTERY_CHARGING = (1ul << 4),
+  // Battery is discharging
+  BATTERY_DISCHARGING = (1ul << 5),
+  // Battery is balancing
+  BATTERY_BALANCING = (1ul << 6),
+  // Safety contactor enabled
+  SAFETY_CONTACTOR = (1ul << 7),
+  // Not used
+  NOT_USED = (1ul << 8),
+  // Over-voltage alarm
   ALARM_OVER_VOLTAGE = (1ul << 9),
+  // Over-voltage warning
+  WARN_OVER_VOLTAGE = (1ul << 10),
+  // Under-voltage alarm
   ALARM_UNDER_VOLTAGE = (1ul << 11),
+  // Under-voltage warning
   WARN_UNDER_VOLTAGE = (1ul << 12),
-
+  // Over-current charge warning
+  WARN_OVER_CURRENT_CHARGE = (1ul << 13),
+  // Over-current discharge warning
+  WARN_OVER_CURRENT_DISCHARGE = (1ul << 14),
+  // Over-temperature alarm
   ALARM_OVER_TEMPERATURE = (1ul << 15),
+  // Over-temperature warning
+  WARN_OVER_TEMPERATURE = (1ul << 16),
+  // Under-temperature charge warning
+  WARN_UNDER_TEMPERATURE_CHARGE = (1ul << 17),
+  // Under-temperature charge alarm
+  ALRM_OVER_TEMPERATURE_CHARGE = (1ul << 18),
+  // Under-temperature discharge warning
+  WARN_UNDER_TEMPERATURE_DISCHARGE = (1ul << 19),
+  // Under-temperature discharge alarm
+  ALRM_OVER_TEMPERATURE_DISCHARGE = (1ul << 20),
+  
   ALARM_UNDER_TEMPERATURE = (1ul << 22),
 
   ALARM_HARDWARE_FAILURE = (1ul << 24),
@@ -729,9 +773,24 @@ struct VICTRON_BLE_RECORD_AC_CHARGER {  // NOLINT(readability-identifier-naming,
 
 // source:
 // - https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/68
-enum class VE_REG_DC_OUTPUT_STATUS : u_int8_t{
+// - BlueSolar-HEX-protocol.pdf
+enum class VE_REG_DC_OUTPUT_STATUS : u_int8_t {
+  // Load output off
   OFF = 0,
-  ON = 1,
+  // Automatic control / batterylife (default)
+  AUTO = 1,
+  // Alternative control 1 (off<11.1V, on>13.1V)
+  ALT1 = 2,
+  // Alternative control 2 (off<11.8V, on>14.0V)
+  ALT2 = 3,
+  // Load output on (use with caution, no discharge guard)
+  ON = 4,
+  // User defined settings 1 (off<Vlow, on>Vhigh)
+  USER1 = 5,
+  // User defined settings 2 (off<Vlow<on<Vhigh<off)
+  USER2 = 6,
+  // Automatic Energy Selector
+  AES = 7,
 };
 
 struct VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)

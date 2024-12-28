@@ -365,6 +365,9 @@ void VictronTextSensor::publish_state_(VE_REG_CHR_ERROR_CODE val) {
     case VE_REG_CHR_ERROR_CODE::OVER_CURRENT:
       this->publish_state("Err 18 - Charger over current");
       break;
+    case VE_REG_CHR_ERROR_CODE::POLARITY:
+      this->publish_state("Err 19 - Charger current polarity reversed");
+      break;
     case VE_REG_CHR_ERROR_CODE::BULK_TIME:
       this->publish_state("Err 20 - Bulk time limit exceeded");
       break;
@@ -569,6 +572,9 @@ void VictronTextSensor::publish_state_(VE_REG_DEVICE_OFF_REASON_2 val) {
   if ((val & VE_REG_DEVICE_OFF_REASON_2::INPUT_VOLTATE) != VE_REG_DEVICE_OFF_REASON_2::NOTHING) {
     this->publish_state("Analysing input voltage");
   }
+  if ((val & VE_REG_DEVICE_OFF_REASON_2::TEMPERATURE) != VE_REG_DEVICE_OFF_REASON_2::NOTHING) {
+    this->publish_state("Battery temperature too low");
+  }
 }
 
 void VictronTextSensor::publish_state_(VE_REG_AC_IN_ACTIVE val) {
@@ -630,8 +636,26 @@ void VictronTextSensor::publish_state_(VE_REG_DC_OUTPUT_STATUS val) {
     case VE_REG_DC_OUTPUT_STATUS::OFF:
       this->publish_state("Off");
       break;
+    case VE_REG_DC_OUTPUT_STATUS::AUTO:
+      this->publish_state("Auto");
+      break;
+    case VE_REG_DC_OUTPUT_STATUS::ALT1:
+      this->publish_state("Alternative control 1");
+      break;
+    case VE_REG_DC_OUTPUT_STATUS::ALT2:
+      this->publish_state("Alternative control 2");
+      break;
     case VE_REG_DC_OUTPUT_STATUS::ON:
       this->publish_state("On");
+      break;
+    case VE_REG_DC_OUTPUT_STATUS::USER1:
+      this->publish_state("User defined settings 1");
+      break;
+    case VE_REG_DC_OUTPUT_STATUS::USER2:
+      this->publish_state("User defined settings 2");
+      break;
+    case VE_REG_DC_OUTPUT_STATUS::AES:
+      this->publish_state("Automatic Energy Selector");
       break;
     default:
       break;

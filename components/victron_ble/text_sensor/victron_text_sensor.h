@@ -17,6 +17,7 @@ enum class VICTRON_TEXT_SENSOR_TYPE {
   ERROR_CODE,
   OFF_REASON,
   WARNING_REASON,
+  OUTPUT_STATE,
   BALANCER_STATUS,
 };
 
@@ -82,6 +83,7 @@ class VictronTextSensor : public text_sensor::TextSensor, public Parented<Victro
   void publish_state_(VE_REG_AC_IN_ACTIVE val);
   void publish_state_(VE_REG_ALARM_NOTIFICATION val);
   void publish_state_(VE_REG_BALANCER_STATUS val);
+  void publish_state_(VE_REG_DC_OUTPUT_STATUS val);
 };
 }  // namespace victron_ble
 }  // namespace esphome

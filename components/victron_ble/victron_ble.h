@@ -727,10 +727,16 @@ struct VICTRON_BLE_RECORD_AC_CHARGER {  // NOLINT(readability-identifier-naming,
   vic_9bit_0_1_positive ac_current : 9;
 } __attribute__((packed));
 
+// source:
+// - https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/68
+enum class VE_REG_DC_OUTPUT_STATUS : u_int8_t{
+  OFF = 0,
+  ON = 1,
+};
+
 struct VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
-  // TODO
-  u_int8_t output_state;
+  VE_REG_DC_OUTPUT_STATUS output_state;
   VE_REG_CHR_ERROR_CODE error_code;
   VE_REG_ALARM_REASON alarm_reason;
   // Warnings always represent the current status of the measured parameter.

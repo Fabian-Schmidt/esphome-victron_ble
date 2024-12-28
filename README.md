@@ -296,6 +296,7 @@ The following `type` are supported by the `text_sensor` component:
 | `OFF_REASON`      |               |                 |          | X               |              |             |            | X                     |                  |          |        |                 | X        |
 | `ERROR_CODE`      |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
 | `WARNING_REASON`  |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
+| `OUTPUT_STATE`    |               |                 |          |                 |              |             |            | X                     |                  |          |        |                 |          |
 | `ALARM`           |               |                 |          |                 |              |             |            |                       |                  |          | X      |                 |          |
 | `BALANCER_STATUS` |               |                 |          |                 | X            |             |            |                       |                  |          |        |                 |          |
 

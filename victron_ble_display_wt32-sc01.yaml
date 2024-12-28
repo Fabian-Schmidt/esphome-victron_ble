@@ -16,11 +16,7 @@ esphome:
     board_build.arduino.memory_type: qio_qspi
 
 external_components:
-  # - source: github://Fabian-Schmidt/esphome-victron_ble
-  - source:
-      type: local
-      path: components
-    components: ["victron_ble"]
+  - source: github://Fabian-Schmidt/esphome-victron_ble
 
 esp32:
   board: esp32dev

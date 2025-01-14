@@ -168,20 +168,20 @@ The following settings exist:
 - `mac_address` - The MAC address of your Victron device.
 - `bindkey` - The AES encryption key of your Victron device.
 - [Automation Triggers](https://esphome.io/guides/automations.html):
-  - `on_message` - When any message is recieved.
-  - `on_battery_monitor_message` - When a battery monitor message is recieved.
-  - `on_solar_charger_message` - When a solar charger message is recieved.
-  - `on_inverter_message` - When a inverter message is recieved.
-  - `on_dcdc_converter_message` - When a DC/DC converter message is recieved.
-  - `on_smart_lithium_message` - When a smart Lithium message is recieved.
-  - `on_inverter_rs_message` - When a Inverter RS message is recieved.
-  - `on_ac_charger_message` - When a AC Charger message is recieved.
-  - `on_smart_battery_protect_message` - When a Smart Battery Protect message is recieved.
-  - `on_lynx_smart_bms_message` - When a Lynx (Smart BMS) message is recieved.
-  - `on_multi_rs_message` - When a Multi RS message is recieved.
-  - `on_ve_bus_message` - When a VE.Bus message is recieved.
-  - `on_dc_energy_meter_message` - When a DC Energy meter message is recieved.
-  - `on_orion_xs_message` - When a Orion XS message is recieved.
+  - `on_message` - When any message is received.
+  - `on_battery_monitor_message` - When a battery monitor message is received.
+  - `on_solar_charger_message` - When a solar charger message is received.
+  - `on_inverter_message` - When a inverter message is received.
+  - `on_dcdc_converter_message` - When a DC/DC converter message is received.
+  - `on_smart_lithium_message` - When a smart Lithium message is received.
+  - `on_inverter_rs_message` - When a Inverter RS message is received.
+  - `on_ac_charger_message` - When a AC Charger message is received.
+  - `on_smart_battery_protect_message` - When a Smart Battery Protect message is received.
+  - `on_lynx_smart_bms_message` - When a Lynx (Smart BMS) message is received.
+  - `on_multi_rs_message` - When a Multi RS message is received.
+  - `on_ve_bus_message` - When a VE.Bus message is received.
+  - `on_dc_energy_meter_message` - When a DC Energy meter message is received.
+  - `on_orion_xs_message` - When a Orion XS message is received.
 
 ### Sensor
 

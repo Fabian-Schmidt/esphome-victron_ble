@@ -316,7 +316,7 @@ void VictronBleConnect::read_value_(const uint16_t handle, const uint8_t *value,
       }
     }
   } else {
-    ESP_LOGW(TAG, "[%s] Error recieved data with unknown handle for service %s handle 0x%04x", this->get_name().c_str(),
+    ESP_LOGW(TAG, "[%s] Error received data with unknown handle for service %s handle 0x%04x", this->get_name().c_str(),
              SERVICE_UUID.to_string().c_str(), handle);
   }
 }
@@ -342,7 +342,7 @@ void VictronBleConnect::update_sensors_() {
       this->state_of_charge_->publish_state(static_cast<float>(this->value_state_of_charge_) / 100.0f);
     } else {
       this->state_of_charge_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for State of Charge.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for State of Charge.", this->get_name().c_str());
     }
   }
 
@@ -351,7 +351,7 @@ void VictronBleConnect::update_sensors_() {
       this->voltage_->publish_state(static_cast<float>(this->value_voltage_) / 100.0f);
     } else {
       this->voltage_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Voltage.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for Voltage.", this->get_name().c_str());
     }
   }
 
@@ -360,7 +360,7 @@ void VictronBleConnect::update_sensors_() {
       this->power_->publish_state(static_cast<float>(this->value_power_));
     } else {
       this->power_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Power consumption.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for Power consumption.", this->get_name().c_str());
     }
   }
 
@@ -369,7 +369,7 @@ void VictronBleConnect::update_sensors_() {
       this->current_->publish_state(static_cast<float>(this->value_current_) / 1000.0f);
     } else {
       this->current_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Current.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for Current.", this->get_name().c_str());
     }
   }
 
@@ -378,7 +378,7 @@ void VictronBleConnect::update_sensors_() {
       this->ah_->publish_state(static_cast<float>(this->value_ah_) / 10.0f);
     } else {
       this->ah_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Consumed Ah.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for Consumed Ah.", this->get_name().c_str());
     }
   }
 
@@ -387,7 +387,7 @@ void VictronBleConnect::update_sensors_() {
       this->starter_battery_voltage_->publish_state(static_cast<float>(this->value_starter_battery_voltage_) / 100.0f);
     } else {
       this->starter_battery_voltage_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Starter Battery Voltage.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for Starter Battery Voltage.", this->get_name().c_str());
     }
   }
 
@@ -396,7 +396,7 @@ void VictronBleConnect::update_sensors_() {
       this->val2_->publish_state(static_cast<float>(this->value_val2_));
     } else {
       this->val2_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Val2.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for Val2.", this->get_name().c_str());
     }
   }
 
@@ -405,7 +405,7 @@ void VictronBleConnect::update_sensors_() {
       this->val3_->publish_state(static_cast<float>(this->value_val3_));
     } else {
       this->val3_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Val3.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for Val3.", this->get_name().c_str());
     }
   }
 
@@ -414,7 +414,7 @@ void VictronBleConnect::update_sensors_() {
       this->val4_->publish_state(static_cast<float>(this->value_val4_));
     } else {
       this->val4_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Val4.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for Val4.", this->get_name().c_str());
     }
   }
 
@@ -423,7 +423,7 @@ void VictronBleConnect::update_sensors_() {
       this->remaining_time_->publish_state(static_cast<float>(this->value_remaining_time_));
     } else {
       this->remaining_time_->publish_state(NAN);
-      ESP_LOGW(TAG, "[%s] Recieved no or invalid data for Remaining Time.", this->get_name().c_str());
+      ESP_LOGW(TAG, "[%s] Received no or invalid data for Remaining Time.", this->get_name().c_str());
     }
   }
 }

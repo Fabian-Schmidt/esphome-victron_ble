@@ -25,6 +25,8 @@
       - logger.log: "Message from VE.Bus."
     on_dc_energy_meter_message:
       - logger.log: "Message from DC Energy Meter."
+    on_orion_xs_message:
+      - logger.log: "Message from OrionXS Charger."
 
   - id: MySmartSolar
     mac_address: ${smart_solar_mac_address}

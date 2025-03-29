@@ -109,5 +109,13 @@ class DcEnergyMeterMessageTrigger : public Trigger<const VICTRON_BLE_RECORD_DC_E
   }
 };
 
+class OrionXsMessageTrigger : public Trigger<const VICTRON_BLE_RECORD_ORION_XS *> {
+ public:
+  explicit OrionXsMessageTrigger(VictronBle *parent) {
+    parent->add_on_orion_xs_message_callback(
+        [this](const VICTRON_BLE_RECORD_ORION_XS *message) { this->trigger(message); });
+  }
+};
+
 }  // namespace victron_ble
 }  // namespace esphome

@@ -4,6 +4,10 @@
 
 **I am not responsible for any problems or damages with your devices or this code**
 
+The goal of this component is to use the Victron Bluetooth Advertising protocol and expose all available data as ESPHome sensors.
+
+Victron Bluetooth Advertising protocol data is also used by the Victron App on the Overview page (before you connect to a device).
+
 This [ESPHome](https://esphome.io) component supports both official Victron Bluetooth BLE Protocols:
 
 - (Recommended) [Bluetooth advertising protocol](https://community.victronenergy.com/questions/187303/victron-bluetooth-advertising-protocol.html) - Component `victron_ble`.
@@ -323,6 +327,43 @@ The [config WT32-SC01](victron_ble_display_wt32-sc01.yaml) displays the followin
 ![Display WT32-SC01](victron_ble_display_wt32-sc01.jpg)
 
 Any [Display supported by ESPHome](https://esphome.io/#display-hardware-platforms) can be used / adopted.
+
+## Frequently Asked Questions
+
+### Can you please provide more sensor data from Device x?
+
+Only if the data is visible in the Victron App on the overview page, before you connect to the device.
+
+The Victron App is using two different protocols to transfer the data. This component is only using the Victron Bluetooth Advertising protocol same as in the Victron App overview page.
+
+### Limit Message to Home Assistant / Sensor Update Interval configuration
+
+By default the component submits all recieved sensor packages to Home Assistant.
+
+ESPHome as an extensive list of filters you add to your sensor to adjust the submitted data.  
+For example you can use the following filter config so it sends an average reading every 1 minute and will send a NAN if nothing is received within 2 minutes.
+
+```ỳaml
+- platform: victron_ble
+    victron_ble_id: MySmartShunt
+    name: "SmartShunt Current"
+    type: BATTERY_CURRENT
+    filters:
+      - throttle_average: 60s
+      - timeout: 120s
+```
+
+See also [ESPHome Sensor Filters](https://esphome.io/components/sensor/index.html#sensor-filters).
+
+### victron_ble:161 incorrect bindkey
+
+The component expects the bindkey to be 32 characters long. Check in the Victron App sometimes the last character is in a invisible second line. Use the clipboard button in the Victron App to copy the bindkey.
+
+If the bindkey is 31 characters long you must reset the bluetooth PIN on the victron device to get a 32 character bindkey.
+
+### Which sensor are avaible for my Victron Device
+
+Each Victron Device is submitting one type of messages (one column in the tables above). Either based ob the device type or based on what you can see in the Victron App Overview Page you can derive the Victron message type.
 
 ## Your support
 

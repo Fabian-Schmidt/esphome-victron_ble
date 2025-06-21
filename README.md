@@ -4,14 +4,14 @@
 
 **I am not responsible for any problems or damages with your devices or this code**
 
-The goal of this component is to use the Victron Bluetooth Advertising protocol and expose all available data as ESPHome sensors.
+The goal of this component is to use the Victron Bluetooth Advertising protocol (aka Instant readout) and expose all available data as ESPHome sensors.
 
 Victron Bluetooth Advertising protocol data is also used by the Victron App on the Overview page (before you connect to a device).
 
 This [ESPHome](https://esphome.io) component supports both official Victron Bluetooth BLE Protocols:
 
 - (Recommended) [Bluetooth advertising protocol](https://community.victronenergy.com/questions/187303/victron-bluetooth-advertising-protocol.html) - Component `victron_ble`.
-  - Supported Devices:
+  - [Devices Supporting Instant readout](https://www.victronenergy.com/media/pg/VictronConnect_Manual/en/stored-trends---instant-readout.html#UUID-5eec18d4-9e11-0845-47e5-9a8f0cec49f4)
     - Smart Shunt
     - Smart Solar
     - Inverter

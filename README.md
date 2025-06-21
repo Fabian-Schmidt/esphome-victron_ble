@@ -365,6 +365,12 @@ If the bindkey is 31 characters long you must reset the bluetooth PIN on the vic
 
 Each Victron Device is submitting one type of messages (one column in the tables above). Either based ob the device type or based on what you can see in the Victron App Overview Page you can derive the Victron message type.
 
+### Can't get values from LOAD_POWER & LOAD_CURREN
+
+Not all Victron solar charger/controllers have load terminals, and those won't report a value (other than N/A). Only smaller SmartSolar devices (up to 20A) have a load output.
+
+See [Victron MPPT overview table](https://www.victronenergy.de/upload/documents/Datasheet-BlueSolar-and-SmartSolar-charge-controller-overview-EN.pdf).
+
 ## Your support
 
 I don't have access to all Victron devices. Please provide feedback if the component is working and all values are correct and match the reading within the Victron app. Only after I got feedback for all devices I can try to get this merged into ESP Home. Given the size of this component I don't expect this soon or be a quick process.

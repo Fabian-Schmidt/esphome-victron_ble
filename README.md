@@ -33,6 +33,7 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - Orion XS
     - Blue Smart Chargers
       - Requires Firmware v3.61 or higher. Available in VictronConnect App v6.10beta14 (2024-09-28).
+    - MultiPlus with VE.Bus Smart Dongle
   -  Not suported. Awaiting final documentation or example log from device:
     - GX-Device
 

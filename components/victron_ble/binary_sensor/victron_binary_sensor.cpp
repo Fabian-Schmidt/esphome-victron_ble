@@ -46,6 +46,9 @@ void VictronBinarySensor::register_callback() {
           case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
             this->publish_state(msg->data.inverter_rs.charger_error != VE_REG_CHR_ERROR_CODE::NO_ERROR);
             break;
+          case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+            this->publish_state(msg->data.ac_charger.charger_error != VE_REG_CHR_ERROR_CODE::NO_ERROR);
+            break;
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
             this->publish_state(msg->data.smart_battery_protect.error_code != VE_REG_CHR_ERROR_CODE::NO_ERROR);
             break;
@@ -93,6 +96,9 @@ void VictronBinarySensor::register_callback() {
             break;
           case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
             this->publish_state_(msg->data.inverter_rs.device_state);
+            break;
+          case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
+            this->publish_state_(msg->data.ac_charger.device_state);
             break;
           case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
             this->publish_state_(msg->data.smart_battery_protect.device_state);

@@ -4,14 +4,14 @@
 
 **I am not responsible for any problems or damages with your devices or this code**
 
-The goal of this component is to use the Victron Bluetooth Advertising protocol and expose all available data as ESPHome sensors.
+The goal of this component is to use the Victron Bluetooth Advertising protocol (aka Instant readout) and expose all available data as ESPHome sensors.
 
 Victron Bluetooth Advertising protocol data is also used by the Victron App on the Overview page (before you connect to a device).
 
 This [ESPHome](https://esphome.io) component supports both official Victron Bluetooth BLE Protocols:
 
 - (Recommended) [Bluetooth advertising protocol](https://community.victronenergy.com/questions/187303/victron-bluetooth-advertising-protocol.html) - Component `victron_ble`.
-  - Supported Devices:
+  - [Devices Supporting Instant readout](https://www.victronenergy.com/media/pg/VictronConnect_Manual/en/stored-trends---instant-readout.html#UUID-5eec18d4-9e11-0845-47e5-9a8f0cec49f4)
     - Smart Shunt
     - Smart Solar
     - Inverter
@@ -33,6 +33,7 @@ This [ESPHome](https://esphome.io) component supports both official Victron Blue
     - Orion XS
     - Blue Smart Chargers
       - Requires Firmware v3.61 or higher. Available in VictronConnect App v6.10beta14 (2024-09-28).
+    - MultiPlus with VE.Bus Smart Dongle
   -  Not suported. Awaiting final documentation or example log from device:
     - GX-Device
 
@@ -364,6 +365,12 @@ If the bindkey is 31 characters long you must reset the bluetooth PIN on the vic
 ### Which sensor are avaible for my Victron Device
 
 Each Victron Device is submitting one type of messages (one column in the tables above). Either based ob the device type or based on what you can see in the Victron App Overview Page you can derive the Victron message type.
+
+### Can't get values from LOAD_POWER & LOAD_CURREN
+
+Not all Victron solar charger/controllers have load terminals, and those won't report a value (other than N/A). Only smaller SmartSolar devices (up to 20A) have a load output.
+
+See [Victron MPPT overview table](https://www.victronenergy.de/upload/documents/Datasheet-BlueSolar-and-SmartSolar-charge-controller-overview-EN.pdf).
 
 ## Your support
 

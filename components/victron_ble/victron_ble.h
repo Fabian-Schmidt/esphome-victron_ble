@@ -330,6 +330,8 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
   VE_BUS = 0x0C,
   // VICTRON_BLE_RECORD_DC_ENERGY_METER
   DC_ENERGY_METER = 0x0D,
+  // VICTRON_BLE_RECORD_SMART_BMS
+  SMART_BMS = 0x0E,
   // VICTRON_BLE_RECORD_ORION_XS
   ORION_XS = 0x0F,
 };
@@ -878,6 +880,21 @@ struct VICTRON_BLE_RECORD_DC_ENERGY_METER {  // NOLINT(readability-identifier-na
   vic_22bit_0_001 battery_current : 22;
 } __attribute__((packed));
 
+struct VICTRON_BLE_RECORD_SMART_BMS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
+  // // TODO
+  // u_int8_t error;
+  // vic_16bit_1_positive ttg;
+  // vic_16bit_0_01 battery_voltage;
+  // vic_16bit_0_1 battery_current;
+  // // TODO
+  // u_int16_t io_status;
+  // // TODO
+  // u_int32_t warnings_alarms : 18;
+  // vic_10bit_0_1_positive soc : 10;
+  // vic_20bit_0_1_negative consumed_ah : 20;
+  // vic_temperature_7bit temperature : 7;
+} __attribute__((packed));
+
 // Undocumented. See <https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/50>
 struct VICTRON_BLE_RECORD_ORION_XS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
@@ -906,6 +923,7 @@ struct VictronBleData {
     VICTRON_BLE_RECORD_MULTI_RS multi_rs;
     VICTRON_BLE_RECORD_VE_BUS ve_bus;
     VICTRON_BLE_RECORD_DC_ENERGY_METER dc_energy_meter;
+    VICTRON_BLE_RECORD_SMART_BMS smart_bms;
     VICTRON_BLE_RECORD_ORION_XS orion_xs;
     u_int8_t raw[VICTRON_ENCRYPTED_DATA_MAX_SIZE];
   } data;

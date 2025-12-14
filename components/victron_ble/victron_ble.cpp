@@ -115,6 +115,14 @@ void VictronBle::update() {
           });
         }
         break;
+      case VICTRON_BLE_RECORD_TYPE::SMART_BMS:
+        ESP_LOGD(TAG, "[%s] Received SMART_BMS message.", this->address_str().c_str());
+        // if (this->on_dc_energy_meter_message_callback_.size() > 0) {
+        //   this->defer("VictronBleE", [this]() {
+        //     this->on_dc_energy_meter_message_callback_.call(&this->last_package_.data.dc_energy_meter);
+        //   });
+        // }
+        break;
       case VICTRON_BLE_RECORD_TYPE::ORION_XS:
         ESP_LOGD(TAG, "[%s] Received ORION_XS message.", this->address_str().c_str());
         if (this->on_orion_xs_message_callback_.size() > 0) {
@@ -230,87 +238,58 @@ bool VictronBle::is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_
   u_int8_t expected_len = 0;
   switch (record_type) {
     case VICTRON_BLE_RECORD_TYPE::SOLAR_CHARGER:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_SOLAR_CHARGER)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_SOLAR_CHARGER);
       break;
     case VICTRON_BLE_RECORD_TYPE::BATTERY_MONITOR:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_BATTERY_MONITOR)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_BATTERY_MONITOR);
       break;
     case VICTRON_BLE_RECORD_TYPE::INVERTER:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_INVERTER)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_INVERTER);
       break;
     case VICTRON_BLE_RECORD_TYPE::DCDC_CONVERTER:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_DCDC_CONVERTER)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_DCDC_CONVERTER);
       break;
     case VICTRON_BLE_RECORD_TYPE::SMART_LITHIUM:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_SMART_LITHIUM)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_SMART_LITHIUM);
       break;
     case VICTRON_BLE_RECORD_TYPE::INVERTER_RS:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_INVERTER_RS)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_INVERTER_RS);
       break;
     case VICTRON_BLE_RECORD_TYPE::AC_CHARGER:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_AC_CHARGER)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_AC_CHARGER);
       break;
     case VICTRON_BLE_RECORD_TYPE::SMART_BATTERY_PROTECT:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT);
       break;
     case VICTRON_BLE_RECORD_TYPE::LYNX_SMART_BMS:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_LYNX_SMART_BMS)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_LYNX_SMART_BMS);
       break;
     case VICTRON_BLE_RECORD_TYPE::MULTI_RS:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_MULTI_RS)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_MULTI_RS);
       break;
     case VICTRON_BLE_RECORD_TYPE::VE_BUS:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_VE_BUS)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_VE_BUS);
       break;
     case VICTRON_BLE_RECORD_TYPE::DC_ENERGY_METER:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_DC_ENERGY_METER)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_DC_ENERGY_METER);
       break;
+    case VICTRON_BLE_RECORD_TYPE::SMART_BMS:
+      expected_len = sizeof(VICTRON_BLE_RECORD_SMART_BMS);
+      break;
     case VICTRON_BLE_RECORD_TYPE::ORION_XS:
-      if (crypted_len >= sizeof(VICTRON_BLE_RECORD_ORION_XS)) {
-        return true;
-      }
       expected_len = sizeof(VICTRON_BLE_RECORD_ORION_XS);
       break;
     default:
       ESP_LOGW(TAG, "[%s] Unsupported record type %02X", this->address_str().c_str(), (u_int8_t) record_type);
       return false;
       break;
+  }
+  if (crypted_len == expected_len) {
+    return true;
+  } else if (crypted_len > expected_len) {
+    ESP_LOGW(TAG, "[%s] Record type %02X message is too long %u, expected %u bytes.", this->address_str().c_str(),
+             (u_int8_t) record_type, crypted_len, expected_len);
+    return true;
   }
   ESP_LOGW(TAG, "[%s] Record type %02X message is too short %u, expected %u bytes.", this->address_str().c_str(),
            (u_int8_t) record_type, crypted_len, expected_len);

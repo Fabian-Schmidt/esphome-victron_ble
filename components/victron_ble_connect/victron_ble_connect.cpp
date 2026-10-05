@@ -7,8 +7,8 @@ namespace esphome {
 namespace victron_ble_connect {
 
 static const char *const TAG = "victron_ble_connect";
-static const std::string KEEP_ALIVE_INTERVAL = "victron_ble_keep_alive";
-static const std::string UPDATE_SENSOR_TIMEOUT = "victron_ble_update_sensors";
+static const char *const KEEP_ALIVE_INTERVAL = "victron_ble_keep_alive";
+static const char *const UPDATE_SENSOR_TIMEOUT = "victron_ble_update_sensors";
 /**
  * Expected steps:
  * 1. ESP_GATTC_OPEN_EVT
@@ -193,8 +193,10 @@ void VictronBleConnect::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt
 uint16_t VictronBleConnect::find_handle_(const esp32_ble_tracker::ESPBTUUID *characteristic) {
   auto *chr = this->parent_->get_characteristic(SERVICE_UUID, *characteristic);
   if (chr == nullptr) {
+    char service_buf[esp32_ble_tracker::ESPBTUUID::UUID_STR_LEN];
+    char char_buf[esp32_ble_tracker::ESPBTUUID::UUID_STR_LEN];
     ESP_LOGW(TAG, "[%s] No characteristic found at service %s char %s", this->get_name().c_str(),
-             SERVICE_UUID.to_string().c_str(), (*characteristic).to_string().c_str());
+             SERVICE_UUID.to_str(service_buf), characteristic->to_str(char_buf));
     return 0;
   }
   return chr->handle;
@@ -229,8 +231,9 @@ bool VictronBleConnect::request_read_(const uint16_t handle) {
                                         ESP_GATT_AUTH_REQ_SIGNED_MITM);
 
   if (status) {
+    char service_buf[esp32_ble_tracker::ESPBTUUID::UUID_STR_LEN];
     ESP_LOGW(TAG, "[%s] Error sending read request for service %s handle 0x%04x, status=%d", this->get_name().c_str(),
-             SERVICE_UUID.to_string().c_str(), handle, status);
+             SERVICE_UUID.to_str(service_buf), handle, status);
     return false;
   } else {
     this->read_request_started_++;
@@ -311,13 +314,15 @@ void VictronBleConnect::read_value_(const uint16_t handle, const uint8_t *value,
           esp_ble_gattc_register_for_notify(this->parent_->get_gattc_if(), this->parent_->get_remote_bda(), handle);
 
       if (status) {
+        char service_buf[esp32_ble_tracker::ESPBTUUID::UUID_STR_LEN];
         ESP_LOGW(TAG, "[%s] Error sending notify request for service %s handle 0x%04x, status=%d",
-                 this->get_name().c_str(), SERVICE_UUID.to_string().c_str(), handle, status);
+                 this->get_name().c_str(), SERVICE_UUID.to_str(service_buf), handle, status);
       }
     }
   } else {
+    char service_buf[esp32_ble_tracker::ESPBTUUID::UUID_STR_LEN];
     ESP_LOGW(TAG, "[%s] Error received data with unknown handle for service %s handle 0x%04x", this->get_name().c_str(),
-             SERVICE_UUID.to_string().c_str(), handle);
+             SERVICE_UUID.to_str(service_buf), handle);
   }
 }
 

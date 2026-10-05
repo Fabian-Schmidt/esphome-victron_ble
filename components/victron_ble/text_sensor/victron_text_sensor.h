@@ -76,6 +76,11 @@ class VictronTextSensor : public text_sensor::TextSensor, public Parented<Victro
 
   void register_callback();
 
+  // Victron devices advertise roughly every second; only forward actual changes.
+  void publish_if_changed_(const std::string &state);
+  // Append `text` to a ", " separated list when `active` (for bit-flag registers).
+  static void append_flag_(std::string &out, bool active, const char *text);
+
   void publish_state_(VE_REG_ALARM_REASON val);
   void publish_state_(VE_REG_DEVICE_STATE val);
   void publish_state_(VE_REG_CHR_ERROR_CODE val);

@@ -1,7 +1,12 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import esp32_ble_tracker
+try:
+    from esphome.components import ble_device_base
+except ImportError as err:  # ESPHome < 2026.8.0
+    raise ImportError(
+        "victron_ble requires ESPHome 2026.8.0 or newer (ble_device_base BLE layer)"
+    ) from err
 from esphome.const import (
     CONF_BINDKEY,
     CONF_ID,
@@ -13,7 +18,7 @@ from esphome.yaml_util import ESPHomeDumper
 from esphome.core import ID
 
 CODEOWNERS = ["@Fabian-Schmidt"]
-DEPENDENCIES = ["esp32_ble_tracker"]
+AUTO_LOAD = ["ble_device_base"]
 
 CONF_VICTRON_BLE_ID = "victron_ble_id"
 CONF_SUBMIT_SENSOR_DATA_ASAP = "submit_sensor_data_asap"
@@ -35,7 +40,7 @@ MULTI_CONF = True
 
 victron_ble_ns = cg.esphome_ns.namespace("victron_ble")
 VictronBle = victron_ble_ns.class_(
-    "VictronBle", esp32_ble_tracker.ESPBTDeviceListener, cg.PollingComponent
+    "VictronBle", ble_device_base.ESPBTDeviceListener, cg.Component
 )
 
 VictronBleDataConstPtr = (
@@ -209,7 +214,8 @@ def bind_mac_address_or_shortened(value):
 
 
 CONFIG_SCHEMA = cv.All(
-    cv.only_on_esp32,
+    cv.require_esphome_version(2026, 8, 0),
+    ble_device_base.rename_legacy_hub_id("victron_ble"),
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(VictronBle),
@@ -320,7 +326,7 @@ CONFIG_SCHEMA = cv.All(
             ),
         }
     )
-    .extend(esp32_ble_tracker.ESP_BLE_DEVICE_SCHEMA)
+    .extend(ble_device_base.BLE_DEVICE_SCHEMA)
     .extend(cv.COMPONENT_SCHEMA),
 )
 
@@ -336,7 +342,7 @@ async def get_parented(value):
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
-    await esp32_ble_tracker.register_ble_device(var, config)
+    await ble_device_base.register_ble_device(var, config)
 
     if CONF_MAC_ADDRESS in config:
         cg.add(var.set_address(config[CONF_MAC_ADDRESS].as_hex))

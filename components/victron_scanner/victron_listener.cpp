@@ -1,8 +1,6 @@
 #include "victron_listener.h"
 #include "esphome/core/log.h"
 
-#ifdef USE_ESP32
-
 namespace esphome {
 namespace victron_scanner {
 
@@ -18,7 +16,7 @@ static const uint16_t MANUFACTURER_ID = 0x02E1;
  *   SMART SHUNT 500A/50mV
  */
 
-bool VictronListener::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
+bool VictronListener::parse_device(const ble_device_base::ESPBTDevice &device) {
   if (device.get_name().size() == 0) {
     return false;
   }
@@ -31,7 +29,7 @@ bool VictronListener::parse_device(const esp32_ble_tracker::ESPBTDevice &device)
 
   const auto &manu_data = manu_datas[0];
 
-  if (manu_data.uuid != esp32_ble_tracker::ESPBTUUID::from_uint16(MANUFACTURER_ID)) {
+  if (manu_data.uuid != ble_device_base::ESPBTUUID::from_uint16(MANUFACTURER_ID)) {
     return false;
   }
   if (manu_data.data.size() < sizeof(VICTRON_BT_MANUFACTURER_DATA)) {
@@ -41,7 +39,9 @@ bool VictronListener::parse_device(const esp32_ble_tracker::ESPBTDevice &device)
   const auto victron_data = (VICTRON_BT_MANUFACTURER_DATA *) manu_data.data.data();
 
   if (victron_data->product_id == VICTRON_PRODUCT_ID::SMARTSHUNT_500A_50MV) {
-    ESP_LOGI(TAG, "FOUND SMART SHUNT 500A/50mV '%s' at %s", device.get_name().c_str(), device.address_str().c_str());
+    char addr_buf[ble_device_base::ESPBTDevice::MAC_ADDRESS_PRETTY_BUFFER_SIZE];
+    ESP_LOGI(TAG, "FOUND SMART SHUNT 500A/50mV '%s' at %s", device.get_name().c_str(),
+             device.address_str_to(addr_buf));
   }
 
   return false;
@@ -50,4 +50,3 @@ bool VictronListener::parse_device(const esp32_ble_tracker::ESPBTDevice &device)
 }  // namespace victron_scanner
 }  // namespace esphome
 
-#endif

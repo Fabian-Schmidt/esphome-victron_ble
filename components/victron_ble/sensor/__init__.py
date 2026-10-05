@@ -364,58 +364,47 @@ CONF_SUPPORTED_TYPE = {
 }
 
 
-def set_default_based_on_type():
-    def set_defaults_(config):
-        type = config[CONF_TYPE]
-        # set defaults based on sensor type:
-        if CONF_STATE_CLASS not in config:
-            if CONF_STATE_CLASS in CONF_SUPPORTED_TYPE[type]:
-                config[CONF_STATE_CLASS] = sensor.validate_state_class(
-                    CONF_SUPPORTED_TYPE[type][CONF_STATE_CLASS]
-                )
-            else:
-                config[CONF_STATE_CLASS] = sensor.validate_state_class(
-                    STATE_CLASS_MEASUREMENT
-                )
+_DEFAULT_KEYS = (
+    CONF_UNIT_OF_MEASUREMENT,
+    CONF_ICON,
+    CONF_ACCURACY_DECIMALS,
+    CONF_DEVICE_CLASS,
+)
 
-        if (
-            CONF_UNIT_OF_MEASUREMENT not in config
-            and CONF_UNIT_OF_MEASUREMENT in CONF_SUPPORTED_TYPE[type]
-        ):
-            config[CONF_UNIT_OF_MEASUREMENT] = CONF_SUPPORTED_TYPE[type][
-                CONF_UNIT_OF_MEASUREMENT
-            ]
 
-        if CONF_ICON not in config and CONF_ICON in CONF_SUPPORTED_TYPE[type]:
-            config[CONF_ICON] = CONF_SUPPORTED_TYPE[type][CONF_ICON]
+def _set_defaults_based_on_type(config):
+    """Fill in per-type defaults before the sensor schema runs.
 
-        if (
-            CONF_ACCURACY_DECIMALS not in config
-            and CONF_ACCURACY_DECIMALS in CONF_SUPPORTED_TYPE[type]
-        ):
-            config[CONF_ACCURACY_DECIMALS] = CONF_SUPPORTED_TYPE[type][
-                CONF_ACCURACY_DECIMALS
-            ]
-
-        if (
-            CONF_DEVICE_CLASS not in config
-            and CONF_DEVICE_CLASS in CONF_SUPPORTED_TYPE[type]
-        ):
-            config[CONF_DEVICE_CLASS] = CONF_SUPPORTED_TYPE[type][CONF_DEVICE_CLASS]
-
+    Runs ahead of the schema so the defaults go through the same validation as
+    user-supplied values, and the user's own values always win. Unknown or
+    missing types are passed through untouched for the schema to reject.
+    """
+    if not isinstance(config, dict) or CONF_TYPE not in config:
+        return config
+    defaults = CONF_SUPPORTED_TYPE.get(str(config[CONF_TYPE]).upper())
+    if defaults is None:
         return config
 
-    return set_defaults_
+    config = config.copy()
+    config.setdefault(
+        CONF_STATE_CLASS, defaults.get(CONF_STATE_CLASS, STATE_CLASS_MEASUREMENT)
+    )
+    for key in _DEFAULT_KEYS:
+        if key in defaults:
+            config.setdefault(key, defaults[key])
+    return config
 
 
-CONFIG_SCHEMA = sensor.sensor_schema().extend(
-    {
-        cv.GenerateID(): cv.declare_id(VictronSensor),
-        cv.GenerateID(CONF_VICTRON_BLE_ID): cv.use_id(VictronBle),
-        cv.Required(CONF_TYPE): cv.enum(CONF_SUPPORTED_TYPE, upper=True),
-    }
+CONFIG_SCHEMA = cv.All(
+    _set_defaults_based_on_type,
+    sensor.sensor_schema().extend(
+        {
+            cv.GenerateID(): cv.declare_id(VictronSensor),
+            cv.GenerateID(CONF_VICTRON_BLE_ID): cv.use_id(VictronBle),
+            cv.Required(CONF_TYPE): cv.enum(CONF_SUPPORTED_TYPE, upper=True),
+        }
+    ),
 )
-FINAL_VALIDATE_SCHEMA = set_default_based_on_type()
 
 
 async def to_code(config):

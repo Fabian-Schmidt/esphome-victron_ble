@@ -15,29 +15,29 @@
 
   - platform: victron_ble
     victron_ble_id: MySmartSolar
-    name: "Dummy/Test"
+    name: "Dummy/Test ALARM"
     type: ALARM
   - platform: victron_ble
     victron_ble_id: MySmartSolar
-    name: "Dummy/Test"
+    name: "Dummy/Test ACTIVE_AC_IN"
     type: ACTIVE_AC_IN
   - platform: victron_ble
     victron_ble_id: MySmartSolar
-    name: "Dummy/Test"
+    name: "Dummy/Test CHARGER_ERROR"
     type: CHARGER_ERROR
   - platform: victron_ble
     victron_ble_id: MySmartSolar
-    name: "Dummy/Test"
+    name: "Dummy/Test ERROR_CODE"
     type: ERROR_CODE
   - platform: victron_ble
     victron_ble_id: MySmartSolar
-    name: "Dummy/Test"
+    name: "Dummy/Test OFF_REASON"
     type: OFF_REASON
   - platform: victron_ble
     victron_ble_id: MySmartSolar
-    name: "Dummy/Test"
+    name: "Dummy/Test WARNING_REASON"
     type: WARNING_REASON
   - platform: victron_ble
     victron_ble_id: MySmartSolar
-    name: "Dummy/Test"
+    name: "Dummy/Test BALANCER_STATUS"
     type: BALANCER_STATUS

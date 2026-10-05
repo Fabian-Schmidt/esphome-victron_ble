@@ -1,14 +1,12 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
-
-#ifdef USE_ESP32
+#include "esphome/components/ble_device_base/ble_device.h"
 
 namespace esphome {
 namespace victron_scanner {
 
-enum class VICTRON_PRODUCT_ID : u_int16_t {
+enum class VICTRON_PRODUCT_ID : uint16_t {
   // BMV-700
   BMV_700 = 0x0203,
   // BMV-702
@@ -238,17 +236,16 @@ enum class VICTRON_PRODUCT_ID : u_int16_t {
 };
 
 struct VICTRON_BT_MANUFACTURER_DATA {
-  u_int8_t d00;  // 0x10
-  u_int8_t d01;  // 0x02
+  uint8_t d00;  // 0x10
+  uint8_t d01;  // 0x02
   VICTRON_PRODUCT_ID product_id;
 };
 
-class VictronListener : public esp32_ble_tracker::ESPBTDeviceListener {
+class VictronListener : public ble_device_base::ESPBTDeviceListener {
  public:
-  bool parse_device(const esp32_ble_tracker::ESPBTDevice &device) override;
+  bool parse_device(const ble_device_base::ESPBTDevice &device) override;
 };
 
 }  // namespace victron_scanner
 }  // namespace esphome
 
-#endif

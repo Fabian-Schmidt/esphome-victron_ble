@@ -60,6 +60,8 @@ When connected to the device via VictronConnect App no Instant readout (Bluetoot
 
 See [victron_ble.yaml](/victron_ble.yaml) for a full example.
 
+Requires ESPHome 2026.8.0 or newer (uses the platform-neutral `ble_device_base` BLE layer). `victron_ble` works with any ESPHome BLE tracker: `esp32_ble_tracker` (ESP32), `rp2_ble_tracker` (Raspberry Pi Pico W), `bk72xx_ble_tracker` and `ln882h_ble_tracker`; only ESP32 and Pico W are built in CI. `victron_ble_connect` remains ESP32-only. If you previously set `esp32_ble_id:` on a `victron_ble` entry, rename it to `ble_hub_id:`; the old key still works but logs a deprecation warning.
+
 ```yaml
 esphome:
   name: "victron-ble"
@@ -246,7 +248,7 @@ The following `type` are supported by the `sensor` component:
 | `BATTERY_VOLTAGE_3`  | V    |               |                 |          |                 |              |             | X          |                       |                  |          |        |                 |          |
 | `BATTERY_POWER_3`    | W    |               |                 |          |                 |              |             | X          |                       |                  |          |        |                 |          |
 
-(1) - Available if device aux port is configured.
+(1) - Available if device aux port is configured. The aux port has one mode at a time; you can configure all three (`AUX_VOLTAGE`, `MID_VOLTAGE`, `TEMPERATURE`) and only the one matching the device setting reports values, the others stay unknown (logged once at INFO).
 (2) - Not available on all models. `NAN` reported if not available.
 
 ### Binary Sensor

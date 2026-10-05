@@ -3,10 +3,8 @@
 #include <array>
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
-#include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
+#include "esphome/components/ble_device_base/ble_device.h"
 #include "victron_custom_type.h"
-
-#ifdef USE_ESP32
 
 // Max documented message size is 16 byte. Maximum length of a record is 20 bytes = 4 byte header
 // (VICTRON_BLE_RECORD_BASE minus VICTRON_BLE_MANUFACTURER_DATA) + 16 byte payload
@@ -18,11 +16,11 @@ namespace victron_ble {
 // `Victron Energy BV`
 static const uint16_t VICTRON_MANUFACTURER_ID = 0x02E1;
 
-enum class VICTRON_MANUFACTURER_RECORD_TYPE : u_int8_t {
+enum class VICTRON_MANUFACTURER_RECORD_TYPE : uint8_t {
   PRODUCT_ADVERTISEMENT = 0x10,
 };
 
-enum class VICTRON_PRODUCT_ID : u_int16_t {
+enum class VICTRON_PRODUCT_ID : uint16_t {
   // BMV-700
   BMV_700 = 0x0203,
   // BMV-702
@@ -295,13 +293,13 @@ enum class VICTRON_PRODUCT_ID : u_int16_t {
 
 struct VICTRON_BLE_MANUFACTURER_DATA {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VICTRON_MANUFACTURER_RECORD_TYPE manufacturer_record_type;
-  u_int8_t manufacturer_record_length;
+  uint8_t manufacturer_record_length;
   VICTRON_PRODUCT_ID product_id;
 } __attribute__((packed));
 
 // source:
 // - extra-manufacturer-data-2022-12-14.pdf
-enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
+enum class VICTRON_BLE_RECORD_TYPE : uint8_t {
   // VICTRON_BLE_RECORD_TEST
   TEST_RECORD = 0x00,
   // VICTRON_BLE_RECORD_SOLAR_CHARGER
@@ -337,15 +335,15 @@ enum class VICTRON_BLE_RECORD_TYPE : u_int8_t {
 struct VICTRON_BLE_RECORD_BASE {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VICTRON_BLE_MANUFACTURER_DATA manufacturer_base;
   VICTRON_BLE_RECORD_TYPE record_type;
-  u_int8_t data_counter_lsb;
-  u_int8_t data_counter_msb;
+  uint8_t data_counter_lsb;
+  uint8_t data_counter_msb;
   // Byte 0 of the encryption key (bindkey)
-  u_int8_t encryption_key_0;
+  uint8_t encryption_key_0;
 } __attribute__((packed));
 
 struct VICTRON_BLE_RECORD_TEST {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   // 1 s, 0 .. 34 year
-  u_int32_t uptime : 30;
+  uint32_t uptime : 30;
   vic_temperature_7bit temperature : 7;
 } __attribute__((packed));
 
@@ -354,7 +352,7 @@ struct VICTRON_BLE_RECORD_TEST {  // NOLINT(readability-identifier-naming,altera
 // - https://www.victronenergy.com/upload/documents/VE.Direct-Protocol-3.33.pdf
 // - https://github.com/victronenergy/venus-html5-app/blob/master/src/app/utils/constants.js
 // - https://github.com/victronenergy/gui-v2/blob/8397825725623a4d15086bef77f67c98aa94a780/src/enums.h#L332C6-L332C7
-enum class VE_REG_DEVICE_STATE : u_int8_t {
+enum class VE_REG_DEVICE_STATE : uint8_t {
   // Off / Not charging
   OFF = 0x00,
   // Low power
@@ -402,7 +400,7 @@ enum class VE_REG_DEVICE_STATE : u_int8_t {
 };
 
 // Source: VE.Direct-Protocol-3.32.pdf & https://www.victronenergy.com/live/mppt-error-codes
-enum class VE_REG_CHR_ERROR_CODE : u_int8_t {
+enum class VE_REG_CHR_ERROR_CODE : uint8_t {
   // No error
   NO_ERROR = 0,
   // Err 1 - Battery temperature too high
@@ -555,7 +553,7 @@ struct VICTRON_BLE_RECORD_SOLAR_CHARGER {  // NOLINT(readability-identifier-nami
 
 // For the following devices: BMV, Inverter
 // source: VE.Direct-Protocol-3.32.pdf
-enum class VE_REG_ALARM_REASON : u_int16_t {
+enum class VE_REG_ALARM_REASON : uint16_t {
   NO_ALARM = 0x00,
   // Low Voltage
   LOW_VOLTAGE = 0x01,
@@ -590,7 +588,7 @@ enum class VE_REG_ALARM_REASON : u_int16_t {
 };
 
 // source: extra-manufacturer-data-2022-12-14.pdf
-enum class VE_REG_BMV_AUX_INPUT : u_int8_t {
+enum class VE_REG_BMV_AUX_INPUT : uint8_t {
   VE_REG_DC_CHANNEL2_VOLTAGE = 0x0,
   VE_REG_BATTERY_MID_POINT_VOLTAGE = 0x1,
   VE_REG_BAT_TEMPERATURE = 0x2,
@@ -624,7 +622,7 @@ struct VICTRON_BLE_RECORD_INVERTER {  // NOLINT(readability-identifier-naming,al
 // source:
 // - VE.Direct-Protocol-3.32.pdf
 // - BlueSolar-HEX-protocol.pdf
-enum struct VE_REG_DEVICE_OFF_REASON_2 : u_int32_t {
+enum struct VE_REG_DEVICE_OFF_REASON_2 : uint32_t {
   NOTHING = 0,
   // No input power (solar panels)
   NO_INPUT_POWER = (1ul << 0),
@@ -659,7 +657,7 @@ struct VICTRON_BLE_RECORD_DCDC_CONVERTER {  // NOLINT(readability-identifier-nam
 // source:
 // - https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/64
 // - VE.Can-registers-public.pdf
-enum struct VE_REG_BMS_FLAGs : u_int32_t {
+enum struct VE_REG_BMS_FLAGs : uint32_t {
   NONE = 0x0,
   // Battery charged
   BATTERY_CHARGED = (1ul << 0),
@@ -718,7 +716,7 @@ template<class T> inline T operator&(T a, T b) { return (T) ((int) a & (int) b);
 // - https://www.victronenergy.com/upload/documents/Lithium_Battery_Smart/15958-Manual_Lithium_Smart_Battery-pdf-en.pdf
 //   - Page 43
 // 0..15 - 4 bit
-enum struct VE_REG_BALANCER_STATUS : u_int8_t {
+enum struct VE_REG_BALANCER_STATUS : uint8_t {
   // unknown (need to charge once to 100%)
   UNKNOWN = 0x0,
   // Balanced / ok
@@ -732,7 +730,7 @@ enum struct VE_REG_BALANCER_STATUS : u_int8_t {
 struct VICTRON_BLE_RECORD_SMART_LITHIUM {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_BMS_FLAGs bms_flags;
   // TODO
-  u_int16_t SmartLithium_error;
+  uint16_t SmartLithium_error;
   vic_cell_7bit_0_01 cell1 : 7;
   vic_cell_7bit_0_01 cell2 : 7;
   vic_cell_7bit_0_01 cell3 : 7;
@@ -774,7 +772,7 @@ struct VICTRON_BLE_RECORD_AC_CHARGER {  // NOLINT(readability-identifier-naming,
 // source:
 // - https://github.com/Fabian-Schmidt/esphome-victron_ble/issues/68
 // - BlueSolar-HEX-protocol.pdf
-enum class VE_REG_DC_OUTPUT_STATUS : u_int8_t {
+enum class VE_REG_DC_OUTPUT_STATUS : uint8_t {
   // Load output off
   OFF = 0,
   // Automatic control / batterylife (default)
@@ -809,20 +807,20 @@ struct VICTRON_BLE_RECORD_SMART_BATTERY_PROTECT {  // NOLINT(readability-identif
 
 struct VICTRON_BLE_RECORD_LYNX_SMART_BMS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   // TODO
-  u_int8_t error;
+  uint8_t error;
   vic_16bit_1_positive ttg;
   vic_16bit_0_01 battery_voltage;
   vic_16bit_0_1 battery_current;
   // TODO
-  u_int16_t io_status;
+  uint16_t io_status;
   // TODO
-  u_int32_t warnings_alarms : 18;
+  uint32_t warnings_alarms : 18;
   vic_10bit_0_1_positive soc : 10;
   vic_20bit_0_1_negative consumed_ah : 20;
   vic_temperature_7bit temperature : 7;
 } __attribute__((packed));
 
-enum class VE_REG_AC_IN_ACTIVE : u_int8_t {
+enum class VE_REG_AC_IN_ACTIVE : uint8_t {
   // AC in 1
   AC_IN_1 = 0,
   // AC in 2
@@ -844,7 +842,7 @@ struct VICTRON_BLE_RECORD_MULTI_RS {  // NOLINT(readability-identifier-naming,al
   vic_16bit_0_01_positive yield_today;
 } __attribute__((packed));
 
-enum class VE_REG_ALARM_NOTIFICATION : u_int8_t {
+enum class VE_REG_ALARM_NOTIFICATION : uint8_t {
   NO_ALARM = 0,
   WARNING = 1,
   ALARM = 2,
@@ -853,7 +851,7 @@ enum class VE_REG_ALARM_NOTIFICATION : u_int8_t {
 struct VICTRON_BLE_RECORD_VE_BUS {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   VE_REG_DEVICE_STATE device_state;
   // TODO
-  u_int8_t ve_bus_error;
+  uint8_t ve_bus_error;
   vic_16bit_0_1 battery_current;
   vic_14bit_0_01_positive battery_voltage : 14;
   VE_REG_AC_IN_ACTIVE active_ac_in : 2;
@@ -890,7 +888,7 @@ struct VICTRON_BLE_RECORD_ORION_XS {  // NOLINT(readability-identifier-naming,al
 } __attribute__((packed));
 
 struct VictronBleData {
-  u_int16_t data_counter = 0;
+  uint16_t data_counter = 0;
   VICTRON_BLE_RECORD_TYPE record_type = VICTRON_BLE_RECORD_TYPE::TEST_RECORD;
   // Assumption: One device (class instance) will send only one type of record.
   union {
@@ -907,28 +905,25 @@ struct VictronBleData {
     VICTRON_BLE_RECORD_VE_BUS ve_bus;
     VICTRON_BLE_RECORD_DC_ENERGY_METER dc_energy_meter;
     VICTRON_BLE_RECORD_ORION_XS orion_xs;
-    u_int8_t raw[VICTRON_ENCRYPTED_DATA_MAX_SIZE];
+    uint8_t raw[VICTRON_ENCRYPTED_DATA_MAX_SIZE];
   } data;
 };
 
-class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Component {
+class VictronBle : public ble_device_base::ESPBTDeviceListener, public Component {
  public:
   void dump_config() override;
 
-  bool parse_device(const esp32_ble_tracker::ESPBTDevice &device) override;
+  bool parse_device(const ble_device_base::ESPBTDevice &device) override;
 
-  void set_address(uint64_t address) { this->address_ = address; }
-
-  inline std::string address_str() const {
-    if (this->address_ == 0) {
-      return "";
-    } else {
-      return str_snprintf("%02X:%02X:%02X:%02X:%02X:%02X", 17, (uint8_t) (this->address_ >> 40) & 0xff,
-                          (uint8_t) (this->address_ >> 32) & 0xff, (uint8_t) (this->address_ >> 24) & 0xff,
-                          (uint8_t) (this->address_ >> 16) & 0xff, (uint8_t) (this->address_ >> 8) & 0xff,
-                          (uint8_t) (this->address_ >> 0) & 0xff);
-    }
+  void set_address(uint64_t address) {
+    this->address_ = address;
+    snprintf(this->address_str_, sizeof(this->address_str_), "%02X:%02X:%02X:%02X:%02X:%02X",
+             (uint8_t) (address >> 40) & 0xff, (uint8_t) (address >> 32) & 0xff, (uint8_t) (address >> 24) & 0xff,
+             (uint8_t) (address >> 16) & 0xff, (uint8_t) (address >> 8) & 0xff, (uint8_t) (address >> 0) & 0xff);
   }
+
+  // Formatted once in set_address(); no heap allocation per log line.
+  const char *address_str() const { return this->address_str_; }
 
   void set_bindkey(std::array<uint8_t, 16> key) { this->bindkey_ = key; }
 
@@ -957,7 +952,8 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
 #undef VICTRON_MESSAGE_ADD_CB
 
  protected:
-  uint64_t address_;
+  uint64_t address_{0};
+  char address_str_[18]{};  // "XX:XX:XX:XX:XX:XX\0"
   std::array<uint8_t, 16> bindkey_;
 
   VictronBleData last_package_{};
@@ -983,15 +979,15 @@ class VictronBle : public esp32_ble_tracker::ESPBTDeviceListener, public Compone
 
 #undef VICTRON_MESSAGE_STORAGE_CB
 
-  bool encrypt_message_(const u_int8_t *crypted_data, const u_int8_t crypted_len, u_int8_t encrypted_data[32],
-                        const u_int8_t data_counter_lsb, const u_int8_t data_counter_msb);
+  bool decrypt_message_(const uint8_t *crypted_data, const uint8_t crypted_len,
+                        uint8_t encrypted_data[VICTRON_ENCRYPTED_DATA_MAX_SIZE],
+                        const uint8_t data_counter_lsb, const uint8_t data_counter_msb);
 
-  bool is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_type, const u_int8_t crypted_len);
-  void handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const u_int8_t encrypted_data[32]);
-  void update();
+  bool is_record_type_supported_(const VICTRON_BLE_RECORD_TYPE record_type, const uint8_t crypted_len);
+  void handle_record_(const VICTRON_BLE_RECORD_TYPE record_type, const uint8_t encrypted_data[32]);
+  void publish_last_package_();
 };
 
 }  // namespace victron_ble
 }  // namespace esphome
 
-#endif

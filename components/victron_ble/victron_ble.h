@@ -4,6 +4,9 @@
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 #include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
+#if __has_include("esphome/core/alloc_helpers.h")
+#include "esphome/core/alloc_helpers.h"  // str_snprintf lives here since ESPHome 2026.5
+#endif
 #include "victron_custom_type.h"
 
 #ifdef USE_ESP32

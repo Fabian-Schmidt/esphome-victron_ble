@@ -3,6 +3,7 @@
 #include <array>
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
+#include "esphome/core/alloc_helpers.h"
 #include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
 #include "victron_custom_type.h"
 
